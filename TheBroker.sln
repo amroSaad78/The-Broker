@@ -7,12 +7,31 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F14DD222-458
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebApp", "WebApp", "{4CA5EC7B-2B2E-4607-BFC3-B11EE76B630B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebMVC", "WebMVC\WebMVC.csproj", "{46C1FE27-C119-46A8-A5B7-DF64835C63ED}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{FE72EE1C-B612-4401-9279-0C3EB57FA73B}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{46C1FE27-C119-46A8-A5B7-DF64835C63ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46C1FE27-C119-46A8-A5B7-DF64835C63ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46C1FE27-C119-46A8-A5B7-DF64835C63ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46C1FE27-C119-46A8-A5B7-DF64835C63ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE72EE1C-B612-4401-9279-0C3EB57FA73B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE72EE1C-B612-4401-9279-0C3EB57FA73B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE72EE1C-B612-4401-9279-0C3EB57FA73B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE72EE1C-B612-4401-9279-0C3EB57FA73B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{4CA5EC7B-2B2E-4607-BFC3-B11EE76B630B} = {F14DD222-4588-49C4-8950-37F652824189}
+		{46C1FE27-C119-46A8-A5B7-DF64835C63ED} = {4CA5EC7B-2B2E-4607-BFC3-B11EE76B630B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {071ACE36-5C14-4792-8787-934D7C505DAB}
