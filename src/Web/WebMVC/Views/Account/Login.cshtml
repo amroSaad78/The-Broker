@@ -1,0 +1,40 @@
+﻿@model WebMVC.ViewModels.AccountViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "The Broker - Login";
+    Layout = "~/Views/Shared/_LayoutAccount.cshtml";
+}
+
+    <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" id="form_wrapper">
+        <input type="hidden" asp-for="ReturnUrl" />
+        <div id="laptopImage">
+            <img src="~/images/laptop.png" alt="Laptop icon">
+        </div>
+        <div id="loginData">
+            <h1>Member Login</h1>
+            <div class="input_container">
+                <i class="fas fa-envelope"></i>
+                <input placeholder="Email" asp-for="Email" class='input_field form-control form-input'>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="input_container">
+                <i class="fas fa-lock"></i>
+                <input placeholder="Password" asp-for="Password" class='input_field form-control form-input'>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="input_container">
+                <div class="checkbox">
+                    <label asp-for="RememberMe">
+                        <input asp-for="RememberMe" />
+                        @Html.DisplayNameFor(m => m.RememberMe)
+                    </label>
+                </div>
+            </div>
+            <input type="submit" value="Login" id='input_submit' class='input_field'>
+
+        </div>
+    </form>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
+

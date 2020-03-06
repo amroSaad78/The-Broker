@@ -1,0 +1,10 @@
+{
+  "version": "1.0",
+  "defaultProvider": "filesystem",
+  "libraries": [
+    {
+      "library": "wwwroot/lib/slimscroll/",
+      "destination": "wwwroot/lib/slimscroll/"
+    }
+  ]
+}

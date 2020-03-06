@@ -1,8 +1,20 @@
 version: '3.4'
 
 services:
-  webmvc:
-    image: ${DOCKER_REGISTRY-}webmvc
+  seq:
+    image: datalust/seq:latest
+
+  redis:
+    image: redis:alpine
+
+  identity.api:
+    image: ${REGISTRY:-broker}/identity.api:${PLATFORM:-linux}-${TAG:-latest}
     build:
       context: .
-      dockerfile: WebMVC/Dockerfile
+      dockerfile: src/Services/Identity/Identity.API/Dockerfile    
+
+  webmvc:
+    image: ${REGISTRY:-broker}/webmvc:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+      context: .
+      dockerfile: src/Web/WebMVC/Dockerfile
