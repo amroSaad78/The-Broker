@@ -4,6 +4,9 @@ services:
   seq:
     image: datalust/seq:latest
 
+  sql.data:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+
   redis:
     image: redis:alpine
 
@@ -11,7 +14,9 @@ services:
     image: ${REGISTRY:-broker}/identity.api:${PLATFORM:-linux}-${TAG:-latest}
     build:
       context: .
-      dockerfile: src/Services/Identity/Identity.API/Dockerfile    
+      dockerfile: src/Services/Identity/Identity.API/Dockerfile 
+    depends_on:
+      - sql.data
 
   webmvc:
     image: ${REGISTRY:-broker}/webmvc:${PLATFORM:-linux}-${TAG:-latest}

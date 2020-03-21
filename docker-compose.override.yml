@@ -7,6 +7,13 @@ services:
     ports:
       - "5340:80"
 
+  sql.data:
+    environment:
+      - SA_PASSWORD=Pass@word
+      - ACCEPT_EULA=Y
+    ports:
+      - "5433:1433"    # Important: In a production environment your should remove the external port
+
   redis:
     ports:
       - "6379:6379"
@@ -15,8 +22,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-      - ConnectionString=${ESHOP_AZURE_IDENTITY_DB:-Server=.;Database=Broker.Service.IdentityDb;Integrated Security=True;} 
-      - MvcClient=http://${ESHOP_EXTERNAL_DNS_NAME_OR_IP}:5100              #Local: You need to open your local dev-machine firewall at range 5100-5110. 
+      - ConnectionString=${BROKER_AZURE_IDENTITY_DB:-Server=sql.data;Database=Broker.Service.IdentityDb;User Id=sa;Password=Pass@word;} 
+      - MvcClient=http://${BROKER_PROD_EXTERNAL_DNS_NAME_OR_IP}:5100
       - UseCustomizationData=False  
       - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
       - OrchestratorType=${ORCHESTRATOR_TYPE}
@@ -27,8 +34,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-      - IdentityUrl=http://10.0.75.1:5105
-      - IdentityUrlHC=http://identity.api/hc
+      - IdentityUrl=http://host.docker.internal:5105
       - UseCustomizationData=False
       - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
       - OrchestratorType=${ORCHESTRATOR_TYPE}

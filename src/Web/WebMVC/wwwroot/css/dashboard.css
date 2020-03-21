@@ -6974,16 +6974,15 @@ form.dropzone {
     align-items: center;
 }
 
-
+#logoutLink {
+    display: none !important;
+}
 /* ==========================================================================
 9. Map
 ========================================================================== */
-
-
 /*----------------------
 9.1 Google Map
 ---------------------------*/
-
 .gmaps {
     height: 350px;
     width: 100%;
@@ -7066,6 +7065,9 @@ Media Query
         border-bottom: 1px solid #dee2e6;
         border-right: transparent !important;
     }
+    #logoutLink {
+        display: block !important;
+    }
 }
 
 
@@ -7145,6 +7147,10 @@ Media Query
         width: 100%;
         border-bottom: 1px solid #dee2e6;
         border-right: transparent !important;
+    }
+
+    #logoutLink {
+        display: block !important;
     }
 }
 
@@ -7270,6 +7276,10 @@ Media Query
 
     .simple-card .nav.nav-tabs .nav-item .nav-link {
         padding: 17px 29px;
+    }
+
+    #logoutLink {
+        display: block !important;
     }
 }
 

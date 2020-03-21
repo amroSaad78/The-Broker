@@ -24,6 +24,7 @@ using Devspaces.Support;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using System.IdentityModel.Tokens.Jwt;
+using WebMVC.Infrastructure.Middlewares;
 
 namespace WebMVC
 {
@@ -44,7 +45,8 @@ namespace WebMVC
                     .AddCustomMvc(Configuration)
                     .AddDevspaces()
                     .AddHttpClientServices(Configuration)
-                    .AddCustomAuthentication(Configuration);
+                    .AddCustomAuthentication(Configuration)
+                    .AddSingleton<IPagesNames, PagesNames>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -84,16 +86,19 @@ namespace WebMVC
             app.UseSession();
             app.UseStaticFiles();
             app.UseRouting();
-
+            if (Configuration.GetValue<bool>("UseLoadTest"))
+            {
+                app.UseMiddleware<ByPassAuthMiddleware>(); //Create a test user Auth
+            }
+            app.UseAuthentication();
             app.UseAuthorization();
-
             WebContextSeed.Seed(app, env, loggerFactory); //seed images files from zip file and seed css file;
             app.UseHttpsRedirection();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Dashboard}/{action=Index}/{id?}");
+                    pattern: "{controller=Dashboard}/{action=Login}/{id?}");
 
                 endpoints.MapControllerRoute(
                     name: "defaultError",
@@ -128,11 +133,11 @@ namespace WebMVC
         public static IServiceCollection AddHealthChecks(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddHealthChecks()
-                .AddCheck("self", () => HealthCheckResult.Healthy())
+                .AddCheck("self", () => HealthCheckResult.Healthy());
                 
                 //.AddUrlGroup(new Uri(configuration["PurchaseUrlHC"]), name: "purchaseapigw-check", tags: new string[] { "purchaseapigw" })
                 //.AddUrlGroup(new Uri(configuration["MarketingUrlHC"]), name: "marketingapigw-check", tags: new string[] { "marketingapigw" })
-                .AddUrlGroup(new Uri(configuration["IdentityUrlHC"]), name: "identityapi-check", tags: new string[] { "identityapi" });
+                //.AddUrlGroup(new Uri(configuration["IdentityUrlHC"]), name: "identityapi-check", tags: new string[] { "identityapi" });
                 
             return services;
         }
@@ -142,7 +147,7 @@ namespace WebMVC
             services.Configure<AppSettings>(configuration);
             services.AddControllersWithViews();
             services.AddSession();
-
+            
             if (configuration.GetValue<string>("IsClusterEnv") == bool.TrueString)
             {
                 services.AddDataProtection(opts =>
@@ -151,6 +156,7 @@ namespace WebMVC
                 })
                 .PersistKeysToStackExchangeRedis(ConnectionMultiplexer.Connect(configuration["DPConnectionString"]), "DataProtection-Keys");
             }
+            
             return services;
         }
         public static IServiceCollection AddHttpClientServices(this IServiceCollection services, IConfiguration configuration)
@@ -172,6 +178,7 @@ namespace WebMVC
 
         public static IServiceCollection AddCustomAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
+            Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
             var useLoadTest = configuration.GetValue<bool>("UseLoadTest");
             var identityUrl = configuration.GetValue<string>("IdentityUrl");
             var callBackUrl = configuration.GetValue<string>("CallBackUrl");
@@ -197,6 +204,7 @@ namespace WebMVC
                 options.GetClaimsFromUserInfoEndpoint = true;
                 options.RequireHttpsMetadata = false;
                 options.Scope.Add("openid");
+                options.Scope.Add("profile");
             });
 
             return services;

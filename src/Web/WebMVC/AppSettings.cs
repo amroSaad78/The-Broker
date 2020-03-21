@@ -4,9 +4,9 @@
     {
         //public Connectionstrings ConnectionStrings { get; set; }
         public string MarketingUrl { get; set; }
-        public string PurchaseUrl { get; set; }
-        public string SignalrHubUrl { get; set; }
-        public bool ActivateCampaignDetailFunction { get; set; }
+        //public string PurchaseUrl { get; set; }
+        //public string SignalrHubUrl { get; set; }
+        //public bool ActivateCampaignDetailFunction { get; set; }
         public Logging Logging { get; set; }
         public bool UseCustomizationData { get; set; }
     }

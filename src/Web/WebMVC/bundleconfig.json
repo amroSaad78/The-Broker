@@ -2,17 +2,31 @@
 // More info at https://go.microsoft.com/fwlink/?LinkId=808241
 [
   {
-    "outputFileName": "wwwroot/css/account.min.css",
-    // An array of relative input file paths. Globbing patterns supported
-    "inputFiles": [
-      "wwwroot/css/account.css"
-    ]
-  },
-  {
     "outputFileName": "wwwroot/css/dashboard.min.css",
     // An array of relative input file paths. Globbing patterns supported
     "inputFiles": [
       "wwwroot/css/dashboard.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/fonts/circular-std/style.min.css",
+    // An array of relative input file paths. Globbing patterns supported
+    "inputFiles": [
+      "wwwroot/lib/fonts/circular-std/style.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/fonts/fontawesome/css/fontawesome-all.min.css",
+    // An array of relative input file paths. Globbing patterns supported
+    "inputFiles": [
+      "wwwroot/lib/fonts/fontawesome/css/fontawesome-all.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/site.min.js",
+    // An array of relative input file paths. Globbing patterns supported
+    "inputFiles": [
+      "wwwroot/js/site.js"
     ]
   }
 ]

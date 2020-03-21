@@ -1,0 +1,48 @@
+﻿@using System.Collections.Generic
+@using Microsoft.AspNetCore.Http
+@model Identity.API.Models.AccountViewModels.LoginViewModel
+
+
+@{
+    ViewData["Title"] = "The Broker - Login";
+}
+
+<img class="wave" src="~/images/wave.png">
+<div class="container">
+    <div class="img">
+        <img src="~/images/bg.svg">
+    </div>
+    <div class="login-content">
+        <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
+            <input type="hidden" asp-for="ReturnUrl" />
+            <img src="~/images/avatar.svg">
+            <h2 class="title">Welcome</h2>
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="input-div email">
+                <div class="i">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="div">
+                    <h5>Email</h5>
+                    <input asp-for="Email" class="input">
+                </div>
+            </div>
+            <div class="input-div password">
+                <div class="i">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <div class="div">
+                    <h5>Password</h5>
+                    <input asp-for="Password" class="input">
+                </div>
+            </div>
+            <div class="custom-control custom-checkbox d-flex flex-row-reverse">
+                <input asp-for="RememberMe" class="custom-control-input"/>
+                <label asp-for="RememberMe" class="custom-control-label">
+                    @Html.DisplayNameFor(m => m.RememberMe)
+                </label>
+            </div>
+                <input type="submit" class="btn" value="Login">
+        </form>
+    </div>
+</div>

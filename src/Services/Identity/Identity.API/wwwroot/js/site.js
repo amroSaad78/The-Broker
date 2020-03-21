@@ -1,4 +1,21 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿const inputs = document.querySelectorAll(".input");
 
-// Write your JavaScript code.
+function addclass() {
+	let parent = this.parentNode.parentNode;
+	parent.classList.add("focus");
+}
+
+function remclass() {
+	let parent = this.parentNode.parentNode;
+	if (this.value == "") {
+		parent.classList.remove("focus");
+	}
+}
+
+inputs.forEach(input => {
+	input.addEventListener("focus", addclass);
+	input.addEventListener("blur", remclass);
+	if (input.value != "") {
+		input.parentNode.parentNode.classList.add("focus");
+	}
+});

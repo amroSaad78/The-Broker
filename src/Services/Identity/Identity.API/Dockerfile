@@ -9,13 +9,13 @@ WORKDIR /src
 
 COPY ["TheBroker.sln", "."]
 COPY ["docker-compose.dcproj", "/src/""]
+COPY ["src/BuildingBlocks/WebHostCustomization/WebHost.Customization/WebHost.Customization.csproj", "src/BuildingBlocks/WebHostCustomization/WebHost.Customization/"]
 COPY ["src/Services/Identity/Identity.API/Identity.API.csproj", "src/Services/Identity/Identity.API/"]
 COPY ["src/BuildingBlocks/Devspaces.Support/Devspaces.Support.csproj", "src/BuildingBlocks/Devspaces.Support/"]
 COPY ["src/Web/WebMVC/WebMVC.csproj", "src/Web/WebMVC/"]
 
 RUN dotnet restore "TheBroker.sln"
 COPY . .
-
 WORKDIR "/src/src/Services/Identity/Identity.API"
 RUN dotnet publish --no-restore -c Release -o /app
 
