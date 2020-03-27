@@ -42,23 +42,23 @@
                 <div class="collapse navbar-collapse " id="navbarSupportedContent">
                     <ul class="navbar-nav ml-auto navbar-right-top">
 
-                        @await Html.PartialAsync("_Notification")
+                        <partial name="_Notification" />
 
-                        @await Html.PartialAsync("_AppList")
+                        <partial name="_AppList" />
 
-                        @await Html.PartialAsync("_UserMenu")
+                        <partial name="_UserMenu" />
                     </ul>
                 </div>
             </nav>
         </div>
 
-        @await Html.PartialAsync("_SideBar")
+        <partial name="_SideBar" />
 
         <div class="dashboard-wrapper">
             <div class="container-fluid dashboard-content">
                 <div class="row">
                     <div class="col-xl-10 col-lg-9 col-md-12 col-sm-12 col-12">
-                        @await Html.PartialAsync("_Header")
+                        <partial name="_Header" />
                         @RenderBody()
                     </div>
                     @if (propsNames.Contains(ViewData["pageName"]?.ToString()))
@@ -67,7 +67,7 @@
                     }
                 </div>
             </div>
-            @await Html.PartialAsync("_Footer")
+            <partial name="_Footer" />
         </div>
     </div>
     <environment names="Development">
