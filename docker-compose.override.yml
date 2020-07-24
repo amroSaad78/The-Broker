@@ -23,21 +23,72 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
       - ConnectionString=${BROKER_AZURE_IDENTITY_DB:-Server=sql.data;Database=Broker.Service.IdentityDb;User Id=sa;Password=Pass@word;} 
-      - MvcClient=http://${BROKER_PROD_EXTERNAL_DNS_NAME_OR_IP}:5100
+      - MvcClient=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5100
+      - ApartmentApiClient=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5102
       - UseCustomizationData=False  
       - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
       - OrchestratorType=${ORCHESTRATOR_TYPE}
     ports:
       - "5105:80"
 
+  owners.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - ConnectionString=${BROKER_AZURE_OWNERS_DB:-Server=sql.data;Database=Broker.Service.OwnersDb;User Id=sa;Password=Pass@word;} 
+      - identityUrl=http://identity-api
+      - IdentityUrlExternal=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5105
+      - UseCustomizationData=False  
+      - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
+      - OrchestratorType=${ORCHESTRATOR_TYPE}
+      - PATH_BASE=/owners-api
+      - GRPC_PORT=81
+      - PORT=80
+    ports:
+      - "5101:80"
+      - "9101:81" # for grpc port
+
+  apartment.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - ConnectionString=${BROKER_AZURE_APARTMENT_DB:-Server=sql.data;Database=Broker.Service.ApartmentDb;User Id=sa;Password=Pass@word;} 
+      - identityUrl=http://identity-api
+      - IdentityUrlExternal=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5105
+      - EventBusConnection=${BROKER_AZURE_SERVICE_BUS:-rabbitmq}
+      - EventBusUserName=${BROKER_SERVICE_BUS_USERNAME}
+      - EventBusPassword=${BROKER_SERVICE_BUS_PASSWORD}
+      - AzureStorageAccountName=${BROKER_AZURE_STORAGE_NAME}
+      - AzureStorageAccountKey=${ESHOP_AZURE_STORAGE_KEY}
+      - UseCustomizationData=True
+      - AzureServiceBusEnabled=False
+      - AzureStorageEnabled=False
+      - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
+      - OrchestratorType=${ORCHESTRATOR_TYPE}
+      - UseLoadTest=${USE_LOADTEST:-False}
+      - PATH_BASE=/apartment-api
+      - GRPC_PORT=81
+      - PORT=80
+    ports:
+      - "5102:80"
+      - "9102:81" # for grpc port
+
   webmvc:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-      - IdentityUrl=http://host.docker.internal:5105
+      - IdentityUrl=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5105
+      - IdentityUrlHC=http://identity.api/hc
       - UseCustomizationData=False
       - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
       - OrchestratorType=${ORCHESTRATOR_TYPE}
       - UseLoadTest=${USE_LOADTEST:-False}
     ports:
       - "5100:80"
+
+  webclientapigw:
+    volumes:
+      - ./ApiGateways/Envoy/config/webclient:/etc/envoy
+    ports:
+    - "5201:80"
+    - "15201:8001"

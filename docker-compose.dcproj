@@ -3,9 +3,9 @@
   <PropertyGroup Label="Globals">
     <ProjectVersion>2.1</ProjectVersion>
     <DockerTargetOS>Linux</DockerTargetOS>
-    <ProjectGuid>eabb3de6-448b-436c-94b6-8af11f59aa69</ProjectGuid>
+    <ProjectGuid>7df77305-c76f-4a25-9eb5-becef3e0c99a</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
-    <DockerServiceUrl>{Scheme}://localhost:{ServicePort}</DockerServiceUrl>
+    <DockerServiceUrl>{Scheme}://host.docker.internal:{ServicePort}</DockerServiceUrl>
     <DockerServiceName>webmvc</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>

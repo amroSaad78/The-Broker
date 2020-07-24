@@ -143,28 +143,28 @@ namespace Identity.API.Data
             var user =
             new ApplicationUser()
             {
-                CardHolderName = "DemoUser",
+                CardHolderName = "AmroSaad",
                 CardNumber = "4012888888881881",
                 CardType = 1,
                 City = "Redmond",
                 Country = "U.S.",
-                Email = "demouser@microsoft.com",
+                Email = "amro@gmail.com",
                 Expiration = "12/20",
                 Id = Guid.NewGuid().ToString(),
                 LastName = "DemoLastName",
-                Name = "DemoUser",
+                Name = "amro",
                 PhoneNumber = "1234567890",
-                UserName = "demouser@microsoft.com",
+                UserName = "amro@gmail.com",
                 ZipCode = "98052",
                 State = "WA",
                 Street = "15703 NE 61st Ct",
                 SecurityNumber = "535",
-                NormalizedEmail = "DEMOUSER@MICROSOFT.COM",
-                NormalizedUserName = "DEMOUSER@MICROSOFT.COM",
+                NormalizedEmail = "AMRO@GMAIL.COM",
+                NormalizedUserName = "AMRO@GMAIL.COM",
                 SecurityStamp = Guid.NewGuid().ToString("D"),
             };
 
-            user.PasswordHash = _passwordHasher.HashPassword(user, "Pass@word1");
+            user.PasswordHash = _passwordHasher.HashPassword(user, "traX@9178");
 
             return new List<ApplicationUser>()
             {

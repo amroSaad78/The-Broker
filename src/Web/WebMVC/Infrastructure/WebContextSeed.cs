@@ -1,22 +1,20 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Serilog;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace WebMVC.Infrastructure
 {
     public class WebContextSeed
     {
-        public static void Seed(IApplicationBuilder applicationBuilder, IWebHostEnvironment env, ILoggerFactory loggerFactory)
+        public static void Seed(IApplicationBuilder applicationBuilder, IWebHostEnvironment env)
         {
-            var log = loggerFactory.CreateLogger<WebContextSeed>();
+            var log = Serilog.Log.Logger;
 
             var settings = (AppSettings)applicationBuilder
                 .ApplicationServices.GetRequiredService<IOptions<AppSettings>>().Value;
@@ -27,9 +25,33 @@ namespace WebMVC.Infrastructure
 
             if (useCustomizationData)
             {
-                GetPreconfiguredImages(contentRootPath, webroot, log); //just for new images modifications, compress it in a zip file under setup folder
+                GetPreconfiguredImages(contentRootPath, webroot, log);
+
+                //GetPreconfiguredCSS(contentRootPath, webroot, log);
             }
         }
+
+        /*
+        static void GetPreconfiguredCSS(string contentRootPath, string webroot, ILogger log)
+        {
+            try
+            {
+                string overrideCssFile = Path.Combine(contentRootPath, "Setup", "override.css");
+                if (!File.Exists(overrideCssFile))
+                {
+                    log.Error("Override css file '{FileName}' does not exists.", overrideCssFile);
+                    return;
+                }
+
+                string destinationFilename = Path.Combine(webroot, "css", "override.css");
+                File.Copy(overrideCssFile, destinationFilename, true);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex, "EXCEPTION ERROR: {Message}", ex.Message);
+            }
+        }
+        */
 
         static void GetPreconfiguredImages(string contentRootPath, string webroot, ILogger log)
         {
@@ -38,7 +60,7 @@ namespace WebMVC.Infrastructure
                 string imagesZipFile = Path.Combine(contentRootPath, "Setup", "images.zip");
                 if (!File.Exists(imagesZipFile))
                 {
-                    log.LogError("Zip file '{ZipFileName}' does not exists.", imagesZipFile);
+                    log.Error("Zip file '{ZipFileName}' does not exists.", imagesZipFile);
                     return;
                 }
 
@@ -60,15 +82,16 @@ namespace WebMVC.Infrastructure
                         }
                         else
                         {
-                            log.LogWarning("Skipped file '{FileName}' in zipfile '{ZipFileName}'", entry.Name, imagesZipFile);
+                            log.Warning("Skipped file '{FileName}' in zipfile '{ZipFileName}'", entry.Name, imagesZipFile);
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                log.LogError(ex, "EXCEPTION ERROR: {Message}", ex.Message);
+                log.Error(ex, "EXCEPTION ERROR: {Message}", ex.Message);
             }
         }
+
     }
 }

@@ -11,7 +11,9 @@ namespace Identity.API.Configuration
         {
             return new List<ApiResource>
             {
-                new ApiResource("orders", "Orders Service")
+                new ApiResource("apartment", "Apartment API"),
+                new ApiResource("owners", "Owners API")
+
             };
         }
 
@@ -37,7 +39,7 @@ namespace Identity.API.Configuration
                     ClientName = "MVC Client",
                     ClientSecrets = new List<Secret>
                     {
-                        new Secret("secret".Sha256())
+                        new Secret("hk93#revTM#58dC@pH*t3".Sha256())
                     },
                     ClientUri = $"{clientsUrl["Mvc"]}",
                     AllowedGrantTypes = GrantTypes.Hybrid,
@@ -56,7 +58,10 @@ namespace Identity.API.Configuration
                     AllowedScopes = new List<string>
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.OfflineAccess,
+                        "apartment",
+                        "owners"
                     },
                     AccessTokenLifetime = 60*60*2, // 2 hours
                     IdentityTokenLifetime= 60*60*2 // 2 hours
@@ -67,7 +72,7 @@ namespace Identity.API.Configuration
                     ClientName = "MVC Client Test",
                     ClientSecrets = new List<Secret>
                     {
-                        new Secret("secret".Sha256())
+                        new Secret("hk93#revTM#58dC@pH*t3".Sha256())
                     },
                     ClientUri = $"{clientsUrl["Mvc"]}",
                     AllowedGrantTypes = GrantTypes.Hybrid,
@@ -85,7 +90,25 @@ namespace Identity.API.Configuration
                     AllowedScopes = new List<string>
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.OfflineAccess,
+                        "apartment",
+                        "owners"
+                    }
+                },
+                new Client
+                {
+                    ClientId = "apartmentswaggerui",
+                    ClientName = "Apartment Swagger UI",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
+
+                    RedirectUris = { $"{clientsUrl["ApartmentApi"]}/swagger/oauth2-redirect.html" },
+                    PostLogoutRedirectUris = { $"{clientsUrl["ApartmentApi"]}/swagger/" },
+
+                    AllowedScopes =
+                    {
+                        "apartment"
                     }
                 }
             };

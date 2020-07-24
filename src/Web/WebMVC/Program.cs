@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
 using System.IO;
-
 namespace WebMVC
 {
     public class Program
@@ -14,21 +13,22 @@ namespace WebMVC
         public static int Main(string[] args)
         {
             var configuration = GetConfiguration();
+
             Log.Logger = CreateSerilogLogger(configuration);
 
             try
             {
-                Log.Information("--- Configuring web host --- ({ApplicationContext})...", AppName);
+                Log.Information("Configuring web host ({ApplicationContext})...", AppName);
                 var host = BuildWebHost(configuration, args);
 
-                Log.Information("--- Starting web host --- ({ApplicationContext})...", AppName);
+                Log.Information("Starting web host ({ApplicationContext})...", AppName);
                 host.Run();
 
                 return 0;
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, "--- Program terminated unexpectedly --- ({ApplicationContext})...", AppName);
+                Log.Fatal(ex, "Program terminated unexpectedly ({ApplicationContext})!", AppName);
                 return 1;
             }
             finally
@@ -36,19 +36,24 @@ namespace WebMVC
                 Log.CloseAndFlush();
             }
         }
-        private static ILogger CreateSerilogLogger(IConfiguration configuration)
+        private static Serilog.ILogger CreateSerilogLogger(IConfiguration configuration)
         {
             var seqServerUrl = configuration["Serilog:SeqServerUrl"];
             var logstashUrl = configuration["Serilog:LogstashgUrl"];
-            return new LoggerConfiguration()
-                .MinimumLevel.Verbose()
+            var cfg = new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration)
                 .Enrich.WithProperty("ApplicationContext", AppName)
                 .Enrich.FromLogContext()
-                .WriteTo.Console()
-                .WriteTo.Seq(string.IsNullOrWhiteSpace(seqServerUrl) ? "http://seq" : seqServerUrl)
-                .WriteTo.Http(string.IsNullOrWhiteSpace(logstashUrl) ? "http://localhost:8080" : logstashUrl)
-                .ReadFrom.Configuration(configuration)
-                .CreateLogger();
+                .WriteTo.Console();
+            if (!string.IsNullOrWhiteSpace(seqServerUrl))
+            {
+                cfg.WriteTo.Seq(seqServerUrl);
+            }
+            if (!string.IsNullOrWhiteSpace(logstashUrl))
+            {
+                cfg.WriteTo.Http(logstashUrl);
+            }
+            return cfg.CreateLogger();
         }
         private static IConfiguration GetConfiguration()
         {
@@ -61,11 +66,11 @@ namespace WebMVC
         }
 
         private static IWebHost BuildWebHost(IConfiguration configuration, string[] args) =>
-           WebHost.CreateDefaultBuilder(args)
-               .CaptureStartupErrors(false)
-               .UseStartup<Startup>()
-               .UseConfiguration(configuration)
-               .UseSerilog()
-               .Build();
+            WebHost.CreateDefaultBuilder(args)
+                .CaptureStartupErrors(true)
+                .ConfigureAppConfiguration(x => x.AddConfiguration(configuration))
+                .UseStartup<Startup>()
+                .UseSerilog()
+                .Build();
     }
 }

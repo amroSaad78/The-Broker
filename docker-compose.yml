@@ -18,8 +18,29 @@ services:
     depends_on:
       - sql.data
 
+  apartment.api:
+    image: ${REGISTRY:-broker}/apartment.api:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+      context: .
+      dockerfile: src/Services/Apartment/Apartment.API/Dockerfile 
+    depends_on:
+      - sql.data
+
+  owners.api:
+    image: ${REGISTRY:-broker}/owners.api:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+      context: .
+      dockerfile: src/Services/Owners/Owners.API/Dockerfile 
+    depends_on:
+      - sql.data      
+
   webmvc:
     image: ${REGISTRY:-broker}/webmvc:${PLATFORM:-linux}-${TAG:-latest}
     build:
       context: .
       dockerfile: src/Web/WebMVC/Dockerfile
+    depends_on:      
+      - identity.api
+
+  webclientapigw:
+    image: envoyproxy/envoy:v1.11.1

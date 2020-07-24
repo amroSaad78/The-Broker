@@ -98,35 +98,17 @@ jQuery(document).ready(function ($) {
 
         });
     }
+
     // ============================================================== 
-    // dropzone script
-    // ============================================================== 
-
-    //     if ($('.dz-clickable').length) {
-    //            $(".dz-clickable").dropzone({ url: "/file/post" });
-    // }
-
-}); // AND OF JQUERY
-
-
-// $(function() {
-//     "use strict";
-
-
-
-
-   // var monkeyList = new List('test-list', {
-    //    valueNames: ['name']
-
-     // });
-  // var monkeyList = new List('test-list-2', {
-    //    valueNames: ['name']
-
-   // });
-
-
-
-
-
-
-// });
+    // Purpose selection changed
+    // ==============================================================
+    $('#purpose').on('change', function () {
+        $('.showhide').each(function () {
+            if ($(this).hasClass("d-none")) {
+                $(this).removeClass("d-none");
+            } else {
+                $(this).addClass("d-none");
+            }
+        })
+    });
+});
