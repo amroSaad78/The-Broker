@@ -36,7 +36,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
       - ConnectionString=${BROKER_AZURE_OWNERS_DB:-Server=sql.data;Database=Broker.Service.OwnersDb;User Id=sa;Password=Pass@word;} 
-      - identityUrl=http://identity-api
+      - identityUrl=http://identity.api
       - IdentityUrlExternal=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5105
       - UseCustomizationData=False  
       - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
@@ -53,7 +53,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
       - ConnectionString=${BROKER_AZURE_APARTMENT_DB:-Server=sql.data;Database=Broker.Service.ApartmentDb;User Id=sa;Password=Pass@word;} 
-      - identityUrl=http://identity-api
+      - identityUrl=http://identity.api
       - IdentityUrlExternal=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5105
       - EventBusConnection=${BROKER_AZURE_SERVICE_BUS:-rabbitmq}
       - EventBusUserName=${BROKER_SERVICE_BUS_USERNAME}

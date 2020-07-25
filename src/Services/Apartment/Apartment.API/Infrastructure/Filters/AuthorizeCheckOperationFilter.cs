@@ -28,7 +28,7 @@ namespace Apartment.API.Infrastructure.Filters
             {
                 new OpenApiSecurityRequirement
                 {
-                    [ oAuthScheme ] = new [] { "basketapi" }
+                    [ oAuthScheme ] = new [] { "apartmentapi" }
                 }
             };
         }

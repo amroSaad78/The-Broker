@@ -1,3 +1,4 @@
+using Apartment.API.Controllers;
 using Apartment.API.Grpc;
 using Apartment.API.Infrastructure;
 using Apartment.API.Infrastructure.Filters;
@@ -16,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
@@ -37,7 +39,7 @@ namespace Apartment.API
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddAppInsight(Configuration)
-                .AddGrpc().Services
+                .AddGrpc(options =>{options.EnableDetailedErrors = true;}).Services
                 .AddCustomMVC(Configuration)
                 .AddCustomDbContext(Configuration)
                 .AddCustomOptions(Configuration)
@@ -46,6 +48,7 @@ namespace Apartment.API
                 .AddSwagger(Configuration)
                 .AddCustomHealthCheck(Configuration)
                 .AddCustomAuthentication(Configuration);
+
 
             var container = new ContainerBuilder();
             container.Populate(services);
@@ -149,7 +152,8 @@ namespace Apartment.API
             {
                 options.Filters.Add(typeof(HttpGlobalExceptionFilter));
                 options.Filters.Add(typeof(ValidateModelStateFilter));
-            }).AddNewtonsoftJson();
+            }).AddApplicationPart(typeof(ApartmentController).Assembly)
+              .AddNewtonsoftJson();
 
             services.AddCors(options =>
             {
@@ -238,7 +242,9 @@ namespace Apartment.API
 
         public static IServiceCollection AddCustomOptions(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddOptions();
             services.Configure<ApartmentSettings>(configuration);
+
             //add BadRequest error Behavior options for Api controller when action method "ModelState" invalid;
             services.Configure<ApiBehaviorOptions>(options =>
             {
@@ -300,9 +306,10 @@ namespace Apartment.API
         public static IServiceCollection AddCustomAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
             // prevent from mapping "sub" claim to nameidentifier.
+            IdentityModelEventSource.ShowPII = true;
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("sub");
 
-            var identityUrl = configuration.GetValue<string>("IdentityUrl");
+            var identityUrl = configuration.GetValue<string>("identityUrl");
 
             services.AddAuthentication(options =>
             {

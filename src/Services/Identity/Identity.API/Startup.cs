@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using HealthChecks.UI.Client;
 using Identity.API.Certificates;
 using Identity.API.Data;
 using Identity.API.Devspaces;
@@ -8,16 +9,16 @@ using Identity.API.Services;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using HealthChecks.UI.Client;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using System;
 using System.Reflection;
@@ -37,6 +38,7 @@ namespace Identity.API
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            RegisterAppInsights(services);
             var connectionString = Configuration["ConnectionString"];
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
@@ -55,8 +57,8 @@ namespace Identity.API
 
             services.Configure<AppSettings>(Configuration);
 
-            services.AddMvc(opt => opt.EnableEndpointRouting = false)
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            //services.AddMvc(opt => opt.EnableEndpointRouting = false)
+            //    .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             
             if (Configuration.GetValue<string>("IsClusterEnv") == bool.TrueString)
             {
@@ -64,7 +66,7 @@ namespace Identity.API
                 {
                     opts.ApplicationDiscriminator = "broker.identity";
                 })
-                .PersistKeysToStackExchangeRedis(ConnectionMultiplexer.Connect(Configuration["DPConnectionString"]), "DataProtection-Keys");
+                .PersistKeysToRedis(ConnectionMultiplexer.Connect(Configuration["DPConnectionString"]), "DataProtection-Keys");
             }
 
             services.AddHealthChecks()
@@ -82,6 +84,7 @@ namespace Identity.API
             })
             .AddDevspacesIfNeeded(Configuration.GetValue("EnableDevspaces", false))
             .AddSigningCredential(Certificate.Get())
+            .AddAspNetIdentity<ApplicationUser>()
             .AddConfigurationStore(options =>
             {
                 options.ConfigureDbContext = builder => builder.UseSqlServer(connectionString,
@@ -100,15 +103,18 @@ namespace Identity.API
                         sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
                     });
             })
-            .AddAspNetIdentity<ApplicationUser>()
             .Services.AddTransient<IProfileService, ProfileService>();
+            services.AddControllers();
+            services.AddControllersWithViews();
+            services.AddRazorPages();
+
             var container = new ContainerBuilder();
             container.Populate(services);
 
             return new AutofacServiceProvider(container.Build());
         }
 
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             if (Environment.IsDevelopment())
             {
@@ -120,18 +126,15 @@ namespace Identity.API
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseHealthChecks("/hc", new HealthCheckOptions()
+            var pathBase = Configuration["PATH_BASE"];
+            if (!string.IsNullOrEmpty(pathBase))
             {
-                Predicate = _ => true,
-                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-            });
-
-            app.UseHealthChecks("/liveness", new HealthCheckOptions
-            {
-                Predicate = r => r.Name.Contains("self")
-            });
+                loggerFactory.CreateLogger<Startup>().LogDebug("Using PATH BASE '{pathBase}'", pathBase);
+                app.UsePathBase(pathBase);
+            }
 
             app.UseStaticFiles();
+
             app.Use(async (context, next) =>
             {
                 context.Response.Headers.Add("Content-Security-Policy",
@@ -139,20 +142,30 @@ namespace Identity.API
                     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/css");
                 await next();
             });
-            app.UseRouting();
             app.UseForwardedHeaders();
             app.UseIdentityServer();
-            //app.UseHttpsRedirection();
+            app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax });
+            app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
-
-                endpoints.MapControllerRoute(
-                    name: "defaultError",
-                    pattern: "{controller=Home}/{action=Error}");
+                endpoints.MapDefaultControllerRoute();
+                endpoints.MapControllers();
+                endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
+                {
+                    Predicate = _ => true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
+                endpoints.MapHealthChecks("/liveness", new HealthCheckOptions
+                {
+                    Predicate = r => r.Name.Contains("self")
+                });
             });
+        }
+
+        private void RegisterAppInsights(IServiceCollection services)
+        {
+            services.AddApplicationInsightsTelemetry(Configuration);
+            services.AddApplicationInsightsKubernetesEnricher();
         }
     }
 }
