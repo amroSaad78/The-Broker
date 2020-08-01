@@ -8,24 +8,22 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 
 COPY ["TheBroker.sln", "."]
-COPY ["docker-compose.dcproj", "/src/""]
-
-COPY ["src/BuildingBlocks/WebHostCustomization/WebHost.Customization/WebHost.Customization.csproj", "src/BuildingBlocks/WebHostCustomization/WebHost.Customization/"]
-COPY ["src/BuildingBlocks/EventBus/EventBusRabbitMQ/EventBusRabbitMQ.csproj", "src/BuildingBlocks/EventBus/EventBusRabbitMQ/"]
-COPY ["src/BuildingBlocks/EventBus/EventBusServiceBus/EventBusServiceBus.csproj", "src/BuildingBlocks/EventBus/EventBusServiceBus/"]
-COPY ["src/BuildingBlocks/EventBus/IntegrationEventLogEF/IntegrationEventLogEF.csproj", "src/BuildingBlocks/EventBus/IntegrationEventLogEF/"]
-COPY ["src/BuildingBlocks/Devspaces.Support/Devspaces.Support.csproj", "src/BuildingBlocks/Devspaces.Support/"]
-COPY ["src/BuildingBlocks/EventBus/EventBus/EventBus.csproj", "src/BuildingBlocks/EventBus/EventBus/"]
-
-COPY ["src/Services/Identity/Identity.API/Identity.API.csproj", "src/Services/Identity/Identity.API/"]
-COPY ["src/Services/Apartment/Apartment.API/Apartment.API.csproj", "src/Services/Apartment/Apartment.API/"]
-COPY ["src/Services/Owners/Owners.API/Owners.API.csproj", "src/Services/Owners/Owners.API/"]
-COPY ["src/Web/WebMVC/WebMVC.csproj", "src/Web/WebMVC/"]
-
+COPY ["docker-compose.dcproj", "docker-compose.dcproj""]
+COPY ["BuildingBlocks/WebHostCustomization/WebHost.Customization/WebHost.Customization.csproj", "BuildingBlocks/WebHostCustomization/WebHost.Customization/"]
+COPY ["BungBlocks/EventBus/EventBusRabbitMQ/EventBusRabbitMQ.csproj", "BuildingBlocks/EventBus/EventBusRabbitMQ/"]
+COPY ["BuildingBlocks/EventBus/EventBusServiceBus/EventBusServiceBus.csproj", "BuildingBlocks/EventBus/EventBusServiceBus/"]
+COPY ["BuildingBlocks/EventBus/IntegrationEventLogEF/IntegrationEventLogEF.csproj", "BuildingBlocks/EventBus/IntegrationEventLogEF/"]
+COPY ["BuildingBlocks/Devspaces.Support/Devspaces.Support.csproj", "BuildingBlocks/Devspaces.Support/"]
+COPY ["BuildingBlocks/EventBus/EventBus/EventBus.csproj", "BuildingBlocks/EventBus/EventBus/"]
+COPY ["ApiGateways/Web.Bff/WebClientAgg/WebClientAgg.csproj", "ApiGateways/Web.Bff/WebClientAgg/"]
+COPY ["Services/Identity/Identity.API/Identity.API.csproj", "Services/Identity/Identity.API/"]
+COPY ["Services/Apartment/Apartment.API/Apartment.API.csproj", "Services/Apartment/Apartment.API/"]
+COPY ["Services/Owners/Owners.API/Owners.API.csproj", "Services/Owners/Owners.API/"]
+COPY ["Web/WebMVC/WebMVC.csproj", "src/Web/WebMVC/"]
 
 RUN dotnet restore "TheBroker.sln"
 COPY . .
-WORKDIR "/src/src/Web/WebMVC"
+WORKDIR /src/Web/WebMVC
 RUN dotnet publish --no-restore -c Release -o /app
 
 FROM build AS publish

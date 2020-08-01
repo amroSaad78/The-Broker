@@ -12,8 +12,8 @@ namespace Identity.API.Configuration
             return new List<ApiResource>
             {
                 new ApiResource("apartment", "Apartment API"),
-                new ApiResource("owners", "Owners API")
-
+                new ApiResource("owners", "Owners API"),
+                new ApiResource("webclientagg", "Web Client Aggregator")
             };
         }
 
@@ -61,7 +61,8 @@ namespace Identity.API.Configuration
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.OfflineAccess,
                         "apartment",
-                        "owners"
+                        "owners",
+                        "webclientagg"
                     },
                     AccessTokenLifetime = 60*60*2, // 2 hours
                     IdentityTokenLifetime= 60*60*2 // 2 hours
@@ -93,7 +94,8 @@ namespace Identity.API.Configuration
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.OfflineAccess,
                         "apartment",
-                        "owners"
+                        "owners",
+                        "webclientagg"
                     }
                 },
                 new Client
@@ -102,13 +104,37 @@ namespace Identity.API.Configuration
                     ClientName = "Apartment Swagger UI",
                     AllowedGrantTypes = GrantTypes.Implicit,
                     AllowAccessTokensViaBrowser = true,
-
                     RedirectUris = { $"{clientsUrl["ApartmentApi"]}/swagger/oauth2-redirect.html" },
                     PostLogoutRedirectUris = { $"{clientsUrl["ApartmentApi"]}/swagger/" },
-
                     AllowedScopes =
                     {
                         "apartment"
+                    },
+                },
+                new Client
+                {
+                    ClientId = "ownerswaggerui",
+                    ClientName = "Owner Swagger UI",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
+                    RedirectUris = { $"{clientsUrl["OwnerApi"]}/swagger/oauth2-redirect.html" },
+                    PostLogoutRedirectUris = { $"{clientsUrl["OwnerApi"]}/swagger/" },
+                    AllowedScopes =
+                    {
+                        "owners"
+                    }
+                },
+                new Client
+                {
+                    ClientId = "webclientaggswaggerui",
+                    ClientName = "WebClientAgg Swagger UI",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
+                    RedirectUris = { $"{clientsUrl["WebClientAgg"]}/swagger/oauth2-redirect.html" },
+                    PostLogoutRedirectUris = { $"{clientsUrl["WebClientAgg"]}/swagger/" },
+                    AllowedScopes =
+                    {
+                        "webclientagg"
                     }
                 }
             };

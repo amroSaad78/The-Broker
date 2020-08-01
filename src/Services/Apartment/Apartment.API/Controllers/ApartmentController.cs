@@ -29,35 +29,56 @@ namespace Apartment.API.Controllers
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
-        // GET api/v1/[controller]/GetBedrooms
+        
+        // GET api/v1/[controller]/bedrooms
         [HttpGet]
         [Route("bedrooms")]
-        [ProducesResponseType(typeof(List<Bedrooms>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<List<Bedrooms>>> GetBedrooms() => Ok(await _context.Bedroom.OrderBy(i => i.Id).ToListAsync());
+        [ProducesResponseType(typeof(Bedrooms), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<List<Bedrooms>>> GetBedrooms()
+        {
+            var _bedrooms = await _context.Bedroom.OrderBy(i => i.Id).ToListAsync();
+            return Ok(_bedrooms);
+        }
 
-        // GET api/v1/[controller]/GetCountries
+        // GET api/v1/[controller]/countries
         [HttpGet]
         [Route("countries")]
-        [ProducesResponseType(typeof(List<Countries>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<List<Countries>>> GetCountries() => Ok(await _context.Country.OrderBy(i => i.Country).ToListAsync());
+        [ProducesResponseType(typeof(Countries), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<List<Countries>>> GetCountries()
+        {
+            var _countries = await _context.Country.OrderBy(i => i.Country).ToListAsync();
+            return Ok(_countries);
+        }
 
-        // GET api/v1/[controller]/GetFurnishings
+        // GET api/v1/[controller]/furnishings
         [HttpGet]
         [Route("furnishings")]
-        [ProducesResponseType(typeof(List<Furnishings>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<List<Furnishings>>> GetFurnishings() => Ok(await _context.Furniture.OrderBy(i => i.Id).ToListAsync());
+        [ProducesResponseType(typeof(Furnishings), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<List<Furnishings>>> GetFurnishings()
+        {
+            var _furniture = await _context.Furniture.OrderBy(i => i.Id).ToListAsync();
+            return Ok(_furniture);
+        }
 
-        // GET api/v1/[controller]/GetPeriods
+        // GET api/v1/[controller]/periods
         [HttpGet]
         [Route("periods")]
-        [ProducesResponseType(typeof(List<Periods>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<List<Periods>>> GetPeriods() => Ok(await _context.Period.OrderBy(i => i.Id).ToListAsync());
+        [ProducesResponseType(typeof(Periods), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<List<Periods>>> GetPeriods()
+        {
+            var _periods = await _context.Period.OrderBy(i => i.Id).ToListAsync();
+            return Ok(_periods);
+        }
 
-        // GET api/v1/[controller]/GetPurpose
+        // GET api/v1/[controller]/purpose
         [HttpGet]
         [Route("purpose")]
-        [ProducesResponseType(typeof(List<Purpose>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<List<Purpose>>> GetPurpose() => Ok(await _context.Purpose.ToListAsync());
+        [ProducesResponseType(typeof(Purpose), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<List<Purpose>>> GetPurpose()
+        {
+            var _purpose = await _context.Purpose.OrderBy(i => i.Id).ToListAsync();
+            return Ok(_purpose);
+        }
 
     }
 }

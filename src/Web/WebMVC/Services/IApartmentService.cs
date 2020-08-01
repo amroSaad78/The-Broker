@@ -7,13 +7,12 @@ namespace WebMVC.Services
 {
     public interface IApartmentService
     {
-        Apartment GetNewApartment();
         Task<Apartment> GetApartment(int id);
         Task<Apartment> GetAllApartment(ApplicationUser user, int page, int take);
         Task<IEnumerable<SelectListItem>> GetBedrooms();
         Task<IEnumerable<SelectListItem>> GetCountries();
         Task<IEnumerable<SelectListItem>> GetFurnishings();
         Task<IEnumerable<SelectListItem>> GetPeriods();
-        Task<IEnumerable<SelectListItem>> GetPurposes();
+        Task<IEnumerable<SelectListItem>> GetPurpose();
     }
 }

@@ -20,6 +20,8 @@ namespace Identity.API.Data
 
             clientUrls.Add("Mvc", configuration.GetValue<string>("MvcClient"));
             clientUrls.Add("ApartmentApi", configuration.GetValue<string>("ApartmentApiClient"));
+            clientUrls.Add("OwnerApi", configuration.GetValue<string>("OwnerApiClient"));
+            clientUrls.Add("WebClientAgg", configuration.GetValue<string>("WebClientAggClient"));
 
             if (!context.Clients.Any())
             {

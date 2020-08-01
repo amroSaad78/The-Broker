@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+option csharp_namespace = "OwnersAPI.Proto";
+
+package OwnersApi;
+
+message OwnerRequest{
+	int32 id = 1;
+}
+
+message OwnersRequest{	
+}
+
+message OwnerResponse{
+	int32 id = 1;
+	string FirstName =2;
+	string LastName =3;
+	string Email =4;
+	string Mobile =5;
+	string City =6;
+	string Company =7;
+	string Address =8;
+	string ZIP =9;
+}
+
+message OwnerBasicResponse{
+	int32 id = 1;
+	string FullName =2;
+}
+
+message OwnersResponse{
+	repeated OwnerResponse GrpcOwners =1;
+}
+
+service OwnersData {
+  rpc GetOwnerById (OwnerRequest) returns (OwnerResponse) {	}
+  rpc GetOwners (OwnersRequest) returns (OwnersResponse) {	}
+}

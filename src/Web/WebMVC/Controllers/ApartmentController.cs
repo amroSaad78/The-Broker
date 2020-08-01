@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
+using WebMVC.Model;
 using WebMVC.Services;
 using WebMVC.ViewModels.Apartments;
 
@@ -12,7 +15,8 @@ namespace WebMVC.Controllers
         private readonly IApartmentService _apartmentService;
         private readonly IOwnersService _ownersService;
 
-        public ApartmentController(IPagesNames pagesNames, IApartmentService apartmentService, IOwnersService ownersService) : base(pagesNames.GetProperty()) 
+        public ApartmentController(IPagesNames pagesNames, IApartmentService apartmentService, IOwnersService ownersService) :
+            base(pagesNames.GetProperty()) 
         {
             _apartmentService = apartmentService;
             _ownersService = ownersService;
@@ -21,24 +25,25 @@ namespace WebMVC.Controllers
         [HttpGet]
         public async Task<IActionResult> New()
         {
-            var apartment = _apartmentService.GetNewApartment();
-            var vm = new ApartmentVM()
+            try
             {
-                Apartment = apartment,
-                Owners = await _ownersService.GetOwners(),
-                Bedrooms = await _apartmentService.GetBedrooms(),
-                Countries = await _apartmentService.GetCountries(),
-                Furnishings = await _apartmentService.GetFurnishings(),
-                Periods = await _apartmentService.GetPeriods(),
-                Purpose = await _apartmentService.GetPurposes()
-            };
-            return ActionResult(vm);
+                var vm = new ApartmentVM()
+                {
+                    Apartment = new Apartment(),
+                    Bedrooms = await _apartmentService.GetBedrooms(),
+                    Countries = await _apartmentService.GetCountries(),
+                    Furnishings = await _apartmentService.GetFurnishings(),
+                    Periods = await _apartmentService.GetPeriods(),
+                    Purpose = await _apartmentService.GetPurpose(),
+                    Owners = await _ownersService.GetBasicOwners()
+                };
+                return ActionResult(vm);
+            }
+            catch(Exception)
+            {
+                return RedirectToAction(nameof(DashboardController.Login), "Dashboard");
+            }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> New(string anyst)
-        {
-            return ActionResult();
-        }
     }
 }

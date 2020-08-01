@@ -44,3 +44,16 @@ services:
 
   webclientapigw:
     image: envoyproxy/envoy:v1.11.1
+
+  webclientaggapigw:
+    image: envoyproxy/envoy:v1.11.1
+
+  webclientagg:
+    image: ${REGISTRY:-broker}/webclientagg:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+      context: .
+      dockerfile: src/ApiGateways/Web.Bff/WebClientAgg/Dockerfile
+    depends_on:
+      - owners.api
+      - apartment.api
+      - identity.api

@@ -133,7 +133,7 @@ namespace WebMVC
             {
                 services.AddDataProtection(opts =>
                 {
-                    opts.ApplicationDiscriminator = "thebroker.webmvc";
+                    opts.ApplicationDiscriminator = "broker.webmvc";
                 })
                 .PersistKeysToRedis(ConnectionMultiplexer.Connect(configuration["DPConnectionString"]), "DataProtection-Keys");
             }
@@ -153,9 +153,11 @@ namespace WebMVC
 
             //add http client services
             services.AddHttpClient<IApartmentService, ApartmentService>()
-                   .AddDevspacesSupport();
+                .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>()
+                .AddDevspacesSupport();
             services.AddHttpClient<IOwnersService, OwnersService>()
-                   .AddDevspacesSupport();
+                .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>()
+                .AddDevspacesSupport();
 
             //add custom application services
             services.AddTransient<IIdentityParser<ApplicationUser>, IdentityParser>();
@@ -191,6 +193,9 @@ namespace WebMVC
                 options.RequireHttpsMetadata = false;
                 options.Scope.Add("openid");
                 options.Scope.Add("profile");
+                options.Scope.Add("apartment");
+                options.Scope.Add("owners");
+                options.Scope.Add("webclientagg");
             });
 
             return services;

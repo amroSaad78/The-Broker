@@ -17,65 +17,24 @@ static_resources:
           codec_type: auto
           stat_prefix: ingress_http
           route_config:
-            name: eshop_backend_route
+            name: broker_backend_route
             virtual_hosts:
-            - name: eshop_backend
+            - name: broker_backend
               domains:
               - "*"
               routes:
-              - name: "c-short"
+              - name: "apartment"
                 match:
-                  prefix: "/c/"
+                  prefix: "/ap/"
                 route:
                   auto_host_rewrite: true
-                  prefix_rewrite: "/catalog-api/"
-                  cluster: catalog
-              - name: "c-long"
+                  cluster: apartmentclient
+              - name: "owners"
                 match:
-                  prefix: "/catalog-api/"
+                  prefix: "/ow/"
                 route:
                   auto_host_rewrite: true
-                  cluster: catalog
-              - name: "o-short"
-                match:
-                  prefix: "/o/"
-                route:
-                  auto_host_rewrite: true
-                  prefix_rewrite: "/ordering-api/"
-                  cluster: ordering
-              - name: "o-long"
-                match:
-                  prefix: "/ordering-api/"
-                route:
-                  auto_host_rewrite: true
-                  cluster: ordering
-              - name: "h-long"
-                match:
-                  prefix: "/hub/notificationhub"
-                route:
-                  auto_host_rewrite: true
-                  cluster: signalr-hub
-                  timeout: 300s
-              - name: "b-short"
-                match:
-                  prefix: "/b/"
-                route:
-                  auto_host_rewrite: true
-                  prefix_rewrite: "/basket-api/"
-                  cluster: basket
-              - name: "b-long"
-                match:
-                  prefix: "/basket-api/"
-                route:
-                  auto_host_rewrite: true
-                  cluster: basket
-              - name: "agg"
-                match:
-                  prefix: "/"
-                route:
-                  auto_host_rewrite: true
-                  prefix_rewrite: "/"
-                  cluster: shoppingagg
+                  cluster: ownersclient
           http_filters:
           - name: envoy.router
           access_log:
@@ -97,43 +56,19 @@ static_resources:
                 upstream_local_address: "%UPSTREAM_LOCAL_ADDRESS%"
               path: "/tmp/access.log"
   clusters:
-  - name: shoppingagg
+  - name: apartmentclient
     connect_timeout: 0.25s
     type: strict_dns
     lb_policy: round_robin
     hosts:
     - socket_address:
-        address: webshoppingagg
+        address: apartment.api
         port_value: 80
-  - name: catalog
+  - name: ownersclient
     connect_timeout: 0.25s
     type: strict_dns
     lb_policy: round_robin
     hosts:
     - socket_address:
-        address: catalog-api
-        port_value: 80
-  - name: basket
-    connect_timeout: 0.25s
-    type: strict_dns
-    lb_policy: round_robin
-    hosts:
-    - socket_address:
-        address: basket-api
-        port_value: 80
-  - name: ordering
-    connect_timeout: 0.25s
-    type: strict_dns
-    lb_policy: round_robin
-    hosts:
-    - socket_address:
-        address: ordering-api
-        port_value: 80
-  - name: signalr-hub
-    connect_timeout: 0.25s
-    type: strict_dns
-    lb_policy: round_robin
-    hosts:
-    - socket_address:
-        address: ordering-signalrhub
+        address: owners.api
         port_value: 80

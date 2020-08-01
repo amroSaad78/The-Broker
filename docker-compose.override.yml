@@ -13,6 +13,8 @@ services:
       - ACCEPT_EULA=Y
     ports:
       - "5433:1433"    # Important: In a production environment your should remove the external port
+    volumes:
+      - broker-sqldata:/var/opt/mssql
 
   redis:
     ports:
@@ -24,7 +26,9 @@ services:
       - ASPNETCORE_URLS=http://0.0.0.0:80
       - ConnectionString=${BROKER_AZURE_IDENTITY_DB:-Server=sql.data;Database=Broker.Service.IdentityDb;User Id=sa;Password=Pass@word;} 
       - MvcClient=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5100
+      - OwnerApiClient=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5101
       - ApartmentApiClient=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5102
+      - WebClientAggClient=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5121
       - UseCustomizationData=False  
       - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
       - OrchestratorType=${ORCHESTRATOR_TYPE}
@@ -38,10 +42,11 @@ services:
       - ConnectionString=${BROKER_AZURE_OWNERS_DB:-Server=sql.data;Database=Broker.Service.OwnersDb;User Id=sa;Password=Pass@word;} 
       - identityUrl=http://identity.api
       - IdentityUrlExternal=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5105
-      - UseCustomizationData=False  
+      - UseCustomizationData=True  
       - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
       - OrchestratorType=${ORCHESTRATOR_TYPE}
-      - PATH_BASE=/owners-api
+      - UseLoadTest=${USE_LOADTEST:-False}
+      - PATH_BASE=/owners.api
       - GRPC_PORT=81
       - PORT=80
     ports:
@@ -66,7 +71,7 @@ services:
       - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
       - OrchestratorType=${ORCHESTRATOR_TYPE}
       - UseLoadTest=${USE_LOADTEST:-False}
-      - PATH_BASE=/apartment-api
+      - PATH_BASE=/apartment.api
       - GRPC_PORT=81
       - PORT=80
     ports:
@@ -77,6 +82,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
+      - ApartmentUrl=http://webclientapigw
+      - OwnersUrl=http://webclientapigw
       - IdentityUrl=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5105
       - IdentityUrlHC=http://identity.api/hc
       - UseCustomizationData=False
@@ -88,7 +95,34 @@ services:
 
   webclientapigw:
     volumes:
-      - ./ApiGateways/Envoy/config/webclient:/etc/envoy
+      - ./src/ApiGateways/Envoy/config/webclient:/etc/envoy
     ports:
     - "5201:80"
     - "15201:8001"
+
+  webclientaggapigw:
+    volumes:
+      - ./src/ApiGateways/Envoy/config/webclientagg:/etc/envoy
+    ports:
+    - "5202:80"
+    - "15202:8001"
+
+  webclientagg:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - urls__Apartment=http://apartment.api
+      - urls__Owners=http://owners.api
+      - urls__identity=http://identity.api
+      - urls__GrpcApartment=http://apartment.api:81
+      - urls__GrpcOwners=http://owners.api:81
+      - ApartmentUrlHC=http://apartment.api/hc
+      - OwnersUrlHC=http://owners.api/hc
+      - IdentityUrlHC=http://identity.api/hc
+      - IdentityUrlExternal=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5105
+      - PATH_BASE=/webclientagg
+    ports:
+      - "5121:80"
+
+volumes:
+  broker-sqldata:
+    external: False

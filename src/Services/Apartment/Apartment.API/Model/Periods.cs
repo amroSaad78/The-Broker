@@ -1,8 +1,9 @@
-﻿namespace Apartment.API.Model
+﻿using ApartmentsApi.Proto;
+
+namespace Apartment.API.Model
 {
-    public class Periods
-    {
-        public int Id { get; set; }
+    public class Periods : Basic
+    { 
         public string Period { get; set; }
     }
 }

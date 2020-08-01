@@ -38,7 +38,8 @@ namespace Apartment.API
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddAppInsight(Configuration)
+            services
+                .AddAppInsight(Configuration)
                 .AddGrpc(options =>{options.EnableDetailedErrors = true;}).Services
                 .AddCustomMVC(Configuration)
                 .AddCustomDbContext(Configuration)

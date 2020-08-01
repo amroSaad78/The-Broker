@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "Apartment.API.Proto";
+option csharp_namespace = "ApartmentsApi.Proto";
 
 package ApartmentApi;
 
@@ -28,15 +28,39 @@ message ApartmentResponse{
 	int32 CountryId =17;
 	int32 FurnitureId =18;	
 	int32 PeriodId =19;	
-	int32 PurposeId=20;	
+	int32 PurposeId =20;	
+	GrpcBedrooms Bedroom =21;
+	GrpcCountries Country =22;
+	GrpcFurnishings Furniture =23;
+	GrpcPeriods Period =24;
+	GrpcPurpose Purpose =25;
 }
 
-service Apartment {
-  rpc GetApartmentById (ApartmentRequest) returns (ApartmentResponse) {
-   /* >>
-  	option (google.api.http) = {
-        get: "/api/v1/catalog/items/{id}"
-      };
-	<< */
-	}
+message GrpcBedrooms{
+	int32 id =1;
+	string BedroomsCount =2;
+}
+
+message GrpcCountries{
+	int32 id =1;
+	string Country =2;
+}
+
+message GrpcFurnishings{
+	int32 id =1;
+	string FurnitureType = 2;
+}
+
+message GrpcPeriods{
+	int32 id =1;
+	string Period =2;
+}
+
+message GrpcPurpose{
+	int32 id =1;
+	string PurposeType =2;
+}
+
+service ApartmentData {
+  rpc GetApartmentById (ApartmentRequest) returns (ApartmentResponse) {}  
 }

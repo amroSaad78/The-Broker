@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using System;
@@ -13,57 +14,53 @@ namespace WebMVC.Services
     public class ApartmentService : IApartmentService
     {
         private readonly IOptions<AppSettings> _settings;
-        private readonly HttpClient _apiClient;
+        private readonly ILogger<ApartmentService> _logger;
+        private readonly HttpClient _httpClient;
         private readonly string _apartmentUrl;
-        public ApartmentService(HttpClient httpClient, IOptions<AppSettings> settings)
+        public ApartmentService(HttpClient httpClient, IOptions<AppSettings> settings, ILogger<ApartmentService> logger)
         {
-            _apiClient = httpClient;
+            _httpClient = httpClient;
             _settings = settings;
-            _apartmentUrl = $"{_settings.Value.ApartmentUrl}/api/v1/apartment";
+            _logger = logger;
+            _apartmentUrl = $"{_settings.Value.ApartmentUrl}/ap/api/v1/apartment";
         }
-        public Apartment GetNewApartment()
-        {
-            return new Apartment() { };
-        }
+
         public Task<Apartment> GetAllApartment(ApplicationUser user, int page, int take) => throw new NotImplementedException();
         public Task<Apartment> GetApartment(int id) => throw new NotImplementedException();
         public async Task<IEnumerable<SelectListItem>> GetBedrooms()
         {
-            var uri = API.Apartment.Bedrooms(_apartmentUrl);
-            return await GetSelectList(uri, "BedroomsNo");
+            var url = API.Apartment.Bedrooms(_apartmentUrl);
+            return await GetSelectListAsync(url, "BedroomsCount");
         }
+
         public async Task<IEnumerable<SelectListItem>> GetCountries()
         {
-            var uri = API.Apartment.Countries(_apartmentUrl);
-            return await GetSelectList(uri, "CountryName");
+            var url = API.Apartment.Countries(_apartmentUrl);
+            return await GetSelectListAsync(url, "Country");
         }
         public async Task<IEnumerable<SelectListItem>> GetFurnishings()
         {
-            var uri = API.Apartment.Furnishings(_apartmentUrl);            
-            return await GetSelectList(uri,"Status");
-        }
-        public async Task<IEnumerable<SelectListItem>> GetOwners()
-        {
-            var uri = API.Apartment.Owners(_apartmentUrl);
-            return await GetSelectList(uri, "Name");
+            var url = API.Apartment.Furnishings(_apartmentUrl);
+            return await GetSelectListAsync(url, "FurnitureType");
         }
         public async Task<IEnumerable<SelectListItem>> GetPeriods()
         {
-            var uri = API.Apartment.Periods(_apartmentUrl);
-            return await GetSelectList(uri, "PeriodName");
+            var url = API.Apartment.Periods(_apartmentUrl);
+            return await GetSelectListAsync(url, "Period");
         }
-        public async Task<IEnumerable<SelectListItem>> GetPurposes()
+        public async Task<IEnumerable<SelectListItem>> GetPurpose()
         {
-            var uri = API.Apartment.Periods(_apartmentUrl);
-            return await GetSelectList(uri, "PurposeName");
+            var url = API.Apartment.Purposes(_apartmentUrl);
+            return await GetSelectListAsync(url, "PurposeType");
         }
-        private async Task<IEnumerable<SelectListItem>> GetSelectList(string uri, string text)
+
+        private async Task<IEnumerable<SelectListItem>> GetSelectListAsync(string url, string text)
         {
-            var responseString = await _apiClient.GetStringAsync(uri);
-            if (string.IsNullOrEmpty(responseString)) throw new NullReferenceException($"{uri}: Null or empty result");
-            List<SelectListItem> list = new List<SelectListItem>();
-            var response = JArray.Parse(responseString);
-            foreach (var item in response.Children<JObject>())
+            var response = await _httpClient.GetStringAsync(url);
+            if (string.IsNullOrEmpty(response)) return null;
+            var list = new List<SelectListItem>();
+            var json = JArray.Parse(response);
+            foreach (var item in json.Children<JObject>())
             {
                 list.Add(new SelectListItem()
                 {

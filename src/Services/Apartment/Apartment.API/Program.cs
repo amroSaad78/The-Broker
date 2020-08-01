@@ -1,6 +1,5 @@
 using Apartment.API.Extensions;
 using Apartment.API.Infrastructure;
-using BuildingBlocks.IntegrationEventLogEF;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;

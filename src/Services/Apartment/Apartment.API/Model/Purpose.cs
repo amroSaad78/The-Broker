@@ -1,8 +1,9 @@
-﻿namespace Apartment.API.Model
+﻿using ApartmentsApi.Proto;
+
+namespace Apartment.API.Model
 {
-    public class Purpose
+    public class Purpose: Basic
     {
-        public int Id { get; set; }
         public string PurposeType { get; set; }
     }
 }
