@@ -1,9 +1,7 @@
 ﻿namespace WebMVC.Model
 {
-    public class Bedrooms
+    public class Bedrooms:Basic
     {
-        public int Id { get; set; }
-
         public string BedroomsCount { get; set; }
     }
 }

@@ -52,15 +52,6 @@ namespace Apartment.API.Infrastructure
                     await context.SaveChangesAsync();                    
                 }
 
-                if (!context.Purpose.Any())
-                {
-                    await context.Purpose.AddRangeAsync(useCustomizationData
-                        ? GetDataFromFile(contentRootPath, logger, GetPreconfiguredPurposes, CreatePurpose)
-                        : GetPreconfiguredPurposes());
-
-                    await context.SaveChangesAsync();
-                }
-
                 if (!context.Period.Any())
                 {
                     await context.Period.AddRangeAsync(useCustomizationData
@@ -135,20 +126,6 @@ namespace Apartment.API.Infrastructure
             };
         }
 
-        private Purpose CreatePurpose(string purpose)
-        {
-            purpose = purpose.Trim('"').Trim();
-
-            if (String.IsNullOrEmpty(purpose))
-            {
-                throw new Exception("Purpose is empty");
-            }
-
-            return new Purpose
-            {
-                PurposeType = purpose
-            };
-        }
 
         private Periods CreatePeriod(string period)
             {
@@ -191,12 +168,7 @@ namespace Apartment.API.Infrastructure
                 new Furnishings() { FurnitureType = "Unfurnished"},
                 new Furnishings() { FurnitureType = "Partly furnished"}
             };
-
-        private IEnumerable<Purpose> GetPreconfiguredPurposes() => new List<Purpose>()
-            {
-                new Purpose() { PurposeType = "Sale"},
-                new Purpose() { PurposeType = "Rent"}
-            };
+        
 
         private IEnumerable<Periods> GetPreconfiguredPeriods() => new List<Periods>()
             {

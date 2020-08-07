@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using WebMVC.Extension;
 using WebMVC.Infrastructure;
 using WebMVC.Model;
 
@@ -30,45 +31,42 @@ namespace WebMVC.Services
         public async Task<IEnumerable<SelectListItem>> GetBedrooms()
         {
             var url = API.Apartment.Bedrooms(_apartmentUrl);
-            return await GetSelectListAsync(url, "BedroomsCount");
+            var response = await _httpClient.GetStringAsync(url);
+            return response.GetSelectListAsync("bedroomsCount");
         }
 
         public async Task<IEnumerable<SelectListItem>> GetCountries()
         {
             var url = API.Apartment.Countries(_apartmentUrl);
-            return await GetSelectListAsync(url, "Country");
+            var response = await _httpClient.GetStringAsync(url);
+            return response.GetSelectListAsync("country");
         }
         public async Task<IEnumerable<SelectListItem>> GetFurnishings()
         {
             var url = API.Apartment.Furnishings(_apartmentUrl);
-            return await GetSelectListAsync(url, "FurnitureType");
+            var response = await _httpClient.GetStringAsync(url);
+            return response.GetSelectListAsync("furnitureType");
         }
         public async Task<IEnumerable<SelectListItem>> GetPeriods()
         {
             var url = API.Apartment.Periods(_apartmentUrl);
-            return await GetSelectListAsync(url, "Period");
-        }
-        public async Task<IEnumerable<SelectListItem>> GetPurpose()
-        {
-            var url = API.Apartment.Purposes(_apartmentUrl);
-            return await GetSelectListAsync(url, "PurposeType");
-        }
-
-        private async Task<IEnumerable<SelectListItem>> GetSelectListAsync(string url, string text)
-        {
             var response = await _httpClient.GetStringAsync(url);
-            if (string.IsNullOrEmpty(response)) return null;
-            var list = new List<SelectListItem>();
-            var json = JArray.Parse(response);
-            foreach (var item in json.Children<JObject>())
+            return response.GetSelectListAsync("period");
+        }
+        public async Task SaveApartment(Apartment apartment)
+        {
+            _logger.LogInformation($"Saving apartment data located in: {apartment.City}");
+            var apartmentContent = new StringContent(JsonConvert.SerializeObject(apartment), System.Text.Encoding.UTF8, "application/json");
+            HttpResponseMessage response;
+            if (apartment.Id > 0)
             {
-                list.Add(new SelectListItem()
-                {
-                    Value = item.Value<string>("Id"),
-                    Text = item.Value<string>(text)
-                });
+                response = await _httpClient.PutAsync(_apartmentUrl, apartmentContent);
             }
-            return list;
+            else
+            {
+                response = await _httpClient.PostAsync(_apartmentUrl, apartmentContent);
+            }
+            response.EnsureSuccessStatusCode();
         }
     }
 }

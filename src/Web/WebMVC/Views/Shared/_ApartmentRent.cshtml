@@ -1,0 +1,107 @@
+﻿@model WebMVC.ViewModels.Apartments.ApartmentVM
+<div class="card">
+    <h5 class="card-header">Add New Apartment</h5>
+    <div class="card-body">
+        <form asp-action="New" asp-controller="Apartment" method="post">
+            <div class="form-row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+                    <label for="ownerid" class="col-form-label">Owner Name</label>
+                    <select asp-for="Apartment.OwnerId" asp-items="@Model.Owners" class="form-control"></select>
+                    <span asp-validation-for="Apartment.OwnerId" class="text-danger"></span>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+                    <label for="furnishings" class="col-form-label">Furnishings</label>
+                    <select asp-for="Apartment.FurnitureId" asp-items="@Model.Furnishings" class="form-control"></select>
+                    <span asp-validation-for="Apartment.FurnitureId" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+                    <label for="bedrooms" class="col-form-label">Bedrooms</label>
+                    <select asp-for="Apartment.BedroomId" asp-items="@Model.Bedrooms" class="form-control"></select>
+                    <span asp-validation-for="Apartment.BedroomId" class="text-danger"></span>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+                    <label for="reception" class="col-form-label">Reception Rooms</label>
+                    <input id="reception" type="number" class="form-control" placeholder="0" asp-for="Apartment.Reception" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+                    <label for="kitchens" class="col-form-label">Kitchens</label>
+                    <input id="kitchens" type="number" class="form-control" placeholder="0" asp-for="Apartment.Kitchens" />
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+                    <label for="bathrooms" class="col-form-label">Bathrooms</label>
+                    <input id="bathrooms" type="number" class="form-control" placeholder="0" asp-for="Apartment.Bathrooms" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+                    <label for="area" class="col-form-label">Area <sup>(sqm)</sup></label>
+                    <input id="area" type="number" class="form-control" placeholder="0" asp-for="Apartment.Area" />
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+                    <label for="view" class="col-form-label">View</label>
+                    <input id="view" type="text" class="form-control" placeholder="ex: Sea View" asp-for="Apartment.View" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+                    <label for="floor" class="col-form-label">Floor No.</label>
+                    <input id="floor" type="number" class="form-control" placeholder="0" asp-for="Apartment.Floor" />
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+                    <label for="flat" class="col-form-label">Flat No.</label>
+                    <input id="flat" type="number" class="form-control" placeholder="0" asp-for="Apartment.Flat" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+                    <label for="country" class="col-form-label">Country</label>
+                    <select asp-for="Apartment.CountryId" asp-items="@Model.Countries" class="form-control"></select>
+                    <span asp-validation-for="Apartment.CountryId" class="text-danger"></span>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+                    <label for="city" class="col-form-label">City | Emirate</label>
+                    <input id="city" type="text" class="form-control" asp-for="Apartment.City" required />
+                    <span asp-validation-for="Apartment.City" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+                    <label for="region" class="col-form-label">Region Name</label>
+                    <input id="region" type="text" class="form-control" asp-for="Apartment.Region" required />
+                    <span asp-validation-for="Apartment.Region" class="text-danger"></span>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+                    <label for="adresse" class="col-form-label">Adresse</label>
+                    <input id="adresse" type="text" class="form-control" asp-for="Apartment.Adresse" required />
+                    <span asp-validation-for="Apartment.Adresse" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+                    <label for="price" class="col-form-label">Price <sup>($)</sup></label>
+                    <input id="price" type="number" class="form-control" placeholder="0" asp-for="Apartment.Price" />
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+                    <label for="period" class="col-form-label">Period</label>
+                    <select asp-for="Apartment.PeriodId" asp-items="Model.Periods" class="form-control"></select>
+                    <span asp-validation-for="Apartment.PeriodId" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12 mb-2">
+                    <label for="parking" class="col-form-label">Parking</label>
+                    <input type="checkbox" id="parking" class="custom-checkbox-lg" asp-for="Apartment.Parking" />
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+                    <input type="hidden" asp-for="Apartment.Purpose" value="Rent" />
+                    <button class="btn btn-danger float-right m-1" type="reset">Reset</button>
+                    <button class="btn btn-primary float-right m-1" type="submit">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,5 @@
+﻿@model WebMVC.Model.Messages
+@if (Model == null) return;
+<script type="text/javascript">
+    showToast('@Model.Types', '@Model.Message', '@Model.Title');
+</script>

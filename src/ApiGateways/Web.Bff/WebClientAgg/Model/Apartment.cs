@@ -1,6 +1,6 @@
-﻿namespace Apartment.API.Model
+﻿namespace WebClientAgg.Model
 {
-    public class Apartments
+    public class Apartment
     {
         public int Id { get; set; }
         public bool Parking { get; set; }        
@@ -25,7 +25,6 @@
         public Furnishings Furniture { get; set; }
         public int PeriodId { get; set; }
         public Periods Period { get; set; }
-        public int PurposeId { get; set; }
-        public Purpose Purpose { get; set; }
+        public string Purpose { get; set; }
     }
 }

@@ -13,6 +13,6 @@ namespace WebMVC.Services
         Task<IEnumerable<SelectListItem>> GetCountries();
         Task<IEnumerable<SelectListItem>> GetFurnishings();
         Task<IEnumerable<SelectListItem>> GetPeriods();
-        Task<IEnumerable<SelectListItem>> GetPurpose();
+        Task SaveApartment(Apartment apartment);
     }
 }

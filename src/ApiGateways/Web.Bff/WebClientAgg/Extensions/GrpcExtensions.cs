@@ -9,11 +9,11 @@ namespace WebClientAgg.Extensions
 {
     public static class GrpcExtensions
     {
-        public static Apartments MapToApartment(this ApartmentResponse apartment)
+        public static Apartment MapToApartment(this ApartmentResponse apartment)
         {
             if (apartment == null) return null;
 
-            var map = new Apartments
+            var map = new Apartment
             {
                 Id = apartment.Id,
                 Parking = apartment.Parking,
@@ -34,12 +34,11 @@ namespace WebClientAgg.Extensions
                 CountryId = apartment.CountryId,
                 FurnitureId = apartment.FurnitureId,
                 PeriodId = apartment.PeriodId,
-                PurposeId = apartment.PurposeId,
+                Purpose = apartment.Purpose,
                 Bedroom = new Bedrooms { Id = apartment.Bedroom.Id, BedroomsCount = apartment.Bedroom.BedroomsCount },
                 Country = new Countries { Id = apartment.Country.Id, Country = apartment.Country.Country },
                 Furniture = new Furnishings { Id = apartment.Furniture.Id, FurnitureType = apartment.Furniture.FurnitureType },
-                Period = new Periods { Id = apartment.Period.Id, Period = apartment.Period.Period },
-                Purpose = new Purpose { Id = apartment.Purpose.Id, PurposeType = apartment.Purpose.PurposeType }
+                Period = new Periods { Id = apartment.Period.Id, Period = apartment.Period.Period }
             };
             return map;
         }
@@ -79,15 +78,6 @@ namespace WebClientAgg.Extensions
                 PeriodsResponse.Add(new Periods { Id = i.Id,  Period = i.Period });
             });
             return PeriodsResponse;
-        }
-        public static List<Purpose> MapToPurpose(this RepeatedField<GrpcPurpose> purposes)
-        {
-            var PurposeResponse = new List<Purpose>();
-            purposes.ToList().ForEach(i =>
-            {
-                PurposeResponse.Add(new Purpose { Id = i.Id,  PurposeType = i.PurposeType });
-            });
-            return PurposeResponse;
         }
         public static Owner MapToOwner(this OwnerResponse grpcOwner) => new Owner
         {

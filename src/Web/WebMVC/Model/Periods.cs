@@ -1,8 +1,7 @@
 ﻿namespace WebMVC.Model
 {
-    public class Periods
-    {
-        public int Id { get; set; }
+    public class Periods : Basic
+    { 
         public string Period { get; set; }
     }
 }

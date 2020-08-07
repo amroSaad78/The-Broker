@@ -1,7 +1,7 @@
 using Devspaces.Support;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -127,7 +127,7 @@ namespace WebMVC
             services.AddOptions();
             services.Configure<AppSettings>(configuration);
             services.AddSession();
-            services.AddDistributedMemoryCache();
+            //services.AddDistributedMemoryCache();
 
             if (configuration.GetValue<string>("IsClusterEnv") == bool.TrueString)
             {
@@ -155,6 +155,7 @@ namespace WebMVC
             services.AddHttpClient<IApartmentService, ApartmentService>()
                 .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>()
                 .AddDevspacesSupport();
+
             services.AddHttpClient<IOwnersService, OwnersService>()
                 .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>()
                 .AddDevspacesSupport();
@@ -177,7 +178,7 @@ namespace WebMVC
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddCookie(setup => setup.ExpireTimeSpan = TimeSpan.FromMinutes(sessionCookieLifetime))
             .AddOpenIdConnect(options =>

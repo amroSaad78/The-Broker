@@ -27,23 +27,22 @@ namespace Identity.API
 {
     public class Startup
     {
-        public IWebHostEnvironment Environment { get; }
         public IConfiguration Configuration { get; }
 
-        public Startup(IWebHostEnvironment environment, IConfiguration configuration)
+        public Startup(IConfiguration configuration)
         {
-            Environment = environment;
             Configuration = configuration;
         }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             RegisterAppInsights(services);
+
             var connectionString = Configuration["ConnectionString"];
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
             services.AddDbContext<ApplicationDbContext>(options =>
-             options.UseSqlServer(connectionString,
+                options.UseSqlServer(connectionString,
                 sqlServerOptionsAction: sqlOptions =>
                 {
                     sqlOptions.MigrationsAssembly(migrationsAssembly);

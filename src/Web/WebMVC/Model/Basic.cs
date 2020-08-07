@@ -1,8 +1,7 @@
 ﻿namespace WebMVC.Model
 {
-    public class Purpose
+    public abstract class Basic
     {
         public int Id { get; set; }
-        public string PurposeType { get; set; }
     }
 }

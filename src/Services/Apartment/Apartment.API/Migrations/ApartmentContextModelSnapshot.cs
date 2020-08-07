@@ -21,10 +21,9 @@ namespace Apartment.API.Migrations
                 .HasAnnotation("Relational:Sequence:.country_hilo", "'country_hilo', '', '1', '10', '', '', 'Int64', 'False'")
                 .HasAnnotation("Relational:Sequence:.furniture_hilo", "'furniture_hilo', '', '1', '10', '', '', 'Int64', 'False'")
                 .HasAnnotation("Relational:Sequence:.period_hilo", "'period_hilo', '', '1', '10', '', '', 'Int64', 'False'")
-                .HasAnnotation("Relational:Sequence:.purpose_hilo", "'purpose_hilo', '', '1', '10', '', '', 'Int64', 'False'")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Apartment.API.Model.Apartments", b =>
+            modelBuilder.Entity("Apartment.API.Model.Apartment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -33,6 +32,7 @@ namespace Apartment.API.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.SequenceHiLo);
 
                     b.Property<string>("Adresse")
+                        .IsRequired()
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
@@ -46,6 +46,7 @@ namespace Apartment.API.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("City")
+                        .IsRequired()
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
@@ -81,13 +82,15 @@ namespace Apartment.API.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("PurposeId")
-                        .HasColumnType("int");
+                    b.Property<string>("Purpose")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Reception")
                         .HasColumnType("int");
 
                     b.Property<string>("Region")
+                        .IsRequired()
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
@@ -104,8 +107,6 @@ namespace Apartment.API.Migrations
                     b.HasIndex("FurnitureId");
 
                     b.HasIndex("PeriodId");
-
-                    b.HasIndex("PurposeId");
 
                     b.ToTable("Apartment");
                 });
@@ -182,25 +183,7 @@ namespace Apartment.API.Migrations
                     b.ToTable("Period");
                 });
 
-            modelBuilder.Entity("Apartment.API.Model.Purpose", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:HiLoSequenceName", "purpose_hilo")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.SequenceHiLo);
-
-                    b.Property<string>("PurposeType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Purpose");
-                });
-
-            modelBuilder.Entity("Apartment.API.Model.Apartments", b =>
+            modelBuilder.Entity("Apartment.API.Model.Apartment", b =>
                 {
                     b.HasOne("Apartment.API.Model.Bedrooms", "Bedroom")
                         .WithMany()
@@ -223,12 +206,6 @@ namespace Apartment.API.Migrations
                     b.HasOne("Apartment.API.Model.Periods", "Period")
                         .WithMany()
                         .HasForeignKey("PeriodId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Apartment.API.Model.Purpose", "Purpose")
-                        .WithMany()
-                        .HasForeignKey("PurposeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

@@ -1,12 +1,11 @@
-﻿using Apartment.API.Model;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Apartment.API.EntityConfigurations
 {
-    public class ApartmentsEntityTypeConfiguration : IEntityTypeConfiguration<Apartments>
+    public class ApartmentsEntityTypeConfiguration : IEntityTypeConfiguration<Model.Apartment>
     {
-        public void Configure(EntityTypeBuilder<Apartments> builder)
+        public void Configure(EntityTypeBuilder<Model.Apartment> builder)
         {
             builder.ToTable("Apartment");
 
@@ -22,13 +21,16 @@ namespace Apartment.API.EntityConfigurations
                 .HasMaxLength(50);
 
             builder.Property(ci => ci.City)
-                .HasMaxLength(50);
+                .HasMaxLength(50)
+                .IsRequired();
 
             builder.Property(ci => ci.Region)
-                .HasMaxLength(100);
+                .HasMaxLength(100)
+                .IsRequired();
 
             builder.Property(ci => ci.Adresse)
-                .HasMaxLength(100);
+                .HasMaxLength(100)
+                .IsRequired();
 
             builder.HasOne(ci => ci.Bedroom)
                 .WithMany()
@@ -41,10 +43,6 @@ namespace Apartment.API.EntityConfigurations
             builder.HasOne(ci => ci.Furniture)
                 .WithMany()
                 .HasForeignKey(ci => ci.FurnitureId);
-
-            builder.HasOne(ci => ci.Purpose)
-                .WithMany()
-                .HasForeignKey(ci => ci.PurposeId);
 
             builder.HasOne(ci => ci.Period)
                 .WithMany()

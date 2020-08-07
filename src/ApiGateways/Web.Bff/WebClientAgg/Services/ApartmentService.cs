@@ -20,7 +20,7 @@ namespace WebClientAgg.Services
             _logger = logger;
             _urls = config.Value;
         }
-        public async Task<Apartments> GetApartmentById(int id) =>
+        public async Task<Apartment> GetApartmentById(int id) =>
             // using http2 or grpc for communcation between aggregators and services like apartment or owners service.
             await GrpcCallerService.CallService(_urls.GrpcApartment, async channel =>
             {

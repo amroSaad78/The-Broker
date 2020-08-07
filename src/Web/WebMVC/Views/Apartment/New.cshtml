@@ -1,122 +1,34 @@
-﻿@model WebMVC.ViewModels.Apartments.ApartmentVM
+﻿@using WebMVC.Model
+@model WebMVC.ViewModels.Apartments.ApartmentVM
 <div class="row">
     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-5">
-        <div class="card">
-            <h5 class="card-header">Add New Apartment</h5>
-            <div class="card-body">
-                <form asp-action="AddApartment" asp-controller="Apartment" method="post">
-                    <div class="form-row">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
-                            <label for="ownerid" class="col-form-label">Owner Name</label>
-                            <select asp-for="@Model.Apartment.OwnerId" asp-items="@Model.Owners" class="form-control"></select>
-                        </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
-                            <label for="purpose" class="col-form-label">For</label>
-                            <select asp-for="@Model.Apartment.PurposeId" asp-items="@Model.Purpose" class="form-control"></select>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
-                            <label for="furnishings" class="col-form-label">Furnishings</label>
-                            <select asp-for="@Model.Apartment.FurnitureId" asp-items="@Model.Furnishings" class="form-control"></select>
-                        </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
-                            <label class="col-form-label">Parking</label>
-                            <div class="pt-1">
-                                <div class="switch-button switch-button-yesno">
-                                    <input type="checkbox" name="parking" id="parking">
-                                    <span>
-                                        <label for="parking"></label>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
-                            <label for="bedrooms" class="col-form-label">Bedrooms</label>
-                            <select asp-for="@Model.Apartment.BedroomId" asp-items="@Model.Bedrooms" class="form-control"></select>
-                        </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
-                            <label for="reception" class="col-form-label">Reception Rooms</label>
-                            <input id="reception" type="number" class="form-control" placeholder="0">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
-                            <label for="kitchens" class="col-form-label">Kitchens</label>
-                            <input id="kitchens" type="number" class="form-control" placeholder="0">
-                        </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
-                            <label for="bathrooms" class="col-form-label">Bathrooms</label>
-                            <input id="bathrooms" type="number" class="form-control" placeholder="0">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
-                            <label for="area" class="col-form-label">Area <sup>(sqm)</sup></label>
-                            <input id="area" type="number" class="form-control" placeholder="0">
-                        </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
-                            <label for="view" class="col-form-label">View</label>
-                            <input id="view" type="text" class="form-control" placeholder="ex: Sea View">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
-                            <label for="floor" class="col-form-label">Floor No.</label>
-                            <input id="floor" type="number" class="form-control" placeholder="0">
-                        </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
-                            <label for="flat" class="col-form-label">Flat No.</label>
-                            <input id="flat" type="number" class="form-control" placeholder="0">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
-                            <label for="country" class="col-form-label">Country</label>
-                            <select asp-for="@Model.Apartment.CountryId" asp-items="@Model.Countries" class="form-control"></select>
-                        </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
-                            <label for="city" class="col-form-label">City | Emirate</label>
-                            <input id="city" type="text" class="form-control">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
-                            <label for="region" class="col-form-label">Region Name</label>
-                            <input id="region" type="text" class="form-control">
-                        </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
-                            <label for="adresse" class="col-form-label">Adresse</label>
-                            <input id="adresse" type="text" class="form-control">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
-                            <label for="price" class="col-form-label">Price <sup>($)</sup></label>
-                            <input id="price" type="number" class="form-control" placeholder="0">
-                        </div>
-
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2 showhide">
-                            <label class="col-form-label">Installment</label>
-                            <div class="pt-1">
-                                <div class="switch-button switch-button-yesno">
-                                    <input type="checkbox" name="installment" id="installment">
-                                    <span>
-                                        <label for="installment"></label>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2 d-none showhide">
-                            <label for="period" class="col-form-label">Period</label>
-                            <select asp-for="@Model.Apartment.PeriodId" asp-items="@Model.Periods" class="form-control"></select>
-                        </div>
-                    </div>
-                </form>
+        <div class="tab-outline">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="rent-tab" data-toggle="tab" href="#Rent" role="tab" aria-controls="For Rent" aria-selected="true">Rent</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="sale-tab" data-toggle="tab" href="#Sale" role="tab" aria-controls="For Sale" aria-selected="false">Sale</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="Rent" role="tabpanel" aria-labelledby="rent-tab">
+                    
+                    <partial name="_ApartmentRent" model="Model" />
+                </div>
+                <div class="tab-pane fade" id="Sale" role="tabpanel" aria-labelledby="sale-tab">
+                    
+                    <partial name="_ApartmentSale" model="Model" />
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ToastrPartial", (Messages)ViewBag.msg);
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

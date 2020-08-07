@@ -10,12 +10,11 @@ namespace Apartment.API.Infrastructure
         public ApartmentContext(DbContextOptions<ApartmentContext> options) : base(options)
         {
         }
-        public DbSet<Apartments> Apartment { get; set; }
+        public DbSet<Model.Apartment> Apartment { get; set; }
         public DbSet<Bedrooms> Bedroom { get; set; }
         public DbSet<Countries> Country { get; set; }
         public DbSet<Furnishings> Furniture { get; set; }
-        public DbSet<Periods> Period { get; set; }
-        public DbSet<Purpose> Purpose { get; set; }
+        public DbSet<Periods> Period { get; set; }        
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -23,8 +22,7 @@ namespace Apartment.API.Infrastructure
             builder.ApplyConfiguration(new BedroomsEntityTypeConfiguration());
             builder.ApplyConfiguration(new CountriesEntityTypeConfiguration());
             builder.ApplyConfiguration(new FurnishingsEntityTypeConfiguration());
-            builder.ApplyConfiguration(new PeriodsEntityTypeConfiguration());
-            builder.ApplyConfiguration(new PurposeEntityTypeConfiguration());
+            builder.ApplyConfiguration(new PeriodsEntityTypeConfiguration());            
         }
     }
 

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Security.Claims;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
+﻿using Identity.API.Models;
+using Identity.API.Models.AccountViewModels;
+using Identity.API.Services;
 using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Models;
@@ -12,11 +10,12 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Identity.API.Models;
-using Identity.API.Models.AccountViewModels;
-using Identity.API.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Identity.API.Controllers
 {

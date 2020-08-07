@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using WebMVC.Extension;
 using WebMVC.Infrastructure;
 using WebMVC.Model;
 
@@ -25,25 +26,9 @@ namespace WebMVC.Services
         public async Task<IEnumerable<SelectListItem>> GetBasicOwners()
         {
             var url = API.Owners.BasicOwners(_ownersUrl);
-            return await GetSelectListAsync(url, "FullName");
+            var response = await _httpClient.GetStringAsync(url);
+            return response.GetSelectListAsync("fullName");
         }
         Task<IEnumerable<Owner>> IOwnersService.GetOwners() => throw new NotImplementedException();
-
-        private async Task<IEnumerable<SelectListItem>> GetSelectListAsync(string url, string text)
-        {
-            var response = await _httpClient.GetStringAsync(url);
-            if (string.IsNullOrEmpty(response)) return null;
-            var list = new List<SelectListItem>();
-            var json = JArray.Parse(response);
-            foreach (var item in json.Children<JObject>())
-            {
-                list.Add(new SelectListItem()
-                {
-                    Value = item.Value<string>("Id"),
-                    Text = item.Value<string>(text)
-                });
-            }
-            return list;
-        }
     }
 }

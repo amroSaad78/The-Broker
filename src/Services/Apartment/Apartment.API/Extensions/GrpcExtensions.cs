@@ -1,13 +1,10 @@
-﻿using Apartment.API.Model;
-using ApartmentsApi.Proto;
-using Google.Protobuf.Collections;
-using System.Collections.Generic;
+﻿using ApartmentsApi.Proto;
 
 namespace Apartment.API.Grpc
 {
     public static class GrpcExtensions
     {
-        public static ApartmentResponse MapToApartmentResponse(this Apartments apartment) => new ApartmentResponse()
+        public static ApartmentResponse MapToApartmentResponse(this Model.Apartment apartment) => new ApartmentResponse()
         {
             Id = apartment.Id,
             Parking = apartment.Parking,
@@ -28,12 +25,11 @@ namespace Apartment.API.Grpc
             CountryId = apartment.CountryId,
             FurnitureId = apartment.FurnitureId,
             PeriodId = apartment.PeriodId,
-            PurposeId = apartment.PurposeId,
+            Purpose = apartment.Purpose,
             Bedroom = new GrpcBedrooms { Id = apartment.Bedroom.Id, BedroomsCount = apartment.Bedroom.BedroomsCount },
             Country = new GrpcCountries { Id = apartment.Country.Id, Country = apartment.Country.Country },
             Furniture = new GrpcFurnishings { Id = apartment.Furniture.Id, FurnitureType = apartment.Furniture.FurnitureType },
             Period = new GrpcPeriods { Id = apartment.Period.Id, Period = apartment.Period.Period },
-            Purpose = new GrpcPurpose { Id = apartment.Purpose.Id, PurposeType = apartment.Purpose.PurposeType }
         };
     }
 }

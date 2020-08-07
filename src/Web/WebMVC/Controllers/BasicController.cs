@@ -7,7 +7,7 @@ using WebMVC.Services;
 
 namespace WebMVC.Controllers
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = "OpenIdConnect")]
     public abstract class BasicController<T> : Controller where T: IPageController
     {
         public readonly string _pageName;
@@ -19,12 +19,12 @@ namespace WebMVC.Controllers
             }
         }
 
-        public virtual IActionResult ActionResult()
+        protected virtual IActionResult ActionResult()
         {
             SetPageName();
             return View(); 
         }
-        public virtual IActionResult ActionResult(object model)
+        protected virtual IActionResult ActionResult(object model)
         {
             SetPageName();
             return View(model); 

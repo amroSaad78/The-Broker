@@ -1,9 +1,7 @@
 ﻿namespace WebMVC.Model
 {
-    public class Furnishings
+    public class Furnishings: Basic
     {
-        public int Id { get; set; }
-
         public string FurnitureType { get; set; }
     }
 }

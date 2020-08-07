@@ -98,17 +98,30 @@ jQuery(document).ready(function ($) {
 
         });
     }
+});
 
     // ============================================================== 
-    // Purpose selection changed
-    // ==============================================================
-    $('#purpose').on('change', function () {
-        $('.showhide').each(function () {
-            if ($(this).hasClass("d-none")) {
-                $(this).removeClass("d-none");
-            } else {
-                $(this).addClass("d-none");
-            }
-        })
-    });
-});
+    // Set Toastr Message
+    // ============================================================== 
+function showToast(type, msg, title) {
+    if (msg.length > 0) {
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-top-center",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
+        Command: toastr[type](msg, title);
+    }
+}

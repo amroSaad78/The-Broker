@@ -28,12 +28,11 @@ message ApartmentResponse{
 	int32 CountryId =17;
 	int32 FurnitureId =18;	
 	int32 PeriodId =19;	
-	int32 PurposeId =20;	
+	string Purpose =20;	
 	GrpcBedrooms Bedroom =21;
 	GrpcCountries Country =22;
 	GrpcFurnishings Furniture =23;
 	GrpcPeriods Period =24;
-	GrpcPurpose Purpose =25;
 }
 
 message GrpcBedrooms{
@@ -54,11 +53,6 @@ message GrpcFurnishings{
 message GrpcPeriods{
 	int32 id =1;
 	string Period =2;
-}
-
-message GrpcPurpose{
-	int32 id =1;
-	string PurposeType =2;
 }
 
 service ApartmentData {

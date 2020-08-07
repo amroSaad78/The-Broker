@@ -26,7 +26,7 @@ namespace Apartment.API.Controllers
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _settings = settings.Value;
-            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
         
@@ -70,15 +70,32 @@ namespace Apartment.API.Controllers
             return Ok(_periods);
         }
 
-        // GET api/v1/[controller]/purpose
-        [HttpGet]
-        [Route("purpose")]
-        [ProducesResponseType(typeof(Purpose), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<List<Purpose>>> GetPurpose()
+
+        // POST api/v1/[controller]/
+        [HttpPost]
+        [ProducesResponseType((int)HttpStatusCode.Created)]
+        public async Task<ActionResult> AddApartment([FromBody] Model.Apartment apartment)
         {
-            var _purpose = await _context.Purpose.OrderBy(i => i.Id).ToListAsync();
-            return Ok(_purpose);
+            _context.Apartment.Add(apartment);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction(nameof(AddApartment), new { id = apartment.Id });
         }
 
+        // PUT api/v1/[controller]/
+        [HttpPut]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Created)]
+        public async Task<ActionResult> UpdateApartment([FromBody] Model.Apartment apartment)
+        {
+            var oldApartment = await _context.Apartment.SingleOrDefaultAsync(a => a.Id == apartment.Id);
+            if (oldApartment == null)
+            {
+                return NotFound(new { Message = $"Apartment with id {apartment.Id} not found." });
+            }
+            oldApartment = apartment;
+            _context.Apartment.Update(oldApartment);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction(nameof(UpdateApartment), new { id = oldApartment.Id });
+        }
     }
 }

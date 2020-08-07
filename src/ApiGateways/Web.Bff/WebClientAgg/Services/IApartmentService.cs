@@ -6,6 +6,6 @@ namespace WebClientAgg.Services
 {
     public interface IApartmentService
     {
-        Task<Apartments> GetApartmentById(int id);
+        Task<Apartment> GetApartmentById(int id);
     }
 }

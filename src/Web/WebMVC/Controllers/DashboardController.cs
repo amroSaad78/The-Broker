@@ -12,7 +12,7 @@ using WebMVC.Services;
 
 namespace WebMVC.Controllers
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = "OpenIdConnect")]
     public class DashboardController : BasicController<DashboardController>, IPageController
     {
         private readonly ILogger<DashboardController> _logger;

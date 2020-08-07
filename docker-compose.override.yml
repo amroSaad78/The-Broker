@@ -29,7 +29,8 @@ services:
       - OwnerApiClient=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5101
       - ApartmentApiClient=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5102
       - WebClientAggClient=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5121
-      - UseCustomizationData=False  
+      - UseCustomizationData=False 
+      - DPConnectionString={BROKER_AZURE_REDIS_keystore_DB:-keystoredata}
       - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
       - OrchestratorType=${ORCHESTRATOR_TYPE}
     ports:
@@ -64,7 +65,7 @@ services:
       - EventBusUserName=${BROKER_SERVICE_BUS_USERNAME}
       - EventBusPassword=${BROKER_SERVICE_BUS_PASSWORD}
       - AzureStorageAccountName=${BROKER_AZURE_STORAGE_NAME}
-      - AzureStorageAccountKey=${ESHOP_AZURE_STORAGE_KEY}
+      - AzureStorageAccountKey=${BROKER_AZURE_STORAGE_KEY}
       - UseCustomizationData=True
       - AzureServiceBusEnabled=False
       - AzureStorageEnabled=False
@@ -77,21 +78,6 @@ services:
     ports:
       - "5102:80"
       - "9102:81" # for grpc port
-
-  webmvc:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://0.0.0.0:80
-      - ApartmentUrl=http://webclientapigw
-      - OwnersUrl=http://webclientapigw
-      - IdentityUrl=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5105
-      - IdentityUrlHC=http://identity.api/hc
-      - UseCustomizationData=False
-      - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
-      - OrchestratorType=${ORCHESTRATOR_TYPE}
-      - UseLoadTest=${USE_LOADTEST:-False}
-    ports:
-      - "5100:80"
 
   webclientapigw:
     volumes:
@@ -123,6 +109,21 @@ services:
     ports:
       - "5121:80"
 
+  webmvc:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - ApartmentUrl=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5201
+      - OwnersUrl=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5201
+      - IdentityUrl=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5105
+      - IdentityUrlHC=http://identity.api/hc
+      - UseCustomizationData=False
+      - DPConnectionString={BROKER_AZURE_REDIS_keystore_DB:-keystoredata}
+      - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
+      - OrchestratorType=${ORCHESTRATOR_TYPE}
+      - UseLoadTest=${USE_LOADTEST:-False}
+    ports:
+      - "5100:80"
 volumes:
   broker-sqldata:
     external: False

@@ -2,33 +2,29 @@
 
 namespace Apartment.API.Migrations
 {
-    public partial class intialDB : Migration
+    public partial class IntialDB : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateSequence(
                 name: "Apartment_hilo",
-                incrementBy: 10);
+                incrementBy: 1);
 
             migrationBuilder.CreateSequence(
                 name: "bedroom_hilo",
-                incrementBy: 10);
+                incrementBy: 1);
 
             migrationBuilder.CreateSequence(
                 name: "country_hilo",
-                incrementBy: 10);
+                incrementBy: 1);
 
             migrationBuilder.CreateSequence(
                 name: "furniture_hilo",
-                incrementBy: 10);
+                incrementBy: 1);
 
             migrationBuilder.CreateSequence(
                 name: "period_hilo",
-                incrementBy: 10);
-
-            migrationBuilder.CreateSequence(
-                name: "purpose_hilo",
-                incrementBy: 10);
+                incrementBy: 1);
 
             migrationBuilder.CreateTable(
                 name: "Bedroom",
@@ -79,18 +75,6 @@ namespace Apartment.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Purpose",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false),
-                    PurposeType = table.Column<string>(maxLength: 100, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Purpose", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Apartment",
                 columns: table => new
                 {
@@ -103,9 +87,9 @@ namespace Apartment.API.Migrations
                     View = table.Column<string>(maxLength: 50, nullable: true),
                     Floor = table.Column<int>(nullable: false),
                     Flat = table.Column<int>(nullable: false),
-                    City = table.Column<string>(maxLength: 50, nullable: true),
-                    Region = table.Column<string>(maxLength: 100, nullable: true),
-                    Adresse = table.Column<string>(maxLength: 100, nullable: true),
+                    City = table.Column<string>(maxLength: 50, nullable: false),
+                    Region = table.Column<string>(maxLength: 100, nullable: false),
+                    Adresse = table.Column<string>(maxLength: 100, nullable: false),
                     Price = table.Column<decimal>(nullable: false),
                     Installment = table.Column<bool>(nullable: false),
                     OwnerId = table.Column<int>(nullable: false, defaultValueSql: "0"),
@@ -113,7 +97,7 @@ namespace Apartment.API.Migrations
                     CountryId = table.Column<int>(nullable: false),
                     FurnitureId = table.Column<int>(nullable: false),
                     PeriodId = table.Column<int>(nullable: false),
-                    PurposeId = table.Column<int>(nullable: false)
+                    Purpose = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -142,12 +126,6 @@ namespace Apartment.API.Migrations
                         principalTable: "Period",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Apartment_Purpose_PurposeId",
-                        column: x => x.PurposeId,
-                        principalTable: "Purpose",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -169,11 +147,6 @@ namespace Apartment.API.Migrations
                 name: "IX_Apartment_PeriodId",
                 table: "Apartment",
                 column: "PeriodId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Apartment_PurposeId",
-                table: "Apartment",
-                column: "PurposeId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -193,9 +166,6 @@ namespace Apartment.API.Migrations
             migrationBuilder.DropTable(
                 name: "Period");
 
-            migrationBuilder.DropTable(
-                name: "Purpose");
-
             migrationBuilder.DropSequence(
                 name: "Apartment_hilo");
 
@@ -210,9 +180,6 @@ namespace Apartment.API.Migrations
 
             migrationBuilder.DropSequence(
                 name: "period_hilo");
-
-            migrationBuilder.DropSequence(
-                name: "purpose_hilo");
         }
     }
 }

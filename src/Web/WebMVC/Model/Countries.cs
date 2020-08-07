@@ -1,9 +1,8 @@
 ﻿namespace WebMVC.Model
 {
-    public class Countries
+    public class Countries: Basic
     {
-        public int Id { get; set; }
-
         public string Country { get; set; }
+
     }
 }
