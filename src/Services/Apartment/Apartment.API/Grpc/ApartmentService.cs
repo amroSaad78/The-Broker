@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using static ApartmentsApi.Proto.ApartmentData;
 
@@ -23,27 +24,21 @@ namespace Apartment.API.Grpc
             _logger = logger;
         }
 
-        public override async Task<ApartmentResponse> GetApartmentById(ApartmentRequest request, ServerCallContext context)
+        public override async Task<ListsResponse> PopulateLists(ListsRequest request, ServerCallContext context)
         {
-            _logger.LogInformation("Begin grpc call ApartmentService.GetApartmentById for apartment id {Id}", request.Id);
-            if (request.Id <= 0)
-            {
-                context.Status = new Status(StatusCode.FailedPrecondition, $"Id must be > 0 (received {request.Id})");
-                return null;
-            }
-            var apartment = await _dbContext.Apartment
-                                    .Include("Bedroom")
-                                    .Include("Country")
-                                    .Include("Furniture")
-                                    .Include("Period")
-                                    .Include("Purpose")
-                                    .SingleOrDefaultAsync(ci => ci.Id == request.Id);
-            if (apartment != null)
-            {
-                apartment.MapToApartmentResponse();
-            }
-            context.Status = new Status(StatusCode.NotFound, $"Apartment with id {request.Id} do not exist");
-            return null;
+            _logger.LogInformation("Begin grpc call ApartmentService.PopulateLists.");
+            var bedrooms = await _dbContext.Bedroom?.Select(b => b.MapToGrpcBedrooms()).ToListAsync();
+            var countries = await _dbContext.Country?.Select(c => c.MapToGrpcCountries()).ToListAsync();
+            var furnishings = await _dbContext.Furniture?.Select(f => f.MapToGrpcFurnishings()).ToListAsync();
+            var periods = await _dbContext.Period?.Select(p => p.MapToGrpcPeriods()).ToListAsync();
+
+            var listResponse = new ListsResponse();
+            listResponse.Grpcbedrooms.AddRange(bedrooms);
+            listResponse.Grpccountries.AddRange(countries);
+            listResponse.Grpcfurnishings.AddRange(furnishings);
+            listResponse.Grpcperiods.AddRange(periods);
+
+            return listResponse;
         }
 
     }

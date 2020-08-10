@@ -1,12 +1,12 @@
 ﻿using Apartment.API.Infrastructure;
+using Apartment.API.IntegrationEvents;
+using Apartment.API.IntegrationEvents.Events;
 using Apartment.API.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -20,82 +20,68 @@ namespace Apartment.API.Controllers
     public class ApartmentController : ControllerBase
     {
         private readonly ApartmentContext _context;
+        private readonly IApartmentIntegrationEventService _apartmentIntegrationEventService;
         private readonly ApartmentSettings _settings;
 
-        public ApartmentController(ApartmentContext context, IOptionsSnapshot<ApartmentSettings> settings)
+        public ApartmentController(ApartmentContext context, IOptionsSnapshot<ApartmentSettings> settings, IApartmentIntegrationEventService apartmentIntegrationEventService)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _apartmentIntegrationEventService = apartmentIntegrationEventService;
             _settings = settings.Value;
             _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
-        
-        // GET api/v1/[controller]/bedrooms
-        [HttpGet]
-        [Route("bedrooms")]
-        [ProducesResponseType(typeof(Bedrooms), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<List<Bedrooms>>> GetBedrooms()
-        {
-            var _bedrooms = await _context.Bedroom.OrderBy(i => i.Id).ToListAsync();
-            return Ok(_bedrooms);
-        }
-
-        // GET api/v1/[controller]/countries
-        [HttpGet]
-        [Route("countries")]
-        [ProducesResponseType(typeof(Countries), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<List<Countries>>> GetCountries()
-        {
-            var _countries = await _context.Country.OrderBy(i => i.Country).ToListAsync();
-            return Ok(_countries);
-        }
-
-        // GET api/v1/[controller]/furnishings
-        [HttpGet]
-        [Route("furnishings")]
-        [ProducesResponseType(typeof(Furnishings), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<List<Furnishings>>> GetFurnishings()
-        {
-            var _furniture = await _context.Furniture.OrderBy(i => i.Id).ToListAsync();
-            return Ok(_furniture);
-        }
-
-        // GET api/v1/[controller]/periods
-        [HttpGet]
-        [Route("periods")]
-        [ProducesResponseType(typeof(Periods), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<List<Periods>>> GetPeriods()
-        {
-            var _periods = await _context.Period.OrderBy(i => i.Id).ToListAsync();
-            return Ok(_periods);
-        }
-
-
-        // POST api/v1/[controller]/
+        // POST api/v1/[controller]/rent
         [HttpPost]
+        [Route("rent")]
         [ProducesResponseType((int)HttpStatusCode.Created)]
-        public async Task<ActionResult> AddApartment([FromBody] Model.Apartment apartment)
+        public async Task<ActionResult> AddRent([FromBody] Rent rent, [FromHeader(Name = "x-requestid")] string requestId)
         {
-            _context.Apartment.Add(apartment);
+            _context.Rent.Add(rent);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(AddApartment), new { id = apartment.Id });
+            return CreatedAtAction(nameof(AddRent), new { id = rent.Id });
         }
 
-        // PUT api/v1/[controller]/
+        // POST api/v1/[controller]/sale
+        [HttpPost]
+        [Route("sale")]
+        [ProducesResponseType((int)HttpStatusCode.Created)]
+        public async Task<ActionResult> AddSale([FromBody] Sale sale)
+        {
+            _context.Sale.Add(sale);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction(nameof(AddSale), new { id = sale.Id });
+        }
+
+        // PUT api/v1/[controller]/rent
         [HttpPut]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Created)]
-        public async Task<ActionResult> UpdateApartment([FromBody] Model.Apartment apartment)
+        public async Task<ActionResult> UpdateRent([FromBody] Rent rent)
         {
-            var oldApartment = await _context.Apartment.SingleOrDefaultAsync(a => a.Id == apartment.Id);
-            if (oldApartment == null)
+            var oldrent = await _context.Rent.SingleOrDefaultAsync(a => a.Id == rent.Id);
+            if (oldrent == null)
             {
-                return NotFound(new { Message = $"Apartment with id {apartment.Id} not found." });
+                return NotFound(new { Message = $"Apartment rent with id {rent.Id} not found." });
             }
-            oldApartment = apartment;
-            _context.Apartment.Update(oldApartment);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(UpdateApartment), new { id = oldApartment.Id });
+            var oldPrice = oldrent.Price;
+            bool raiseApartmentPriceChangedEvent = oldPrice != rent.Price;
+
+            oldrent = rent;
+            _context.Rent.Update(oldrent);
+            if (raiseApartmentPriceChangedEvent)
+            {
+                var priceChangedEvent = new RentPriceChangedIntegrationEvent(oldrent.Id, rent.Price, oldPrice);
+
+                await _apartmentIntegrationEventService.SaveEventAndCatalogContextChangesAsync(priceChangedEvent);
+
+                await _apartmentIntegrationEventService.PublishThroughEventBusAsync(priceChangedEvent);
+            }
+            else
+            {
+                await _context.SaveChangesAsync();
+            }
+            return CreatedAtAction(nameof(UpdateRent), new { id = oldrent.Id });
         }
     }
 }

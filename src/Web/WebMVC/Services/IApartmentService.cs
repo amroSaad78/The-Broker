@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using WebMVC.Model;
 
 namespace WebMVC.Services
@@ -9,10 +7,8 @@ namespace WebMVC.Services
     {
         Task<Apartment> GetApartment(int id);
         Task<Apartment> GetAllApartment(ApplicationUser user, int page, int take);
-        Task<IEnumerable<SelectListItem>> GetBedrooms();
-        Task<IEnumerable<SelectListItem>> GetCountries();
-        Task<IEnumerable<SelectListItem>> GetFurnishings();
-        Task<IEnumerable<SelectListItem>> GetPeriods();
-        Task SaveApartment(Apartment apartment);
+        Task<string> PopulateLists();
+        Task SaveRent(Rent apartment);
+        Task SaveSale(Sale apartment);
     }
 }

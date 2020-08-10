@@ -20,6 +20,11 @@ services:
     ports:
       - "6379:6379"
 
+  rabbitmq:
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+
   identity.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -116,6 +121,7 @@ services:
       - ApartmentUrl=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5201
       - OwnersUrl=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5201
       - IdentityUrl=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5105
+      - ApartmentAggUrl=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5202
       - IdentityUrlHC=http://identity.api/hc
       - UseCustomizationData=False
       - DPConnectionString={BROKER_AZURE_REDIS_keystore_DB:-keystoredata}

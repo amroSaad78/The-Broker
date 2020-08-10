@@ -1,4 +1,4 @@
-﻿namespace Owners.API.Model
+﻿namespace Owners.API.Model.DTO
 {
     public class BasicOwner
     {

@@ -165,7 +165,6 @@ namespace Identity.API.Data
             };
 
             user.PasswordHash = _passwordHasher.HashPassword(user, "traX@9178");
-
             return new List<ApplicationUser>()
             {
                 user

@@ -1,13 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using WebMVC.Extension;
-using WebMVC.Infrastructure;
 using WebMVC.Model;
 
 namespace WebMVC.Services
@@ -18,54 +14,51 @@ namespace WebMVC.Services
         private readonly ILogger<ApartmentService> _logger;
         private readonly HttpClient _httpClient;
         private readonly string _apartmentUrl;
+        private readonly string _apartmentAggUrl;
         public ApartmentService(HttpClient httpClient, IOptions<AppSettings> settings, ILogger<ApartmentService> logger)
         {
             _httpClient = httpClient;
             _settings = settings;
             _logger = logger;
-            _apartmentUrl = $"{_settings.Value.ApartmentUrl}/ap/api/v1/apartment";
+            _apartmentUrl = $"{_settings.Value.ApartmentUrl}";
+            _apartmentAggUrl = $"{_settings.Value.ApartmentAggUrl}/agg/api/v1/apartment";
         }
 
         public Task<Apartment> GetAllApartment(ApplicationUser user, int page, int take) => throw new NotImplementedException();
         public Task<Apartment> GetApartment(int id) => throw new NotImplementedException();
-        public async Task<IEnumerable<SelectListItem>> GetBedrooms()
+
+        public async Task<string> PopulateLists()
         {
-            var url = API.Apartment.Bedrooms(_apartmentUrl);
-            var response = await _httpClient.GetStringAsync(url);
-            return response.GetSelectListAsync("bedroomsCount");
+            var response = await _httpClient.GetAsync(_apartmentAggUrl);
+            _logger.LogDebug("[PopulateLists] -> response code {StatusCode}", response.StatusCode);
+            return await response.Content.ReadAsStringAsync();  
         }
 
-        public async Task<IEnumerable<SelectListItem>> GetCountries()
+        public async Task SaveRent(Rent apartment)
         {
-            var url = API.Apartment.Countries(_apartmentUrl);
-            var response = await _httpClient.GetStringAsync(url);
-            return response.GetSelectListAsync("country");
+            _logger.LogInformation($"Saving apartment for rent data located in: {apartment.City}");
+            await Save(apartment);
         }
-        public async Task<IEnumerable<SelectListItem>> GetFurnishings()
+        public async Task SaveSale(Sale apartment)
         {
-            var url = API.Apartment.Furnishings(_apartmentUrl);
-            var response = await _httpClient.GetStringAsync(url);
-            return response.GetSelectListAsync("furnitureType");
+            _logger.LogInformation($"Saving apartment for sale data located in: {apartment.City}");
+            await Save(apartment);
         }
-        public async Task<IEnumerable<SelectListItem>> GetPeriods()
+
+        private async Task Save(Apartment apartment)
         {
-            var url = API.Apartment.Periods(_apartmentUrl);
-            var response = await _httpClient.GetStringAsync(url);
-            return response.GetSelectListAsync("period");
-        }
-        public async Task SaveApartment(Apartment apartment)
-        {
-            _logger.LogInformation($"Saving apartment data located in: {apartment.City}");
             var apartmentContent = new StringContent(JsonConvert.SerializeObject(apartment), System.Text.Encoding.UTF8, "application/json");
             HttpResponseMessage response;
+            string url= Uris.GetUrl(_apartmentUrl, apartment.GetType().Name);
             if (apartment.Id > 0)
             {
-                response = await _httpClient.PutAsync(_apartmentUrl, apartmentContent);
+                response = await _httpClient.PutAsync(url, apartmentContent);
             }
             else
             {
-                response = await _httpClient.PostAsync(_apartmentUrl, apartmentContent);
+                response = await _httpClient.PostAsync(url, apartmentContent);
             }
+            _logger.LogInformation($"Response of saving apartment, Status Code: {response.StatusCode}");
             response.EnsureSuccessStatusCode();
         }
     }

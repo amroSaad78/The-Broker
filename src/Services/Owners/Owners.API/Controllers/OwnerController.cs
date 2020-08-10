@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Owners.API;
 using Owners.API.Infrastructure;
 using Owners.API.Model;
+using Owners.API.Model.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;

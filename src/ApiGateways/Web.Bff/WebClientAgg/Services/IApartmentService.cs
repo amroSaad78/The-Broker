@@ -1,11 +1,10 @@
-﻿using System.Threading.Tasks;
-using WebClientAgg.Model;
-using WebClientAgg.Model.DTO;
+﻿using ApartmentsApi.Proto;
+using System.Threading.Tasks;
 
 namespace WebClientAgg.Services
 {
     public interface IApartmentService
     {
-        Task<Apartment> GetApartmentById(int id);
+        Task<ListsResponse> PopulateLists();
     }
 }

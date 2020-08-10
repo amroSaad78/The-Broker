@@ -2,7 +2,7 @@
 { 
     public class Messages
     {
-        public ToastTypes Types { get; set; }
+        public ToastTypes Type { get; set; }
         public string Message { get; set; }
         public string Title { get; set; }
     }

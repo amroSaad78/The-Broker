@@ -3,8 +3,17 @@ using Apartment.API.Grpc;
 using Apartment.API.Infrastructure;
 using Apartment.API.Infrastructure.Filters;
 using Apartment.API.Infrastructure.Middlewares;
+using Apartment.API.IntegrationEvents;
+using Apartment.API.IntegrationEvents.EventHandling;
+using Apartment.API.IntegrationEvents.Events;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using BuildingBlocks.EventBus;
+using BuildingBlocks.EventBus.Abstractions;
+using BuildingBlocks.EventBusRabbitMQ;
+using BuildingBlocks.EventBusServiceBus;
+using BuildingBlocks.IntegrationEventLogEF;
+using BuildingBlocks.IntegrationEventLogEF.Services;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -12,15 +21,20 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.ServiceBus;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.eShopOnContainers.BuildingBlocks.EventBusServiceBus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.OpenApi.Models;
+using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Reflection;
@@ -44,8 +58,8 @@ namespace Apartment.API
                 .AddCustomMVC(Configuration)
                 .AddCustomDbContext(Configuration)
                 .AddCustomOptions(Configuration)
-                //.AddIntegrationServices(Configuration)
-                //.AddEventBus(Configuration)
+                .AddIntegrationServices(Configuration)
+                .AddEventBus(Configuration)
                 .AddSwagger(Configuration)
                 .AddCustomHealthCheck(Configuration)
                 .AddCustomAuthentication(Configuration);
@@ -113,7 +127,7 @@ namespace Apartment.API
                 });
             });
 
-            //ConfigureEventBus(app);
+            ConfigureEventBus(app);
         }
 
         protected virtual void ConfigureAuth(IApplicationBuilder app)
@@ -127,14 +141,14 @@ namespace Apartment.API
             app.UseAuthorization();
         }
 
-        /*
+        
         protected virtual void ConfigureEventBus(IApplicationBuilder app)
         {
             var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
-            eventBus.Subscribe<OrderStatusChangedToAwaitingValidationIntegrationEvent, OrderStatusChangedToAwaitingValidationIntegrationEventHandler>();
-            eventBus.Subscribe<OrderStatusChangedToPaidIntegrationEvent, OrderStatusChangedToPaidIntegrationEventHandler>();
+            eventBus.Subscribe<NewRentOrderIntegrationEvent, NewRentOrderIntegrationEventHandler>();
+            eventBus.Subscribe<NewSaleOrderIntegrationEvent, NewSaleOrderIntegrationEventHandler>();
         }
-        */
+        
     }
 
     public static class CustomExtensionMethods
@@ -226,7 +240,7 @@ namespace Apartment.API
                                          sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
                                          });
                 });
-            /*
+            
             services.AddDbContext<IntegrationEventLogContext>(options =>
             {
                 options.UseSqlServer(configuration["ConnectionString"],
@@ -237,7 +251,7 @@ namespace Apartment.API
                                          sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
                                      });
             });
-            */
+            
             return services;
         }
 
@@ -326,20 +340,20 @@ namespace Apartment.API
             return services;
         }
 
-        /*
+        
         public static IServiceCollection AddIntegrationServices(this IServiceCollection services, IConfiguration configuration)
         {
             // DbConnection -> get the connection details from IOC;
             services.AddTransient<Func<DbConnection, IIntegrationEventLogService>>(
                 sp => (DbConnection c) => new IntegrationEventLogService(c));
 
-            services.AddTransient<ICatalogIntegrationEventService, CatalogIntegrationEventService>();
+            services.AddTransient<IApartmentIntegrationEventService, ApartmentIntegrationEventService>();
 
             if (configuration.GetValue<bool>("AzureServiceBusEnabled"))
             {
                 services.AddSingleton<IServiceBusPersisterConnection>(sp =>
                 {
-                    var settings = sp.GetRequiredService<IOptions<CatalogSettings>>().Value;
+                    var settings = sp.GetRequiredService<IOptions<ApartmentSettings>>().Value;
                     var logger = sp.GetRequiredService<ILogger<DefaultServiceBusPersisterConnection>>();
 
                     var serviceBusConnection = new ServiceBusConnectionStringBuilder(settings.EventBusConnection);
@@ -351,7 +365,7 @@ namespace Apartment.API
             {
                 services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
                 {
-                    var settings = sp.GetRequiredService<IOptions<CatalogSettings>>().Value;
+                    var settings = sp.GetRequiredService<IOptions<ApartmentSettings>>().Value;
                     var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
 
                     var factory = new ConnectionFactory()
@@ -385,7 +399,7 @@ namespace Apartment.API
 
         public static IServiceCollection AddEventBus(this IServiceCollection services, IConfiguration configuration)
         {
-            var subscriptionClientName = configuration["SubscriptionClientName"]; //SubscriptionClientName = Catalog
+            var subscriptionClientName = configuration["SubscriptionClientName"];
 
             if (configuration.GetValue<bool>("AzureServiceBusEnabled"))
             {
@@ -421,11 +435,11 @@ namespace Apartment.API
             }
 
             services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
-            services.AddTransient<OrderStatusChangedToAwaitingValidationIntegrationEventHandler>();
-            services.AddTransient<OrderStatusChangedToPaidIntegrationEventHandler>();
+            services.AddTransient<NewRentOrderIntegrationEventHandler>();
+            services.AddTransient<NewSaleOrderIntegrationEventHandler>();
 
             return services;
         }
-        */
+        
     }
 }

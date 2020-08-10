@@ -1,15 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Apartment.API.Migrations
+namespace Apartment.API.Migrations.Apartment
 {
-    public partial class IntialDB : Migration
+    public partial class IntialApartment : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateSequence(
-                name: "Apartment_hilo",
-                incrementBy: 1);
-
             migrationBuilder.CreateSequence(
                 name: "bedroom_hilo",
                 incrementBy: 1);
@@ -24,6 +20,14 @@ namespace Apartment.API.Migrations
 
             migrationBuilder.CreateSequence(
                 name: "period_hilo",
+                incrementBy: 1);
+
+            migrationBuilder.CreateSequence(
+                name: "Rent_hilo",
+                incrementBy: 1);
+
+            migrationBuilder.CreateSequence(
+                name: "Sale_hilo",
                 incrementBy: 1);
 
             migrationBuilder.CreateTable(
@@ -75,7 +79,7 @@ namespace Apartment.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Apartment",
+                name: "Sale",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false),
@@ -90,38 +94,88 @@ namespace Apartment.API.Migrations
                     City = table.Column<string>(maxLength: 50, nullable: false),
                     Region = table.Column<string>(maxLength: 100, nullable: false),
                     Adresse = table.Column<string>(maxLength: 100, nullable: false),
-                    Price = table.Column<decimal>(nullable: false),
-                    Installment = table.Column<bool>(nullable: false),
+                    Price = table.Column<decimal>(type: "money", nullable: false),
                     OwnerId = table.Column<int>(nullable: false, defaultValueSql: "0"),
                     BedroomId = table.Column<int>(nullable: false),
                     CountryId = table.Column<int>(nullable: false),
                     FurnitureId = table.Column<int>(nullable: false),
-                    PeriodId = table.Column<int>(nullable: false),
-                    Purpose = table.Column<string>(nullable: false)
+                    PictureFileName = table.Column<string>(nullable: true),
+                    PictureUri = table.Column<string>(nullable: true),
+                    BookedUp = table.Column<bool>(nullable: false),
+                    Installment = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Apartment", x => x.Id);
+                    table.PrimaryKey("PK_Sale", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Apartment_Bedroom_BedroomId",
+                        name: "FK_Sale_Bedroom_BedroomId",
                         column: x => x.BedroomId,
                         principalTable: "Bedroom",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Apartment_Country_CountryId",
+                        name: "FK_Sale_Country_CountryId",
                         column: x => x.CountryId,
                         principalTable: "Country",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Apartment_Furniture_FurnitureId",
+                        name: "FK_Sale_Furniture_FurnitureId",
+                        column: x => x.FurnitureId,
+                        principalTable: "Furniture",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Rent",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false),
+                    Parking = table.Column<bool>(nullable: false),
+                    Reception = table.Column<int>(nullable: false),
+                    Kitchens = table.Column<int>(nullable: false),
+                    Bathrooms = table.Column<int>(nullable: false),
+                    Area = table.Column<int>(nullable: false),
+                    View = table.Column<string>(maxLength: 50, nullable: true),
+                    Floor = table.Column<int>(nullable: false),
+                    Flat = table.Column<int>(nullable: false),
+                    City = table.Column<string>(maxLength: 50, nullable: false),
+                    Region = table.Column<string>(maxLength: 100, nullable: false),
+                    Adresse = table.Column<string>(maxLength: 100, nullable: false),
+                    Price = table.Column<decimal>(type: "money", nullable: false),
+                    OwnerId = table.Column<int>(nullable: false, defaultValueSql: "0"),
+                    BedroomId = table.Column<int>(nullable: false),
+                    CountryId = table.Column<int>(nullable: false),
+                    FurnitureId = table.Column<int>(nullable: false),
+                    PictureFileName = table.Column<string>(nullable: true),
+                    PictureUri = table.Column<string>(nullable: true),
+                    BookedUp = table.Column<bool>(nullable: false),
+                    PeriodId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Rent", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Rent_Bedroom_BedroomId",
+                        column: x => x.BedroomId,
+                        principalTable: "Bedroom",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Rent_Country_CountryId",
+                        column: x => x.CountryId,
+                        principalTable: "Country",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Rent_Furniture_FurnitureId",
                         column: x => x.FurnitureId,
                         principalTable: "Furniture",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Apartment_Period_PeriodId",
+                        name: "FK_Rent_Period_PeriodId",
                         column: x => x.PeriodId,
                         principalTable: "Period",
                         principalColumn: "Id",
@@ -129,30 +183,51 @@ namespace Apartment.API.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Apartment_BedroomId",
-                table: "Apartment",
+                name: "IX_Rent_BedroomId",
+                table: "Rent",
                 column: "BedroomId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Apartment_CountryId",
-                table: "Apartment",
+                name: "IX_Rent_CountryId",
+                table: "Rent",
                 column: "CountryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Apartment_FurnitureId",
-                table: "Apartment",
+                name: "IX_Rent_FurnitureId",
+                table: "Rent",
                 column: "FurnitureId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Apartment_PeriodId",
-                table: "Apartment",
+                name: "IX_Rent_PeriodId",
+                table: "Rent",
                 column: "PeriodId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Sale_BedroomId",
+                table: "Sale",
+                column: "BedroomId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Sale_CountryId",
+                table: "Sale",
+                column: "CountryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Sale_FurnitureId",
+                table: "Sale",
+                column: "FurnitureId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Apartment");
+                name: "Rent");
+
+            migrationBuilder.DropTable(
+                name: "Sale");
+
+            migrationBuilder.DropTable(
+                name: "Period");
 
             migrationBuilder.DropTable(
                 name: "Bedroom");
@@ -162,12 +237,6 @@ namespace Apartment.API.Migrations
 
             migrationBuilder.DropTable(
                 name: "Furniture");
-
-            migrationBuilder.DropTable(
-                name: "Period");
-
-            migrationBuilder.DropSequence(
-                name: "Apartment_hilo");
 
             migrationBuilder.DropSequence(
                 name: "bedroom_hilo");
@@ -180,6 +249,12 @@ namespace Apartment.API.Migrations
 
             migrationBuilder.DropSequence(
                 name: "period_hilo");
+
+            migrationBuilder.DropSequence(
+                name: "Rent_hilo");
+
+            migrationBuilder.DropSequence(
+                name: "Sale_hilo");
         }
     }
 }

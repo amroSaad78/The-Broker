@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BuildingBlocks.IntegrationEventLogEF
 {
@@ -45,4 +43,18 @@ namespace BuildingBlocks.IntegrationEventLogEF
 
         }
     }
+    /*
+    public class IntegrationEventContextDesignFactory : IDesignTimeDbContextFactory<IntegrationEventLogContext>
+    {
+        //called at migration only for design tools
+        public IntegrationEventLogContext CreateDbContext(string[] args)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<IntegrationEventLogContext>()
+                .UseSqlServer("Server=.;Initial Catalog=Broker.Service.ApartmentDb;Integrated Security=true");
+
+            return new IntegrationEventLogContext(optionsBuilder.Options);
+        }
+
+    }
+    */
 }

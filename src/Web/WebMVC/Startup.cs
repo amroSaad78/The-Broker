@@ -127,7 +127,7 @@ namespace WebMVC
             services.AddOptions();
             services.Configure<AppSettings>(configuration);
             services.AddSession();
-            //services.AddDistributedMemoryCache();
+            services.AddDistributedMemoryCache();
 
             if (configuration.GetValue<string>("IsClusterEnv") == bool.TrueString)
             {
@@ -154,6 +154,7 @@ namespace WebMVC
             //add http client services
             services.AddHttpClient<IApartmentService, ApartmentService>()
                 .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>()
+                //.AddHttpMessageHandler<HttpClientRequestIdDelegatingHandler>()
                 .AddDevspacesSupport();
 
             services.AddHttpClient<IOwnersService, OwnersService>()

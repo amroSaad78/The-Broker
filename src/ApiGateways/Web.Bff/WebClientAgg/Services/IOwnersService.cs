@@ -1,13 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using OwnersAPI.Proto;
 using System.Threading.Tasks;
-using WebClientAgg.Model;
-using WebClientAgg.Model.DTO;
 
 namespace WebClientAgg.Services
 {
     public interface IOwnersService
     {
-        Task<List<Owner>> GetOwners();
-        Task<Owner> GetOwnerById(int id);
+        Task<OwnersResponse> GetOwners();
+        Task<OwnersBasicResponse> GetBasicOwners();
+        Task<OwnerResponse> GetOwnerById(int id);
     }
 }

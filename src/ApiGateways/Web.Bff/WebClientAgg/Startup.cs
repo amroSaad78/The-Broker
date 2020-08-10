@@ -1,3 +1,4 @@
+using AutoMapper;
 using Devspaces.Support;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -121,7 +122,13 @@ namespace WebClientAgg
         {
             services.AddOptions();
             services.Configure<UrlsConfig>(configuration.GetSection("urls"));
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+            });
 
+            IMapper mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(mapper);
             services.AddControllers()
                 .AddNewtonsoftJson();
 

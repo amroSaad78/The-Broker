@@ -4,7 +4,10 @@ namespace WebClientAgg.Model.DTO
 {
     public class ApartmentSubLists
     {
-        public List<BasicOwner> OwnersList { get; set; }
-        public DropDownLists DropDownLists { get; set; }
+        public IEnumerable<BasicOwner> Owners { get; set; }
+        public IEnumerable<Bedrooms> Bedrooms { get; set; }
+        public IEnumerable<Countries> Countries { get; set; }
+        public IEnumerable<Furnishings> Furnishings { get; set; }
+        public IEnumerable<Periods> Periods { get; set; }
     }
 }

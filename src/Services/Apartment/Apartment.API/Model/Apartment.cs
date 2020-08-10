@@ -2,8 +2,9 @@
 
 namespace Apartment.API.Model
 {
-    public class Apartment: Basic
+    public class Apartment
     {
+        public int Id { get; set; }
         public bool Parking { get; set; }
         public int Reception { get; set; }
         public int Kitchens { get; set; }
@@ -19,9 +20,7 @@ namespace Apartment.API.Model
         public string Region { get; set; }
         [Required, MaxLength(100)]
         public string Adresse { get; set; }
-        [Required]
         public decimal Price { get; set; }
-        public bool Installment { get; set; }
         public int OwnerId { get; set; }
         public int BedroomId { get; set; }
         public Bedrooms Bedroom { get; set; }
@@ -29,9 +28,19 @@ namespace Apartment.API.Model
         public Countries Country { get; set; }
         public int FurnitureId { get; set; }
         public Furnishings Furniture { get; set; }
+        public string PictureFileName { get; set; }
+        public string PictureUri { get; set; }
+        public bool BookedUp { get; set; }
+    }
+
+    public class Rent: Apartment
+    {
         public int PeriodId { get; set; }
         public Periods Period { get; set; }
-        [Required]
-        public string Purpose { get; set; }
+    }
+
+    public class Sale: Apartment
+    {
+        public bool Installment { get; set; }
     }
 }

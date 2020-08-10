@@ -4,57 +4,35 @@ option csharp_namespace = "ApartmentsApi.Proto";
 
 package ApartmentApi;
 
-message ApartmentRequest{
-	int32 id = 1;
-}
+message ListsRequest{}
 
-message ApartmentResponse{
-	int32 id = 1;
-	bool Parking =2;
-	int32 Reception =3;
-	int32 Kitchens =4;
-	int32 Bathrooms =5;
-	int32 Area =6;
-	string View =7;
-	int32 Floor=8;
-	int32 Flat=9;
-	string City=10;
-	string Region=11;
-	string Adresse=12;
-	double Price=13;
-	bool Installment=14;
-	int32 OwnerId=15;
-	int32 BedroomId =16;
-	int32 CountryId =17;
-	int32 FurnitureId =18;	
-	int32 PeriodId =19;	
-	string Purpose =20;	
-	GrpcBedrooms Bedroom =21;
-	GrpcCountries Country =22;
-	GrpcFurnishings Furniture =23;
-	GrpcPeriods Period =24;
+message ListsResponse{
+	repeated GrpcBedrooms grpcbedrooms=1;
+	repeated GrpcCountries grpccountries=2;
+	repeated GrpcFurnishings grpcfurnishings=3;
+	repeated GrpcPeriods grpcperiods=4;
 }
 
 message GrpcBedrooms{
 	int32 id =1;
-	string BedroomsCount =2;
+	string bedroomsCount =2;
 }
 
 message GrpcCountries{
 	int32 id =1;
-	string Country =2;
+	string country =2;
 }
 
 message GrpcFurnishings{
 	int32 id =1;
-	string FurnitureType = 2;
+	string furnitureType = 2;
 }
 
 message GrpcPeriods{
 	int32 id =1;
-	string Period =2;
+	string period =2;
 }
 
 service ApartmentData {
-  rpc GetApartmentById (ApartmentRequest) returns (ApartmentResponse) {}  
+  rpc PopulateLists (ListsRequest) returns (ListsResponse) {}  
 }

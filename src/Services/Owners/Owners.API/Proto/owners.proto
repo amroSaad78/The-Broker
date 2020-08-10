@@ -32,7 +32,12 @@ message OwnersResponse{
 	repeated OwnerResponse GrpcOwners =1;
 }
 
+message OwnersBasicResponse{
+	repeated OwnerBasicResponse GrpcOwnersBasic =1;
+}
+
 service OwnersData {
   rpc GetOwnerById (OwnerRequest) returns (OwnerResponse) {	}
   rpc GetOwners (OwnersRequest) returns (OwnersResponse) {	}
+  rpc GetBasicOwners (OwnersRequest) returns (OwnersBasicResponse) {	}
 }

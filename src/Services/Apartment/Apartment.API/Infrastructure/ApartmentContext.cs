@@ -10,7 +10,8 @@ namespace Apartment.API.Infrastructure
         public ApartmentContext(DbContextOptions<ApartmentContext> options) : base(options)
         {
         }
-        public DbSet<Model.Apartment> Apartment { get; set; }
+        public DbSet<Rent> Rent { get; set; }
+        public DbSet<Sale> Sale { get; set; }
         public DbSet<Bedrooms> Bedroom { get; set; }
         public DbSet<Countries> Country { get; set; }
         public DbSet<Furnishings> Furniture { get; set; }
@@ -18,7 +19,8 @@ namespace Apartment.API.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.ApplyConfiguration(new ApartmentsEntityTypeConfiguration());
+            builder.ApplyConfiguration(new RentEntityTypeConfiguration());
+            builder.ApplyConfiguration(new SaleEntityTypeConfiguration());
             builder.ApplyConfiguration(new BedroomsEntityTypeConfiguration());
             builder.ApplyConfiguration(new CountriesEntityTypeConfiguration());
             builder.ApplyConfiguration(new FurnishingsEntityTypeConfiguration());
@@ -26,7 +28,8 @@ namespace Apartment.API.Infrastructure
         }
     }
 
-    public class CatalogContextDesignFactory : IDesignTimeDbContextFactory<ApartmentContext>
+
+    public class ApartmentContextDesignFactory : IDesignTimeDbContextFactory<ApartmentContext>
     {
         //called at migration only for design tools
         public ApartmentContext CreateDbContext(string[] args)
@@ -38,4 +41,5 @@ namespace Apartment.API.Infrastructure
         }
 
     }
+
 }

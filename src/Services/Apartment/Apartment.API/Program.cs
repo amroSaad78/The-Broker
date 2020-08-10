@@ -1,5 +1,6 @@
 using Apartment.API.Extensions;
 using Apartment.API.Infrastructure;
+using BuildingBlocks.IntegrationEventLogEF;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -40,8 +41,8 @@ namespace Apartment.API
                     new ApartmentContextSeed()
                         .SeedAsync(context, env, settings, logger)
                         .Wait();
-                });
-                //.MigrateDbContext<IntegrationEventLogContext>((_, __) => { });
+                })
+                .MigrateDbContext<IntegrationEventLogContext>((_, __) => { });
 
                 Log.Information("Starting web host ({ApplicationContext})...", AppName);
                 host.Run();
@@ -77,6 +78,8 @@ namespace Apartment.API
 
                 })
                 .UseStartup<Startup>()
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseWebRoot("Pics")
                 .UseSerilog()
                 .Build();
 

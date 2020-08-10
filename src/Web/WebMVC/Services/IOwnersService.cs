@@ -8,6 +8,5 @@ namespace WebMVC.Services
     public interface IOwnersService
     {
         Task<IEnumerable<Owner>> GetOwners();
-        Task<IEnumerable<SelectListItem>> GetBasicOwners();
     }
 }

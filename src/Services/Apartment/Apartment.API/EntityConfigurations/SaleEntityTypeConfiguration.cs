@@ -1,16 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Apartment.API.Model;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Data.SqlTypes;
 
 namespace Apartment.API.EntityConfigurations
 {
-    public class ApartmentsEntityTypeConfiguration : IEntityTypeConfiguration<Model.Apartment>
+    public class SaleEntityTypeConfiguration : IEntityTypeConfiguration<Sale>
     {
-        public void Configure(EntityTypeBuilder<Model.Apartment> builder)
+        public void Configure(EntityTypeBuilder<Sale> builder)
         {
-            builder.ToTable("Apartment");
+            builder.ToTable("Sale");
 
             builder.Property(ci => ci.Id)
-                .UseHiLo("Apartment_hilo")
+                .UseHiLo("Sale_hilo")
                 .IsRequired();
 
             builder.Property(ci => ci.OwnerId)
@@ -23,6 +25,9 @@ namespace Apartment.API.EntityConfigurations
             builder.Property(ci => ci.City)
                 .HasMaxLength(50)
                 .IsRequired();
+
+            builder.Property(ci => ci.Price)
+                .HasColumnType("money");
 
             builder.Property(ci => ci.Region)
                 .HasMaxLength(100)
@@ -43,10 +48,6 @@ namespace Apartment.API.EntityConfigurations
             builder.HasOne(ci => ci.Furniture)
                 .WithMany()
                 .HasForeignKey(ci => ci.FurnitureId);
-
-            builder.HasOne(ci => ci.Period)
-                .WithMany()
-                .HasForeignKey(ci => ci.PeriodId);
         }
     }
 }
