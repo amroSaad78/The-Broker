@@ -13,12 +13,12 @@
             </ul>
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="Rent" role="tabpanel" aria-labelledby="rent-tab">
-                    
-                    <partial name="_ApartmentRent" model="Model.RentVM" />
+
+                    <partial name="~/Views/Shared/Apartment/_ApartmentRent.cshtml" model="Model.RentVM" />
                 </div>
                 <div class="tab-pane fade" id="Sale" role="tabpanel" aria-labelledby="sale-tab">
-                    
-                    <partial name="_ApartmentSale" model="Model.SaleVM" />
+
+                    <partial name="~/Views/Shared/Apartment/_ApartmentSale.cshtml" model="Model.SaleVM" />
                 </div>
             </div>
         </div>
@@ -29,6 +29,7 @@
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ToastrPartial", (Messages)ViewBag.msg);
+        await Html.RenderPartialAsync("_CustomFileInputPartial");
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }

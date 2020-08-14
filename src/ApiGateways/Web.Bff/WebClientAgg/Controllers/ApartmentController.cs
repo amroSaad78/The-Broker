@@ -14,7 +14,6 @@ namespace WebClientAgg.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    [Authorize]
     [Consumes("application/json")]
     [Produces("application/json")]
     public class ApartmentController : ControllerBase
@@ -32,6 +31,7 @@ namespace WebClientAgg.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(ApartmentSubLists), (int)HttpStatusCode.OK)]
+        [Authorize(Roles ="Admin")]
         public async Task<ActionResult<ApartmentSubLists>> PopulateLists()
         {
             var owners = await _ownersService.GetBasicOwners();

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
 using WebMVC.Model;
 
 namespace WebMVC.Services
@@ -10,5 +11,6 @@ namespace WebMVC.Services
         Task<string> PopulateLists();
         Task SaveRent(Rent apartment);
         Task SaveSale(Sale apartment);
+        Task UploadImage(IFormFile file);
     }
 }

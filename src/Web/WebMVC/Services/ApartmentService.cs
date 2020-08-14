@@ -1,7 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
+using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using WebMVC.Model;
@@ -60,6 +63,18 @@ namespace WebMVC.Services
             }
             _logger.LogInformation($"Response of saving apartment, Status Code: {response.StatusCode}");
             response.EnsureSuccessStatusCode();
+        }
+        public async Task UploadImage (IFormFile file)
+        {
+            if (file.Length <= 0) return;
+            string url = Uris.GetUrl(_apartmentUrl, "Pic");
+            string fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+            var imgData = new MultipartFormDataContent
+            {
+                { new StreamContent(file.OpenReadStream()), "imgfile", fileName }
+            };
+            var response = await _httpClient.PostAsync(url, imgData);
+            response.EnsureSuccessStatusCode();            
         }
     }
 }

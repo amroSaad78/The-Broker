@@ -31,8 +31,10 @@ namespace Identity.API.Services
             if (user == null)
                 throw new ArgumentException("Invalid subject identifier");
 
-            var claims = GetClaimsFromUser(user);
-            context.IssuedClaims = claims.ToList();
+            var claims = GetClaimsFromUser(user).ToList();
+            var roleClaims = context.Subject.FindAll(JwtClaimTypes.Role);
+            claims.AddRange(roleClaims);
+            context.IssuedClaims = claims;
         }
 
         async public Task IsActiveAsync(IsActiveContext context)

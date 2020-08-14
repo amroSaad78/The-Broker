@@ -31,4 +31,5 @@ namespace Identity.API.Models
         [Required]
         public string LastName { get; set; }
     }
+
 }

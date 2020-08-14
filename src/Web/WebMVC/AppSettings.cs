@@ -8,6 +8,8 @@
         public string OwnersUrl { get; set; }        
         public Logging Logging { get; set; }
         public bool UseCustomizationData { get; set; }
+        public long FileSizeLimit { get; set; }
+        public string[] PermittedExtensions { get; set; }
     }
 
     public class Connectionstrings

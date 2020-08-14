@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Pipelines;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -13,7 +14,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Apartment.API.Controllers
 {
-    [Authorize]
     [ApiController]
     public class PicController : ControllerBase
     {
@@ -31,7 +31,6 @@ namespace Apartment.API.Controllers
         [Route("api/v1/apartment/{id:int}/pic")]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        // GET: /<controller>/
         public async Task<ActionResult> GetImageAsync(int id)
         {
             if (id <= 0)
@@ -58,6 +57,21 @@ namespace Apartment.API.Controllers
             return NotFound();
         }
 
+        [HttpPost]
+        [Authorize(Roles ="Admin")]
+        [Route("api/v1/apartment/pic")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        public async Task<ActionResult> SaveImage(IFormFile imgfile)
+        {
+            //validate file
+            // add azure blob storage and key vault to save keys
+            var filePath = Path.Combine(_env.WebRootPath, imgfile.FileName);
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await imgfile.CopyToAsync(fileStream);
+            }
+            return Ok();
+        }
         private string GetImageMimeTypeFromImageFileExtension(string extension)
         {
             string mimetype;

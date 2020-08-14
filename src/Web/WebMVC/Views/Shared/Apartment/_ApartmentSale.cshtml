@@ -1,100 +1,106 @@
-﻿@model WebMVC.ViewModels.Apartments.RentVM
+﻿@model WebMVC.ViewModels.Apartments.SaleVM
 <div class="card">
     <h5 class="card-header">Add New Apartment</h5>
     <div class="card-body">
-        <form asp-action="Rent" asp-controller="Apartment" method="post">
+        <form asp-action="Sale" asp-controller="Apartment" method="post" enctype="multipart/form-data">
             <div class="form-row">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
                     <label for="ownerid" class="col-form-label">Owner Name</label>
-                    <select asp-for="Rent.OwnerId" asp-items="@Model.Owners" class="form-control"></select>
-                    <span asp-validation-for="Rent.OwnerId" class="text-danger"></span>
+                    <select asp-for="Sale.OwnerId" asp-items="@Model.Owners" class="form-control"></select>
+                    <span asp-validation-for="Sale.OwnerId" class="text-danger"></span>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
                     <label for="furnishings" class="col-form-label">Furnishings</label>
-                    <select asp-for="Rent.FurnitureId" asp-items="@Model.Furnishings" class="form-control"></select>
-                    <span asp-validation-for="Rent.FurnitureId" class="text-danger"></span>
+                    <select asp-for="Sale.FurnitureId" asp-items="@Model.Furnishings" class="form-control"></select>
+                    <span asp-validation-for="Sale.FurnitureId" class="text-danger"></span>
                 </div>
             </div>
             <div class="form-row">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
                     <label for="bedrooms" class="col-form-label">Bedrooms</label>
-                    <select asp-for="Rent.BedroomId" asp-items="@Model.Bedrooms" class="form-control"></select>
-                    <span asp-validation-for="Rent.BedroomId" class="text-danger"></span>
+                    <select asp-for="Sale.BedroomId" asp-items="@Model.Bedrooms" class="form-control"></select>
+                    <span asp-validation-for="Sale.BedroomId" class="text-danger"></span>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
                     <label for="reception" class="col-form-label">Reception Rooms</label>
-                    <input id="reception" type="number" class="form-control" placeholder="0" asp-for="Rent.Reception" />
+                    <input id="reception" type="number" class="form-control" placeholder="0" asp-for="Sale.Reception" />
                 </div>
             </div>
             <div class="form-row">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
                     <label for="kitchens" class="col-form-label">Kitchens</label>
-                    <input id="kitchens" type="number" class="form-control" placeholder="0" asp-for="Rent.Kitchens" />
+                    <input id="kitchens" type="number" class="form-control" placeholder="0" asp-for="Sale.Kitchens" />
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
                     <label for="bathrooms" class="col-form-label">Bathrooms</label>
-                    <input id="bathrooms" type="number" class="form-control" placeholder="0" asp-for="Rent.Bathrooms" />
+                    <input id="bathrooms" type="number" class="form-control" placeholder="0" asp-for="Sale.Bathrooms" />
                 </div>
             </div>
             <div class="form-row">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
                     <label for="area" class="col-form-label">Area <sup>(sqm)</sup></label>
-                    <input id="area" type="number" class="form-control" placeholder="0" asp-for="Rent.Area" />
+                    <input id="area" type="number" class="form-control" placeholder="0" asp-for="Sale.Area" />
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
                     <label for="view" class="col-form-label">View</label>
-                    <input id="view" type="text" class="form-control" placeholder="ex: Sea View" asp-for="Rent.View" />
+                    <input id="view" type="text" class="form-control" placeholder="ex: Sea View" asp-for="Sale.View" />
                 </div>
             </div>
             <div class="form-row">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
                     <label for="floor" class="col-form-label">Floor No.</label>
-                    <input id="floor" type="number" class="form-control" placeholder="0" asp-for="Rent.Floor" />
+                    <input id="floor" type="number" class="form-control" placeholder="0" asp-for="Sale.Floor" />
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
                     <label for="flat" class="col-form-label">Flat No.</label>
-                    <input id="flat" type="number" class="form-control" placeholder="0" asp-for="Rent.Flat" />
+                    <input id="flat" type="number" class="form-control" placeholder="0" asp-for="Sale.Flat" />
                 </div>
             </div>
             <div class="form-row">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
                     <label for="country" class="col-form-label">Country</label>
-                    <select asp-for="Rent.CountryId" asp-items="@Model.Countries" class="form-control"></select>
-                    <span asp-validation-for="Rent.CountryId" class="text-danger"></span>
+                    <select asp-for="Sale.CountryId" asp-items="@Model.Countries" class="form-control"></select>
+                    <span asp-validation-for="Sale.CountryId" class="text-danger"></span>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
                     <label for="city" class="col-form-label">City | Emirate</label>
-                    <input id="city" type="text" class="form-control" asp-for="Rent.City" required />
-                    <span asp-validation-for="Rent.City" class="text-danger"></span>
+                    <input id="city" type="text" class="form-control" asp-for="Sale.City" required />
+                    <span asp-validation-for="Sale.City" class="text-danger"></span>
                 </div>
             </div>
             <div class="form-row">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
                     <label for="region" class="col-form-label">Region Name</label>
-                    <input id="region" type="text" class="form-control" asp-for="Rent.Region" required />
-                    <span asp-validation-for="Rent.Region" class="text-danger"></span>
+                    <input id="region" type="text" class="form-control" asp-for="Sale.Region" required />
+                    <span asp-validation-for="Sale.Region" class="text-danger"></span>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
                     <label for="adresse" class="col-form-label">Adresse</label>
-                    <input id="adresse" type="text" class="form-control" asp-for="Rent.Adresse" required />
-                    <span asp-validation-for="Rent.Adresse" class="text-danger"></span>
+                    <input id="adresse" type="text" class="form-control" asp-for="Sale.Adresse" required />
+                    <span asp-validation-for="Sale.Adresse" class="text-danger"></span>
                 </div>
             </div>
             <div class="form-row">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
                     <label for="price" class="col-form-label">Price <sup>($)</sup></label>
-                    <input id="price" type="number" class="form-control" placeholder="0" asp-for="Rent.Price" />
+                    <input id="price" type="number" class="form-control" placeholder="0" asp-for="Sale.Price" />
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
-                    <label for="period" class="col-form-label">Period</label>
-                    <select asp-for="Rent.PeriodId" asp-items="Model.Periods" class="form-control"></select>
-                    <span asp-validation-for="Rent.PeriodId" class="text-danger"></span>
+                    <label for="img" class="col-form-label">Image</label>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="img" name="file">
+                        <label class="custom-file-label" for="img" data-browse="Browse">Click here to add file...</label>
+                    </div>
                 </div>
             </div>
             <div class="form-row">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-2">
+                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 mb-2">
+                    <label for="installment" class="col-form-label">Installment</label>
+                    <input type="checkbox" id="installment" class="custom-checkbox-lg" asp-for="Sale.Installment" />
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 mb-2">
                     <label for="parking" class="col-form-label">Parking</label>
-                    <input type="checkbox" id="parking" class="custom-checkbox-lg" asp-for="Rent.Parking" />
+                    <input type="checkbox" id="parking" class="custom-checkbox-lg" asp-for="Sale.Parking" />
                 </div>
             </div>
             <div class="form-row">

@@ -16,12 +16,13 @@ namespace Identity.API.Data
         {
 
             //callbacks urls from config:
-            var clientUrls = new Dictionary<string, string>();
-
-            clientUrls.Add("Mvc", configuration.GetValue<string>("MvcClient"));
-            clientUrls.Add("ApartmentApi", configuration.GetValue<string>("ApartmentApiClient"));
-            clientUrls.Add("OwnerApi", configuration.GetValue<string>("OwnerApiClient"));
-            clientUrls.Add("WebClientAgg", configuration.GetValue<string>("WebClientAggClient"));
+            var clientUrls = new Dictionary<string, string>
+            {
+                { "Mvc", configuration.GetValue<string>("MvcClient") },
+                { "ApartmentApi", configuration.GetValue<string>("ApartmentApiClient") },
+                { "OwnerApi", configuration.GetValue<string>("OwnerApiClient") },
+                { "WebClientAgg", configuration.GetValue<string>("WebClientAggClient") }
+            };
 
             if (!context.Clients.Any())
             {

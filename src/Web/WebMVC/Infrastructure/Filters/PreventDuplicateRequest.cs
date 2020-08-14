@@ -19,7 +19,7 @@ namespace WebMVC.Infrastructure.Filters
 
 				if (lastToken == currentToken)
 				{
-					context.ModelState.AddModelError("duplication", "Data was saved once, but looks like you accidentally submitted the same form twice.");
+					context.ModelState.AddModelError("error", "Data was saved once, but looks like you accidentally submitted the same form twice.");
 				}
 				else
 				{

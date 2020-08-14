@@ -14,7 +14,6 @@ namespace Apartment.API.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    [Authorize]
     [Consumes("application/json")]
     [Produces("application/json")]
     public class ApartmentController : ControllerBase
@@ -34,8 +33,9 @@ namespace Apartment.API.Controllers
         // POST api/v1/[controller]/rent
         [HttpPost]
         [Route("rent")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType((int)HttpStatusCode.Created)]
-        public async Task<ActionResult> AddRent([FromBody] Rent rent, [FromHeader(Name = "x-requestid")] string requestId)
+        public async Task<ActionResult> AddRent([FromBody] Rent rent)
         {
             _context.Rent.Add(rent);
             await _context.SaveChangesAsync();
@@ -45,6 +45,7 @@ namespace Apartment.API.Controllers
         // POST api/v1/[controller]/sale
         [HttpPost]
         [Route("sale")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType((int)HttpStatusCode.Created)]
         public async Task<ActionResult> AddSale([FromBody] Sale sale)
         {
@@ -55,6 +56,7 @@ namespace Apartment.API.Controllers
 
         // PUT api/v1/[controller]/rent
         [HttpPut]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Created)]
         public async Task<ActionResult> UpdateRent([FromBody] Rent rent)
@@ -62,7 +64,7 @@ namespace Apartment.API.Controllers
             var oldrent = await _context.Rent.SingleOrDefaultAsync(a => a.Id == rent.Id);
             if (oldrent == null)
             {
-                return NotFound(new { Message = $"Apartment rent with id {rent.Id} not found." });
+                return NotFound(new { Message = $"Apartment for rent with id {rent.Id} not found." });
             }
             var oldPrice = oldrent.Price;
             bool raiseApartmentPriceChangedEvent = oldPrice != rent.Price;
@@ -82,6 +84,38 @@ namespace Apartment.API.Controllers
                 await _context.SaveChangesAsync();
             }
             return CreatedAtAction(nameof(UpdateRent), new { id = oldrent.Id });
+        }
+
+        // PUT api/v1/[controller]/sale
+        [HttpPut]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Created)]
+        public async Task<ActionResult> UpdateSale([FromBody] Sale sale)
+        {
+            var oldsale = await _context.Sale.SingleOrDefaultAsync(a => a.Id == sale.Id);
+            if (oldsale == null)
+            {
+                return NotFound(new { Message = $"Apartment for sale with id {sale.Id} not found." });
+            }
+            var oldPrice = oldsale.Price;
+            bool raiseApartmentPriceChangedEvent = oldPrice != sale.Price;
+
+            oldsale = sale;
+            _context.Sale.Update(oldsale);
+            if (raiseApartmentPriceChangedEvent)
+            {
+                var priceChangedEvent = new SalePriceChangedIntegrationEvent(oldsale.Id, sale.Price, oldPrice);
+
+                await _apartmentIntegrationEventService.SaveEventAndCatalogContextChangesAsync(priceChangedEvent);
+
+                await _apartmentIntegrationEventService.PublishThroughEventBusAsync(priceChangedEvent);
+            }
+            else
+            {
+                await _context.SaveChangesAsync();
+            }
+            return CreatedAtAction(nameof(UpdateSale), new { id = oldsale.Id });
         }
     }
 }

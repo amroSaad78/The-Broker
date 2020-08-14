@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -12,7 +11,6 @@ using WebMVC.Services;
 
 namespace WebMVC.Controllers
 {
-    [Authorize(AuthenticationSchemes = "OpenIdConnect")]
     public class DashboardController : BasicController<DashboardController>, IPageController
     {
         private readonly ILogger<DashboardController> _logger;
@@ -40,7 +38,7 @@ namespace WebMVC.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);
-            var homeUrl = Url.Action(nameof(DashboardController.Login), "Dashboard");
+            var homeUrl = Url.Action(nameof(HomeController.Index), "Home");
             return new SignOutResult(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = homeUrl });
         }
     }

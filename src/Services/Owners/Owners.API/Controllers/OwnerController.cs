@@ -16,7 +16,7 @@ namespace Apartment.API.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [Consumes("application/json")]
     [Produces("application/json")]
     public class OwnerController : ControllerBase

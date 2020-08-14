@@ -3,27 +3,22 @@
   "defaultProvider": "cdnjs",
   "libraries": [
     {
-      "provider": "filesystem",
-      "library": "wwwroot/lib/slimscroll/",
-      "destination": "wwwroot/lib/slimscroll/"
-    },
-    {
       "library": "jquery@3.4.1",
       "destination": "wwwroot/lib/jquery/"
     },
-    //{
-    //  "provider": "unpkg",
-    //  "library": "bootstrap@4.3.1",
-    //  "files": [
-    //    "dist/css/bootstrap.css",
-    //    "dist/css/bootstrap.css.map",
-    //    "dist/css/bootstrap.min.css",
-    //    "dist/css/bootstrap.min.css.map",
-    //    "dist/js/bootstrap.js",
-    //    "dist/js/bootstrap.min.js"
-    //  ],
-    //  "destination": "wwwroot/lib/bootstrap/"
-    //},
+    {
+      "provider": "unpkg",
+      "library": "bootstrap@4.3.1",
+      "destination": "wwwroot/lib/bootstrap/",
+      "files": [
+        "dist/css/bootstrap.css",
+        "dist/css/bootstrap.css.map",
+        "dist/css/bootstrap.min.css",
+        "dist/css/bootstrap.min.css.map",
+        "dist/js/bootstrap.js",
+        "dist/js/bootstrap.min.js"
+      ]
+    },
     {
       "library": "jquery-validation-unobtrusive@3.2.11",
       "destination": "wwwroot/lib/jquery-validation-unobtrusive/"
@@ -39,6 +34,94 @@
     {
       "library": "toastr.js@2.1.4",
       "destination": "wwwroot/lib/toastr/"
+    },
+    {
+      "provider": "unpkg",
+      "library": "elegant-icons@0.0.1",
+      "destination": "wwwroot/lib/elegant-icons/",
+      "files": [
+        "style.css",
+        "fonts/ElegantIcons.eot",
+        "fonts/ElegantIcons.svg",
+        "fonts/ElegantIcons.ttf",
+        "fonts/ElegantIcons.woff"
+      ]
+    },
+    {
+      "provider": "unpkg",
+      "library": "themify-icons@1.0.0",
+      "destination": "wwwroot/lib/themify-icons/",
+      "files": [
+        "themify-icons/fonts/themify.eot",
+        "themify-icons/fonts/themify.svg",
+        "themify-icons/fonts/themify.ttf",
+        "themify-icons/fonts/themify.woff",
+        "themify-icons/_variables.scss",
+        "themify-icons/_themify-icons.scss",
+        "themify-icons/_path.scss",
+        "themify-icons/_mixins.scss",
+        "themify-icons/_icons.scss",
+        "themify-icons/_core.scss",
+        "themify-icons/_extras.scss"
+      ]
+    },
+    {
+      "provider": "unpkg",
+      "library": "jquery-nice-select@1.1.0",
+      "destination": "wwwroot/lib/jquery-nice-select/",
+      "files": [
+        "js/jquery.nice-select.min.js",
+        "js/jquery.nice-select.js",
+        "css/nice-select.css"
+      ]
+    },
+    {
+      "provider": "unpkg",
+      "library": "owl.carousel@2.3.4",
+      "destination": "wwwroot/lib/owl.carousel/",
+      "files": [
+        "dist/owl.carousel.js",
+        "dist/owl.carousel.min.js",
+        "dist/assets/owl.carousel.css",
+        "dist/assets/owl.carousel.min.css"
+      ]
+    },
+    {
+      "provider": "unpkg",
+      "library": "magnific-popup@1.1.0",
+      "destination": "wwwroot/lib/magnific-popup/",
+      "files": [
+        "dist/jquery.magnific-popup.js",
+        "dist/jquery.magnific-popup.min.js",
+        "dist/magnific-popup.css"
+      ]
+    },
+    {
+      "provider": "unpkg",
+      "library": "slicknav@1.0.8",
+      "destination": "wwwroot/lib/slicknav/",
+      "files": [
+        "dist/jquery.slicknav.js",
+        "dist/jquery.slicknav.min.js",
+        "dist/slicknav.min.css",
+        "dist/slicknav.css"
+      ]
+    },
+    {
+      "provider": "unpkg",
+      "library": "slimscroll@0.9.1",
+      "destination": "wwwroot/lib/slimscroll/",
+      "files": [
+        "lib/slimscroll.js"
+      ]
+    },
+    {
+      "provider": "unpkg",
+      "library": "slimscroll@0.9.1",
+      "destination": "wwwroot/lib/slimscroll/",
+      "files": [
+        "lib/slimscroll.js"
+      ]
     }
   ]
 }

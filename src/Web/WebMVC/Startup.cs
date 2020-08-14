@@ -12,11 +12,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Logging;
 using StackExchange.Redis;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using WebMVC.Infrastructure;
+using WebMVC.Infrastructure.Filters;
 using WebMVC.Infrastructure.Middlewares;
 using WebMVC.Model;
 using WebMVC.Services;
@@ -88,7 +90,7 @@ namespace WebMVC
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute("default", "{controller=Dashboard}/{action=Login}/{id?}");
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapControllerRoute("defaultError", "{controller=Error}/{action=Error}");
                 endpoints.MapControllers();
                 endpoints.MapHealthChecks("/liveness", new HealthCheckOptions
@@ -137,7 +139,7 @@ namespace WebMVC
                 })
                 .PersistKeysToRedis(ConnectionMultiplexer.Connect(configuration["DPConnectionString"]), "DataProtection-Keys");
             }
-
+            services.AddScoped<CheckUploadedFile<IOptions<AppSettings>>>();
             return services;
         }
         public static IServiceCollection AddHttpClientServices(this IServiceCollection services, IConfiguration configuration)
@@ -193,6 +195,7 @@ namespace WebMVC
                 options.SaveTokens = true;
                 options.GetClaimsFromUserInfoEndpoint = true;
                 options.RequireHttpsMetadata = false;
+                options.Scope.Add("offline_access");
                 options.Scope.Add("openid");
                 options.Scope.Add("profile");
                 options.Scope.Add("apartment");

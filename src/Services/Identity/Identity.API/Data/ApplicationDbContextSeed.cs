@@ -11,6 +11,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Identity.API.Data
 {
@@ -21,7 +22,8 @@ namespace Identity.API.Data
         private readonly IPasswordHasher<ApplicationUser> _passwordHasher = new PasswordHasher<ApplicationUser>();
 
         public async Task SeedAsync(ApplicationDbContext context, IWebHostEnvironment env,
-            ILogger<ApplicationDbContextSeed> logger, IOptions<AppSettings> settings, int? retry = 0)
+            ILogger<ApplicationDbContextSeed> logger, IOptions<AppSettings> settings,
+            UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, int? retry = 0)
         {
             int retryForAvaiability = retry.Value;
 
@@ -34,10 +36,23 @@ namespace Identity.API.Data
                 if (!context.Users.Any())
                 {
                     context.Users.AddRange(useCustomizationData
-                        ? GetUsersFromFile(contentRootPath, logger)
-                        : GetDefaultUser());
+                                            ? GetUsersFromFile(contentRootPath, logger)
+                                            : GetDefaultUser());
 
                     await context.SaveChangesAsync();
+                }
+
+                if (!roleManager.Roles.Any())
+                {
+                    var roles = useCustomizationData
+                        ? GetRolesFromFile(contentRootPath, logger)
+                        : GetDefaultRoles();
+                    foreach(IdentityRole role in roles)
+                    {
+                        await roleManager.CreateAsync(role);
+                    }
+                    var user = await userManager.Users.FirstOrDefaultAsync();
+                    await userManager.AddToRoleAsync(user, "Admin");
                 }
 
                 if (useCustomizationData)
@@ -53,7 +68,7 @@ namespace Identity.API.Data
 
                     logger.LogError(ex, "EXCEPTION ERROR while migrating {DbContextName}", nameof(ApplicationDbContext));
 
-                    await SeedAsync(context, env, logger, settings, retryForAvaiability);
+                    await SeedAsync(context, env, logger, settings, userManager, roleManager, retryForAvaiability);
                 }
             }
         }
@@ -170,6 +185,70 @@ namespace Identity.API.Data
                 user
             };
         }
+
+        private IEnumerable<IdentityRole> GetRolesFromFile(string contentRootPath, ILogger logger)
+        {
+            string csvFileRoles = Path.Combine(contentRootPath, "Setup", "Roles.csv");
+
+            if (!File.Exists(csvFileRoles))
+            {
+                return GetDefaultRoles();
+            }
+
+            string[] csvheaders;
+            try
+            {
+                string[] requiredHeaders = {
+                    "normalizedname", "name"
+                };
+                csvheaders = GetHeaders(requiredHeaders, csvFileRoles);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "EXCEPTION ERROR: {Message}", ex.Message);
+
+                return GetDefaultRoles();
+            }
+
+            List<IdentityRole> roles = File.ReadAllLines(csvFileRoles)
+                        .Skip(1) // skip header column
+                        .Select(row => Regex.Split(row, ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"))
+                        .SelectTry(column => CreateRoles(column, csvheaders))
+                        .OnCaughtException(ex => { logger.LogError(ex, "EXCEPTION ERROR: {Message}", ex.Message); return null; })
+                        .Where(x => x != null)
+                        .ToList();
+
+            return roles;
+        }
+
+        private IdentityRole CreateRoles(string[] column, string[] headers)
+        {
+            if (column.Count() != headers.Count())
+            {
+                throw new Exception($"column count '{column.Count()}' not the same as headers count'{headers.Count()}'");
+            }
+
+            var role = new IdentityRole
+            {
+                NormalizedName = column[Array.IndexOf(headers, "normalizedname")].Trim('"').Trim(),
+                Name = column[Array.IndexOf(headers, "name")].Trim('"').Trim(),
+            };
+            return role;
+        }
+
+        private IEnumerable<IdentityRole> GetDefaultRoles() => new List<IdentityRole>()
+            {
+                new IdentityRole()
+                {
+                    NormalizedName = "ADMINISTRATOR",
+                    Name = "Admin"
+                },
+                new IdentityRole()
+                {
+                    NormalizedName = "GUEST",
+                    Name = "Guest"
+                }
+            };
 
         static string[] GetHeaders(string[] requiredHeaders, string csvfile)
         {

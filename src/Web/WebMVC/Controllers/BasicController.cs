@@ -7,7 +7,7 @@ using WebMVC.Services;
 
 namespace WebMVC.Controllers
 {
-    [Authorize(AuthenticationSchemes = "OpenIdConnect")]
+    [Authorize(AuthenticationSchemes = "OpenIdConnect", Roles ="Admin")]
     public abstract class BasicController<T> : Controller where T: IPageController
     {
         public readonly string _pageName;

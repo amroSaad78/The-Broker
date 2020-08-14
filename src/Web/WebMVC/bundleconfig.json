@@ -8,9 +8,34 @@
     ]
   },
   {
+    "outputFileName": "wwwroot/css/home.min.css",
+    "inputFiles": [
+      "wwwroot/css/home.css"
+    ]
+  },
+  {
     "outputFileName": "wwwroot/lib/fonts/circular-std/style.min.css",
     "inputFiles": [
       "wwwroot/lib/fonts/circular-std/style.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/elegant-icons/style.min.css",
+    "inputFiles": [
+      "wwwroot/lib/elegant-icons/style.css"
+    ]
+  },
+
+  {
+    "outputFileName": "wwwroot/lib/magnific-popup/dist/magnific-popup.min.css",
+    "inputFiles": [
+      "wwwroot/lib/magnific-popup/dist/magnific-popup.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/jquery-nice-select/css/nice-select.min.css",
+    "inputFiles": [
+      "wwwroot/lib/jquery-nice-select/css/nice-select.css"
     ]
   },
   {
@@ -29,6 +54,18 @@
     "outputFileName": "wwwroot/js/site.min.js",
     "inputFiles": [
       "wwwroot/js/site.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/home.min.js",
+    "inputFiles": [
+      "wwwroot/js/home.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/jquery-nice-select/js/jquery.nice-select.min.js",
+    "inputFiles": [
+      "wwwroot/lib/jquery-nice-select/js/jquery.nice-select.js"
     ]
   }
 ]

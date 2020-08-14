@@ -1,7 +1,9 @@
 ﻿using Identity.API.Data;
+using Identity.API.Models;
 using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -35,9 +37,11 @@ namespace Identity.API
                         var env = services.GetService<IWebHostEnvironment>();
                         var logger = services.GetService<ILogger<ApplicationDbContextSeed>>();
                         var settings = services.GetService<IOptions<AppSettings>>();
+                        var userManager = services.GetService<UserManager<ApplicationUser>>();
+                        var roleManager = services.GetService<RoleManager<IdentityRole>>();
 
                         new ApplicationDbContextSeed()
-                            .SeedAsync(context, env, logger, settings)
+                            .SeedAsync(context, env, logger, settings, userManager, roleManager)
                             .Wait();
                     })
                     .MigrateDbContext<ConfigurationDbContext>((context, services) =>
