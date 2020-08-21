@@ -2,7 +2,7 @@
 
 namespace Apartment.API.IntegrationEvents.Events
 {
-    public class NewRentOrderIntegrationEvent: IntegrationEvent
+    public class NewOrderIntegrationEvent: IntegrationEvent
     {
     }
 }

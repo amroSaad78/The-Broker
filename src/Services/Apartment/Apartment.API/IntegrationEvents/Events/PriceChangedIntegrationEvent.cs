@@ -2,7 +2,7 @@
 
 namespace Apartment.API.IntegrationEvents.Events
 {
-    public class RentPriceChangedIntegrationEvent: IntegrationEvent
+    public class PriceChangedIntegrationEvent: IntegrationEvent
     {
         public int ApartmentId { get; private set; }
 
@@ -10,7 +10,7 @@ namespace Apartment.API.IntegrationEvents.Events
 
         public decimal OldPrice { get; private set; }
 
-        public RentPriceChangedIntegrationEvent(int apartmentId, decimal newPrice, decimal oldPrice)
+        public PriceChangedIntegrationEvent(int apartmentId, decimal newPrice, decimal oldPrice)
         {
             ApartmentId = apartmentId;
             NewPrice = newPrice;

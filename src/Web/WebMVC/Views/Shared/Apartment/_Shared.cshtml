@@ -1,0 +1,88 @@
+﻿@model WebMVC.Model.GenricApartment<ListsVM, RentVM, SaleVM, ApartmentVM>
+<div class="form-row">
+    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+        <label for="ownerid" class="col-form-label">Owner Name</label>
+        <select asp-for="In4.Apartment.OwnerId" asp-items="@Model.In1.Owners" class="form-control"></select>
+        <span asp-validation-for="In4.Apartment.OwnerId" class="text-danger"></span>
+    </div>
+    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+        <label for="furnishings" class="col-form-label">Furnishings</label>
+        <select asp-for="In4.Apartment.FurnitureId" asp-items="@Model.In1.Furnishings" class="form-control"></select>
+        <span asp-validation-for="In4.Apartment.FurnitureId" class="text-danger"></span>
+    </div>
+</div>
+<div class="form-row">
+    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+        <label for="bedrooms" class="col-form-label">Bedrooms</label>
+        <select asp-for="In4.Apartment.BedroomId" asp-items="@Model.In1.Bedrooms" class="form-control"></select>
+        <span asp-validation-for="In4.Apartment.BedroomId" class="text-danger"></span>
+    </div>
+    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+        <label for="reception" class="col-form-label">Reception Rooms</label>
+        <input id="reception" type="number" class="form-control" placeholder="0" asp-for="In4.Apartment.Reception" />
+    </div>
+</div>
+<div class="form-row">
+    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+        <label for="kitchens" class="col-form-label">Kitchens</label>
+        <input id="kitchens" type="number" class="form-control" placeholder="0" asp-for="In4.Apartment.Kitchens" />
+    </div>
+    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+        <label for="bathrooms" class="col-form-label">Bathrooms</label>
+        <input id="bathrooms" type="number" class="form-control" placeholder="0" asp-for="In4.Apartment.Bathrooms" />
+    </div>
+</div>
+<div class="form-row">
+    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+        <label for="area" class="col-form-label">Area <sup>(sqm)</sup></label>
+        <input id="area" type="number" class="form-control" placeholder="0" asp-for="In4.Apartment.Area" />
+    </div>
+    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+        <label for="view" class="col-form-label">View</label>
+        <input id="view" type="text" class="form-control" placeholder="ex: Sea View" asp-for="In4.Apartment.View" />
+    </div>
+</div>
+<div class="form-row">
+    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+        <label for="floor" class="col-form-label">Floor No.</label>
+        <input id="floor" type="number" class="form-control" placeholder="0" asp-for="In4.Apartment.Floor" />
+    </div>
+    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+        <label for="flat" class="col-form-label">Flat No.</label>
+        <input id="flat" type="number" class="form-control" placeholder="0" asp-for="In4.Apartment.Flat" />
+    </div>
+</div>
+<div class="form-row">
+    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+        <label for="country" class="col-form-label">Country</label>
+        <select asp-for="In4.Apartment.CountryId" asp-items="@Model.In1.Countries" class="form-control"></select>
+        <span asp-validation-for="In4.Apartment.CountryId" class="text-danger"></span>
+    </div>
+    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+        <label for="city" class="col-form-label">City | Emirate</label>
+        <input id="city" type="text" class="form-control" asp-for="In4.Apartment.City" required />
+        <span asp-validation-for="In4.Apartment.City" class="text-danger"></span>
+    </div>
+</div>
+<div class="form-row">
+    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+        <label for="region" class="col-form-label">Region Name</label>
+        <input id="region" type="text" class="form-control" asp-for="In4.Apartment.Region" required />
+        <span asp-validation-for="In4.Apartment.Region" class="text-danger"></span>
+    </div>
+    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+        <label for="adresse" class="col-form-label">Adresse</label>
+        <input id="adresse" type="text" class="form-control" asp-for="In4.Apartment.Adresse" required />
+        <span asp-validation-for="In4.Apartment.Adresse" class="text-danger"></span>
+    </div>
+</div>
+<div class="form-row">
+    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+        <label for="price" class="col-form-label">Price <sup>($)</sup></label>
+        <input id="price" type="number" class="form-control" placeholder="0" asp-for="In4.Apartment.Price" />
+    </div>
+    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+        <label for="parking" class="col-form-label">Parking</label>
+        <input type="checkbox" id="parking" class="custom-checkbox-lg" asp-for="In4.Apartment.Parking" />
+    </div>
+</div>

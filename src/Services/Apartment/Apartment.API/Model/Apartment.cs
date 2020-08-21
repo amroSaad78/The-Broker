@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Apartment.API.Infrastructure.Services;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Apartment.API.Model
 {
@@ -25,24 +25,48 @@ namespace Apartment.API.Model
         public decimal Price { get; set; }
         public int OwnerId { get; set; }
         public int BedroomId { get; set; }
+        [JsonIgnore]
         public Bedrooms Bedroom { get; set; }
         public int CountryId { get; set; }
+        [JsonIgnore]
         public Countries Country { get; set; }
         public int FurnitureId { get; set; }
+        [JsonIgnore]
         public Furnishings Furniture { get; set; }
         public string PictureFileName { get; set; }
         public string PictureUri { get; set; }
         public bool BookedUp { get; set; }
     }
 
-    public class Rent: Apartment
+    public class Rent: IPayload
     {
+        public int Id { get; set; }
+        public int ApartmentId { get; set; }
+        [JsonIgnore]
+        public Apartment Apartment { get; set; }
         public int PeriodId { get; set; }
+        [JsonIgnore]
         public Periods Period { get; set; }
     }
 
-    public class Sale: Apartment
+    public class Sale: IPayload
     {
+        public int Id { get; set; }
+        public int ApartmentId { get; set; }
+        [JsonIgnore]
+        public Apartment Apartment { get; set; }
         public bool Installment { get; set; }
+    }
+
+    public class Payload<Tin> where Tin : IPayload
+    {
+        public Payload(Apartment apartment, Tin inobj)
+        {
+            Apartment = apartment;
+            InObject = inobj;
+        }
+
+        public Apartment Apartment { get; set; }
+        public Tin InObject { get; set; }
     }
 }

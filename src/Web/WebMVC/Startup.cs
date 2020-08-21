@@ -139,7 +139,6 @@ namespace WebMVC
                 })
                 .PersistKeysToRedis(ConnectionMultiplexer.Connect(configuration["DPConnectionString"]), "DataProtection-Keys");
             }
-            services.AddScoped<CheckUploadedFile<IOptions<AppSettings>>>();
             return services;
         }
         public static IServiceCollection AddHttpClientServices(this IServiceCollection services, IConfiguration configuration)

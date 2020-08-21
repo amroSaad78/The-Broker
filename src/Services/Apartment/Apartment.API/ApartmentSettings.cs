@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Apartment.API
+﻿namespace Apartment.API
 {
     public class ApartmentSettings
     {
@@ -14,5 +9,6 @@ namespace Apartment.API
         public bool UseCustomizationData { get; set; }
 
         public bool AzureStorageEnabled { get; set; }
+        public long FileSizeLimit { get; set; }
     }
 }

@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using WebMVC.Services.Signatures;
 using RequiredAttribute = System.ComponentModel.DataAnnotations.RequiredAttribute;
 
 namespace WebMVC.Model
 {
-    public abstract class Apartment
+    public class Apartment
     {
         public int Id { get; set; }
         public int Reception { get; set; }
@@ -37,15 +38,29 @@ namespace WebMVC.Model
         public string PictureUri { get; set; }
         public bool BookedUp { get; set; }
     }
-    public class Rent : Apartment
+
+    public class Rent : IPayload
     {
         [Required(ErrorMessage = "Period is required.")]
         public int PeriodId { get; set; }
         public Periods Period { get; set; }
     }
 
-    public class Sale : Apartment
+    public class Sale : IPayload
     {
         public bool Installment { get; set; }
+    }
+
+
+    public class Payload<Tin> where Tin : IPayload
+    {
+        public Payload(Apartment apartment , Tin inobj)
+        {
+            Apartment = apartment;
+            InObject = inobj;
+        }
+
+        public Apartment Apartment { get; set; }
+        public Tin InObject { get; set; }
     }
 }

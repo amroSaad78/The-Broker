@@ -28,6 +28,7 @@ services:
       dockerfile: src/Services/Apartment/Apartment.API/Dockerfile 
     depends_on:
       - sql.data
+      - rabbitmq
 
   owners.api:
     image: ${REGISTRY:-broker}/owners.api:${PLATFORM:-linux}-${TAG:-latest}

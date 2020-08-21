@@ -10,6 +10,7 @@ namespace Apartment.API.Infrastructure
         public ApartmentContext(DbContextOptions<ApartmentContext> options) : base(options)
         {
         }
+        public DbSet<Model.Apartment> Apartment { get; set; }
         public DbSet<Rent> Rent { get; set; }
         public DbSet<Sale> Sale { get; set; }
         public DbSet<Bedrooms> Bedroom { get; set; }
@@ -19,6 +20,7 @@ namespace Apartment.API.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.ApplyConfiguration(new ApartmentEntityTypeConfiguration());
             builder.ApplyConfiguration(new RentEntityTypeConfiguration());
             builder.ApplyConfiguration(new SaleEntityTypeConfiguration());
             builder.ApplyConfiguration(new BedroomsEntityTypeConfiguration());

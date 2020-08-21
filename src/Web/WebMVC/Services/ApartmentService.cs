@@ -3,11 +3,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
-using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using WebMVC.Model;
+using WebMVC.Services.Signatures;
 
 namespace WebMVC.Services
 {
@@ -37,23 +36,13 @@ namespace WebMVC.Services
             return await response.Content.ReadAsStringAsync();  
         }
 
-        public async Task SaveRent(Rent apartment)
+        public async Task Save(Payload<IPayload> payload)
         {
-            _logger.LogInformation($"Saving apartment for rent data located in: {apartment.City}");
-            await Save(apartment);
-        }
-        public async Task SaveSale(Sale apartment)
-        {
-            _logger.LogInformation($"Saving apartment for sale data located in: {apartment.City}");
-            await Save(apartment);
-        }
-
-        private async Task Save(Apartment apartment)
-        {
-            var apartmentContent = new StringContent(JsonConvert.SerializeObject(apartment), System.Text.Encoding.UTF8, "application/json");
+            _logger.LogInformation($"Saving apartment for rent data located in: {payload.Apartment.City}");
+            var apartmentContent = new StringContent(JsonConvert.SerializeObject(payload), System.Text.Encoding.UTF8, "application/json");
             HttpResponseMessage response;
-            string url= Uris.GetUrl(_apartmentUrl, apartment.GetType().Name);
-            if (apartment.Id > 0)
+            string url= Uris.GetUrl(_apartmentUrl, payload.InObject.GetType().Name);
+            if (payload.Apartment.Id > 0)
             {
                 response = await _httpClient.PutAsync(url, apartmentContent);
             }
@@ -64,17 +53,18 @@ namespace WebMVC.Services
             _logger.LogInformation($"Response of saving apartment, Status Code: {response.StatusCode}");
             response.EnsureSuccessStatusCode();
         }
+
         public async Task UploadImage (IFormFile file)
         {
-            if (file.Length <= 0) return;
+            //validation
             string url = Uris.GetUrl(_apartmentUrl, "Pic");
-            string fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
             var imgData = new MultipartFormDataContent
             {
-                { new StreamContent(file.OpenReadStream()), "imgfile", fileName }
+                { new StreamContent(file.OpenReadStream()), "imgfile", file.FileName }
             };
             var response = await _httpClient.PostAsync(url, imgData);
-            response.EnsureSuccessStatusCode();            
+            _logger.LogDebug("[UploadImage] -> response code {StatusCode}", response.StatusCode);
+            response.EnsureSuccessStatusCode();
         }
     }
 }

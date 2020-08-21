@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebMVC.Services;
+using WebMVC.Services.Signatures;
 
 namespace WebMVC.Controllers
 {

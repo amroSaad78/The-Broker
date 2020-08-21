@@ -3,6 +3,7 @@ using Apartment.API.Grpc;
 using Apartment.API.Infrastructure;
 using Apartment.API.Infrastructure.Filters;
 using Apartment.API.Infrastructure.Middlewares;
+using Apartment.API.Infrastructure.Services;
 using Apartment.API.IntegrationEvents;
 using Apartment.API.IntegrationEvents.EventHandling;
 using Apartment.API.IntegrationEvents.Events;
@@ -145,8 +146,7 @@ namespace Apartment.API
         protected virtual void ConfigureEventBus(IApplicationBuilder app)
         {
             var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
-            eventBus.Subscribe<NewRentOrderIntegrationEvent, NewRentOrderIntegrationEventHandler>();
-            eventBus.Subscribe<NewSaleOrderIntegrationEvent, NewSaleOrderIntegrationEventHandler>();
+            eventBus.Subscribe<NewOrderIntegrationEvent, NewOrderIntegrationEventHandler>();
         }
         
     }
@@ -179,7 +179,8 @@ namespace Apartment.API
                     .AllowAnyHeader()
                     .AllowCredentials());
             });
-
+            services.AddTransient<IPicService, PicServices>();
+            services.AddTransient<IPicServicesHandler, PicServicesHandler>();
             return services;
         }
 
@@ -435,8 +436,7 @@ namespace Apartment.API
             }
 
             services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
-            services.AddTransient<NewRentOrderIntegrationEventHandler>();
-            services.AddTransient<NewSaleOrderIntegrationEventHandler>();
+            services.AddTransient<NewOrderIntegrationEventHandler>();            
 
             return services;
         }

@@ -46,7 +46,7 @@ namespace Apartment.API.IntegrationEvents
                 await _eventLogService.MarkEventAsFailedAsync(evt.Id);
             }
         }
-        public async Task SaveEventAndCatalogContextChangesAsync(IntegrationEvent evt)
+        public async Task SaveEventAndApartmentContextChangesAsync(IntegrationEvent evt)
         {
             _logger.LogInformation("----- CatalogIntegrationEventService - Saving changes and integrationEvent: {IntegrationEventId}", evt.Id);
 

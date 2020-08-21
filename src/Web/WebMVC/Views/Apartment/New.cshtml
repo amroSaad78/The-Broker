@@ -1,5 +1,4 @@
-﻿@using WebMVC.Model
-@model WebMVC.ViewModels.Apartments.ApartmentVM
+﻿@model WebMVC.Model.GenricApartment<ListsVM, RentVM, SaleVM, ApartmentVM>
 <div class="row">
     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-5">
         <div class="tab-outline">
@@ -14,11 +13,11 @@
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="Rent" role="tabpanel" aria-labelledby="rent-tab">
 
-                    <partial name="~/Views/Shared/Apartment/_ApartmentRent.cshtml" model="Model.RentVM" />
+                    <partial name="~/Views/Shared/Apartment/_ApartmentRent.cshtml" model="Model" />
                 </div>
                 <div class="tab-pane fade" id="Sale" role="tabpanel" aria-labelledby="sale-tab">
 
-                    <partial name="~/Views/Shared/Apartment/_ApartmentSale.cshtml" model="Model.SaleVM" />
+                    <partial name="~/Views/Shared/Apartment/_ApartmentSale.cshtml" model="Model" />
                 </div>
             </div>
         </div>

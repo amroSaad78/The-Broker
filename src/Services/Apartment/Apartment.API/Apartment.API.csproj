@@ -48,6 +48,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Migrations\Apartment\" />
     <Folder Include="Setup\" />
     <Folder Include="Pics\" />
   </ItemGroup>
