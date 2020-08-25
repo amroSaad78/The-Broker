@@ -8,7 +8,6 @@ namespace WebMVC.Extension
     {
         public static IEnumerable<SelectListItem> GetSelectListAsync(this string response, string listKey, string text)
         {
-            if (string.IsNullOrEmpty(response)) return null;
             var list = new List<SelectListItem>();
             JObject obj = JObject.Parse(response);
             var json = JArray.Parse(obj[listKey].ToString());

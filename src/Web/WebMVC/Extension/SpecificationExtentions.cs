@@ -1,7 +1,7 @@
-﻿using Apartment.API.Infrastructure.Services;
-using System;
+﻿using System;
+using WebMVC.Services;
 
-namespace Apartment.API.Extensions
+namespace WebMVC.Extension
 {
     public static class SpecificationExtentions
     {

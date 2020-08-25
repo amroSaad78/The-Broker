@@ -75,7 +75,6 @@ namespace Apartment.API
                     {
                         listenOptions.Protocols = HttpProtocols.Http2;
                     });
-
                 })
                 .UseStartup<Startup>()
                 .UseContentRoot(Directory.GetCurrentDirectory())

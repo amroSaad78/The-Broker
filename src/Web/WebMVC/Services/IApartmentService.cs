@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Threading.Tasks;
 using WebMVC.Model;
 using WebMVC.Services.Signatures;
@@ -11,6 +12,6 @@ namespace WebMVC.Services
         Task<Apartment> GetAllApartment(ApplicationUser user, int page, int take);
         Task<string> PopulateLists();
         Task Save(Payload<IPayload> payload);
-        Task UploadImage(IFormFile file);
+        Task UploadImage(IFormFile file, Guid requestId);
     }
 }

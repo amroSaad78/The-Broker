@@ -1,11 +1,11 @@
-﻿using Apartment.API.Infrastructure.Services;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using WebMVC.Services;
 
-namespace Apartment.API.Infrastructure.Validators
+namespace WebMVC.Infrastructure.Validators
 {
     public class IsFileSignatureSuitable : ISpecification<IFormFile>
     {

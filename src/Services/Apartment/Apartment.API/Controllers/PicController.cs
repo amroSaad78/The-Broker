@@ -2,12 +2,14 @@
 using Apartment.API.Infrastructure;
 using Apartment.API.Infrastructure.Services;
 using Apartment.API.Infrastructure.Validators;
+using Apartment.API.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using System;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
@@ -34,7 +36,7 @@ namespace Apartment.API.Controllers
             _apartmentContext = apartmentContext;
             _picService = picService;
             _picServicesHandler = picServicesHandler;
-            _picServicesHandler.Subscrib(picService);
+            _picServicesHandler.Subscrib(_picService);
         }
 
         [HttpGet]
@@ -71,18 +73,14 @@ namespace Apartment.API.Controllers
         [Authorize(Roles = "Admin")]
         [Route("api/v1/apartment/pic")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
-        public ActionResult SaveImage(IFormFile imgfile)
+        public ActionResult SaveImage(IFormFile imgfile, [FromHeader(Name = "x-requestid")] string requestId)
         {
             var rule = new IsFileNotNull().And(new IsFileSizeSuitable(_options)).And(new IsFileExtntionSuitable()).And(new IsFileSignatureSuitable());
-            if (rule.IsSatisfiedBy(imgfile))
-            {
-                _picService.UploadFile(imgfile);
-            }
-            else
-            { 
-                return BadRequest("File size should less than 2Mb and type should be [JPG, JPEG, PNG].");
-            }
-            return Ok();
+            if (!rule.IsSatisfiedBy(imgfile)) return BadRequest("File size should less than 2Mb, Type should be [JPG, JPEG, PNG] and not empty.");
+            bool result = Guid.TryParse(requestId, out Guid id);
+            if(!result) return BadRequest("Apartment requestid is required.");
+            _picService.UploadFile(new FileData(imgfile, id));
+            return Ok("The file went to storage.");
         }
         private string GetImageMimeTypeFromImageFileExtension(string extension)
         {

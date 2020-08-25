@@ -5,6 +5,8 @@ using Newtonsoft.Json;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using WebMVC.Extension;
+using WebMVC.Infrastructure.Validators;
 using WebMVC.Model;
 using WebMVC.Services.Signatures;
 
@@ -12,18 +14,18 @@ namespace WebMVC.Services
 {
     public class ApartmentService : IApartmentService
     {
-        private readonly IOptions<AppSettings> _settings;
+        private readonly IOptions<AppSettings> _options;
         private readonly ILogger<ApartmentService> _logger;
         private readonly HttpClient _httpClient;
         private readonly string _apartmentUrl;
         private readonly string _apartmentAggUrl;
-        public ApartmentService(HttpClient httpClient, IOptions<AppSettings> settings, ILogger<ApartmentService> logger)
+        public ApartmentService(HttpClient httpClient, IOptions<AppSettings> options, ILogger<ApartmentService> logger)
         {
             _httpClient = httpClient;
-            _settings = settings;
+            _options = options;
             _logger = logger;
-            _apartmentUrl = $"{_settings.Value.ApartmentUrl}";
-            _apartmentAggUrl = $"{_settings.Value.ApartmentAggUrl}/agg/api/v1/apartment";
+            _apartmentUrl = $"{_options.Value.ApartmentUrl}";
+            _apartmentAggUrl = $"{_options.Value.ApartmentAggUrl}/agg/api/v1/apartment";
         }
 
         public Task<Apartment> GetAllApartment(ApplicationUser user, int page, int take) => throw new NotImplementedException();
@@ -33,7 +35,8 @@ namespace WebMVC.Services
         {
             var response = await _httpClient.GetAsync(_apartmentAggUrl);
             _logger.LogDebug("[PopulateLists] -> response code {StatusCode}", response.StatusCode);
-            return await response.Content.ReadAsStringAsync();  
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
         }
 
         public async Task Save(Payload<IPayload> payload)
@@ -54,14 +57,17 @@ namespace WebMVC.Services
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task UploadImage (IFormFile file)
+        public async Task UploadImage (IFormFile file, Guid requestId)
         {
-            //validation
+            if (file == null) return;
+            var rule = new IsFileNotNull().And(new IsFileSizeSuitable(_options)).And(new IsFileExtntionSuitable()).And(new IsFileSignatureSuitable());
+            if (!rule.IsSatisfiedBy(file)) throw new ArgumentException("Data saved, but file size should less than 2Mb and type should be [JPG, JPEG, PNG].");
             string url = Uris.GetUrl(_apartmentUrl, "Pic");
             var imgData = new MultipartFormDataContent
             {
                 { new StreamContent(file.OpenReadStream()), "imgfile", file.FileName }
             };
+            _httpClient.DefaultRequestHeaders.Add("x-requestid", requestId.ToString());
             var response = await _httpClient.PostAsync(url, imgData);
             _logger.LogDebug("[UploadImage] -> response code {StatusCode}", response.StatusCode);
             response.EnsureSuccessStatusCode();

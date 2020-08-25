@@ -1,12 +1,17 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Apartment.API.Model;
 using System;
 
 namespace Apartment.API.Infrastructure.Services
 {
     public class PicServices : IPicService
-    {
-        public event EventHandler<IFormFile> OnFileUpload;
+    {        
+        public event EventHandler<FileData> OnFileUpload;
+        public void UploadFile(FileData fileData) => OnFileUpload?.Invoke(this, fileData);
+    }
 
-        public void UploadFile(IFormFile file) => OnFileUpload?.Invoke(this, file);
+    public class PicDBServices : IPicDBService
+    {
+        public event EventHandler<SavedFileInfo> OnFileSaved;
+        public void UpdateApartmentPic(SavedFileInfo fileInfo) => OnFileSaved?.Invoke(this, fileInfo);
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using WebMVC.Services.Signatures;
 using RequiredAttribute = System.ComponentModel.DataAnnotations.RequiredAttribute;
 
@@ -6,7 +7,7 @@ namespace WebMVC.Model
 {
     public class Apartment
     {
-        public int Id { get; set; }
+        public int Id { get; set; } = 0;
         public int Reception { get; set; }
         public int Kitchens { get; set; }
         public int Bathrooms { get; set; }
@@ -37,6 +38,7 @@ namespace WebMVC.Model
         public string PictureFileName { get; set; }
         public string PictureUri { get; set; }
         public bool BookedUp { get; set; }
+        public Guid RequestId { get; set; }
     }
 
     public class Rent : IPayload

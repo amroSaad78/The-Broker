@@ -181,6 +181,11 @@ namespace Apartment.API
             });
             services.AddTransient<IPicService, PicServices>();
             services.AddTransient<IPicServicesHandler, PicServicesHandler>();
+            //services.AddTransient<IPicDBService, PicDBServices>();
+            //services.AddTransient<IPicDBServicesHandler, PicDBServicesHandler>();
+            services.AddTransient<IStorage, AzureStorage>();
+            services.AddTransient<IStorage, LocalStorage>();
+            
             return services;
         }
 

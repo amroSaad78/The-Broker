@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Apartment.API.Migrations.Apartment
 {
@@ -105,7 +106,8 @@ namespace Apartment.API.Migrations.Apartment
                     FurnitureId = table.Column<int>(nullable: false),
                     PictureFileName = table.Column<string>(nullable: true),
                     PictureUri = table.Column<string>(nullable: true),
-                    BookedUp = table.Column<bool>(nullable: false)
+                    BookedUp = table.Column<bool>(nullable: false),
+                    RequestId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
