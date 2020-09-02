@@ -6,9 +6,9 @@ namespace Apartment.API.Infrastructure.Validators
 {
     public class IsFileSizeSuitable : ISpecification<IFormFile>
     {
-        private readonly IOptions<ApartmentSettings> options;
+        private readonly IOptions<AppSettings> options;
 
-        public IsFileSizeSuitable(IOptions<ApartmentSettings> options)
+        public IsFileSizeSuitable(IOptions<AppSettings> options)
         {
             this.options = options;
         }

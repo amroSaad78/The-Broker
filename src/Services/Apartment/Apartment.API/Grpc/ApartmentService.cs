@@ -14,10 +14,10 @@ namespace Apartment.API.Grpc
     public class ApartmentService: ApartmentDataBase
     {
         private readonly ApartmentContext _dbContext;
-        private readonly ApartmentSettings _settings;
+        private readonly AppSettings _settings;
         private readonly ILogger<ApartmentService> _logger;
 
-        public ApartmentService(ApartmentContext dbContext, IOptions<ApartmentSettings> settings, ILogger<ApartmentService> logger)
+        public ApartmentService(ApartmentContext dbContext, IOptions<AppSettings> settings, ILogger<ApartmentService> logger)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext)); ;
             _settings = settings.Value;

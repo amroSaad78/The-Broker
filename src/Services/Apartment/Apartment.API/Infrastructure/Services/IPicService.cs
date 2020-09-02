@@ -5,13 +5,7 @@ namespace Apartment.API.Infrastructure.Services
 {
     public interface IPicService
     {
-        event EventHandler<FileData> OnFileUpload;
+        event EventHandler<FileData> OnFileUploaded;
         void UploadFile(FileData fileData);
-    }
-
-    public interface IPicDBService
-    {
-        event EventHandler<SavedFileInfo> OnFileSaved;
-        void UpdateApartmentPic(SavedFileInfo fileInfo);
     }
 }

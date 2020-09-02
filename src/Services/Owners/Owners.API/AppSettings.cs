@@ -1,6 +1,6 @@
 ﻿namespace Owners.API
 {
-    public class OwnerSettings
+    public class AppSettings
     {        
         public bool UseCustomizationData { get; set; }
     }

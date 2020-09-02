@@ -12,13 +12,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Logging;
 using StackExchange.Redis;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using WebMVC.Infrastructure;
-using WebMVC.Infrastructure.Filters;
 using WebMVC.Infrastructure.Middlewares;
 using WebMVC.Model;
 using WebMVC.Services;
@@ -200,6 +198,7 @@ namespace WebMVC
                 options.Scope.Add("apartment");
                 options.Scope.Add("owners");
                 options.Scope.Add("webclientagg");
+                options.Scope.Add("signalrhub");
             });
 
             return services;

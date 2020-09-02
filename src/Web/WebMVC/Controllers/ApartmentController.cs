@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using WebMVC.Extension;
@@ -13,6 +12,8 @@ using WebMVC.ViewModels;
 
 namespace WebMVC.Controllers
 {
+    //Todo: adding cashing service for lists and adding signalR client
+    //using https and win sql server
     public class ApartmentController: BasicController<ApartmentController> ,IPageController
     {
         private readonly IApartmentService _apartmentService;

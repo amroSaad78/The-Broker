@@ -24,7 +24,7 @@ COPY ["Web/WebMVC/WebMVC.csproj", "src/Web/WebMVC/"]
 
 RUN dotnet restore "TheBroker.sln"
 COPY . .
-WORKDIR /src/Services/Apartment/Apartment.API
+WORKDIR /src/Services/SignalR/SignalrHub
 RUN dotnet publish --no-restore -c Release -o /app
 
 FROM build AS publish
@@ -32,4 +32,4 @@ FROM build AS publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
-ENTRYPOINT ["dotnet", "Apartment.API.dll"]
+ENTRYPOINT ["dotnet", "SignalrHub.dll"]

@@ -1,9 +1,9 @@
 using Apartment.API.Controllers;
 using Apartment.API.Grpc;
 using Apartment.API.Infrastructure;
+using Apartment.API.Infrastructure.AutofacModules;
 using Apartment.API.Infrastructure.Filters;
 using Apartment.API.Infrastructure.Middlewares;
-using Apartment.API.Infrastructure.Services;
 using Apartment.API.IntegrationEvents;
 using Apartment.API.IntegrationEvents.EventHandling;
 using Apartment.API.IntegrationEvents.Events;
@@ -65,10 +65,10 @@ namespace Apartment.API
                 .AddCustomHealthCheck(Configuration)
                 .AddCustomAuthentication(Configuration);
 
-
             var container = new ContainerBuilder();
             container.Populate(services);
-
+            container.RegisterModule(new AppModule());
+            container.RegisterModule(new MediatorModule());
             return new AutofacServiceProvider(container.Build());
         }
 
@@ -179,13 +179,6 @@ namespace Apartment.API
                     .AllowAnyHeader()
                     .AllowCredentials());
             });
-            services.AddTransient<IPicService, PicServices>();
-            services.AddTransient<IPicServicesHandler, PicServicesHandler>();
-            //services.AddTransient<IPicDBService, PicDBServices>();
-            //services.AddTransient<IPicDBServicesHandler, PicDBServicesHandler>();
-            services.AddTransient<IStorage, AzureStorage>();
-            services.AddTransient<IStorage, LocalStorage>();
-            
             return services;
         }
 
@@ -239,24 +232,24 @@ namespace Apartment.API
                 .AddDbContext<ApartmentContext>(options =>
                 {
                     options.UseSqlServer(configuration["ConnectionString"],
-                                         sqlServerOptionsAction: sqlOptions =>
-                                         {
-                                             sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
-                                         //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
-                                         sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
-                                         });
+                        sqlServerOptionsAction: sqlOptions =>
+                        {
+                            sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+                            //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
+                            sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+                        });
                 });
             
             services.AddDbContext<IntegrationEventLogContext>(options =>
-            {
-                options.UseSqlServer(configuration["ConnectionString"],
-                                     sqlServerOptionsAction: sqlOptions =>
-                                     {
-                                         sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
-                                         //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
-                                         sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
-                                     });
-            });
+                {
+                    options.UseSqlServer(configuration["ConnectionString"],
+                        sqlServerOptionsAction: sqlOptions =>
+                        {
+                            sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+                            //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
+                            sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+                        });
+                });
             
             return services;
         }
@@ -264,7 +257,7 @@ namespace Apartment.API
         public static IServiceCollection AddCustomOptions(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddOptions();
-            services.Configure<ApartmentSettings>(configuration);
+            services.Configure<AppSettings>(configuration);
 
             //add BadRequest error Behavior options for Api controller when action method "ModelState" invalid;
             services.Configure<ApiBehaviorOptions>(options =>
@@ -359,7 +352,7 @@ namespace Apartment.API
             {
                 services.AddSingleton<IServiceBusPersisterConnection>(sp =>
                 {
-                    var settings = sp.GetRequiredService<IOptions<ApartmentSettings>>().Value;
+                    var settings = sp.GetRequiredService<IOptions<AppSettings>>().Value;
                     var logger = sp.GetRequiredService<ILogger<DefaultServiceBusPersisterConnection>>();
 
                     var serviceBusConnection = new ServiceBusConnectionStringBuilder(settings.EventBusConnection);
@@ -371,7 +364,7 @@ namespace Apartment.API
             {
                 services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
                 {
-                    var settings = sp.GetRequiredService<IOptions<ApartmentSettings>>().Value;
+                    var settings = sp.GetRequiredService<IOptions<AppSettings>>().Value;
                     var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
 
                     var factory = new ConnectionFactory()

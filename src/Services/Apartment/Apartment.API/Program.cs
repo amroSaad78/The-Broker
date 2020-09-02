@@ -35,7 +35,7 @@ namespace Apartment.API
                 host.MigrateDbContext<ApartmentContext>((context, services) =>
                 {
                     var env = services.GetService<IWebHostEnvironment>();
-                    var settings = services.GetService<IOptions<ApartmentSettings>>();
+                    var settings = services.GetService<IOptions<AppSettings>>();
                     var logger = services.GetService<ILogger<ApartmentContextSeed>>();
 
                     new ApartmentContextSeed()

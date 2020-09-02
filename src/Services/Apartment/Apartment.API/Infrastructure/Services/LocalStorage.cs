@@ -1,4 +1,8 @@
-﻿using Apartment.API.Model;
+﻿using Apartment.API.Infrastructure.Commands;
+using Apartment.API.IntegrationEvents.Events;
+using Apartment.API.Model;
+using BuildingBlocks.EventBus.Abstractions;
+using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -9,13 +13,23 @@ namespace Apartment.API.Infrastructure.Services
 {
     public class LocalStorage : IStorage
     {
-        private readonly IWebHostEnvironment _env;
+        private readonly IWebHostEnvironment _env;        
+        private readonly IMediator _mediator;
         private readonly ILogger<LocalStorage> _logger;
+        private readonly IIdentityService _identityService;
+        private readonly IEventBus _eventBus;
 
-        public LocalStorage(IWebHostEnvironment env, ILogger<LocalStorage> logger)
+        public LocalStorage(IWebHostEnvironment env,
+                            IMediator mediator,
+                            ILogger<LocalStorage> logger,
+                            IIdentityService identityService,
+                            IEventBus eventBus)
         {
-            _env = env;            
+            _env = env;                        
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger;
+            _identityService = identityService;
+            _eventBus = eventBus;
         }
         public async Task SaveAsync(FileData fileData)
         {
@@ -25,17 +39,17 @@ namespace Apartment.API.Infrastructure.Services
             {
                 using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                 {
-                    Task copy =Task.Run(async() =>await fileData.File.CopyToAsync(stream));
-                    copy.Wait();
-                    if (copy.IsCompleted) {
-                        //fire filesaved event
-                    }
+                    await fileData.File.CopyToAsync(stream);
                 }
+                if(!await _mediator.Send(new UpdatePicCommand(filePath, fileName, fileData.RequestId)))
+                    File.Delete(filePath);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _logger.LogWarning($"[Uploading failed] - ex: {ex.Message}");
-                //invok filenotsaved event on rabbitmq and using signalr to send message to the user;
+                _logger.LogError($"The uploading process has failed to request No. {fileData.RequestId} - Ex : {ex.Message}");
+                
+                _eventBus.Publish(new UploadingFailedIntegrationEvent(_identityService.GetUserIdentity(),
+                                                                        $"The uploading process has failed to request No. {fileData.RequestId}"));
             }
         }
     }

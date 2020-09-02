@@ -19,6 +19,7 @@ COPY ["ApiGateways/Web.Bff/WebClientAgg/WebClientAgg.csproj", "ApiGateways/Web.B
 COPY ["Services/Identity/Identity.API/Identity.API.csproj", "Services/Identity/Identity.API/"]
 COPY ["Services/Apartment/Apartment.API/Apartment.API.csproj", "Services/Apartment/Apartment.API/"]
 COPY ["Services/Owners/Owners.API/Owners.API.csproj", "Services/Owners/Owners.API/"]
+COPY ["Services/SignalR/SignalrHub/SignalrHub.csproj", "Services/SignalR/SignalrHub/"]
 COPY ["Web/WebMVC/WebMVC.csproj", "src/Web/WebMVC/"]
 
 RUN dotnet restore "TheBroker.sln"

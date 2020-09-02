@@ -1,6 +1,6 @@
 ﻿namespace Apartment.API
 {
-    public class ApartmentSettings
+    public class AppSettings
     {
         public string EventBusConnection { get; set; }
         public bool UseCustomizationData { get; set; }

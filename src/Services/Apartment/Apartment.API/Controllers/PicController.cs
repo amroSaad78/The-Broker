@@ -20,13 +20,13 @@ namespace Apartment.API.Controllers
     public class PicController : ControllerBase
     {
         private readonly IWebHostEnvironment _env;
-        private readonly IOptions<ApartmentSettings> _options;
+        private readonly IOptions<AppSettings> _options;
         private readonly ApartmentContext _apartmentContext;
         private readonly IPicService _picService;
         private readonly IPicServicesHandler _picServicesHandler;
 
         public PicController(IWebHostEnvironment env,
-                                IOptions<ApartmentSettings> options,
+                                IOptions<AppSettings> options,
                                 ApartmentContext apartmentContext,
                                 IPicService picService,
                                 IPicServicesHandler picServicesHandler)
@@ -73,13 +73,13 @@ namespace Apartment.API.Controllers
         [Authorize(Roles = "Admin")]
         [Route("api/v1/apartment/pic")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
-        public ActionResult SaveImage(IFormFile imgfile, [FromHeader(Name = "x-requestid")] string requestId)
+        public ActionResult SaveImage(IFormFile imgfile, [FromHeader(Name = "x-requestid")] string request)
         {
             var rule = new IsFileNotNull().And(new IsFileSizeSuitable(_options)).And(new IsFileExtntionSuitable()).And(new IsFileSignatureSuitable());
             if (!rule.IsSatisfiedBy(imgfile)) return BadRequest("File size should less than 2Mb, Type should be [JPG, JPEG, PNG] and not empty.");
-            bool result = Guid.TryParse(requestId, out Guid id);
+            bool result = Guid.TryParse(request, out Guid requestId);
             if(!result) return BadRequest("Apartment requestid is required.");
-            _picService.UploadFile(new FileData(imgfile, id));
+            _picService.UploadFile(new FileData(imgfile, requestId));
             return Ok("The file went to storage.");
         }
         private string GetImageMimeTypeFromImageFileExtension(string extension)

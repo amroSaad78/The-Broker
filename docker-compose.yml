@@ -38,6 +38,17 @@ services:
     depends_on:
       - sql.data      
 
+  signalrhub:
+    image: ${REGISTRY:-broker}/signalrhub:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+      context: .
+      dockerfile: src/Services/SignalR/SignalrHub/Dockerfile
+    depends_on:      
+      - sql.data
+      - identity.api
+      - rabbitmq
+      - apartment.api
+
   webmvc:
     image: ${REGISTRY:-broker}/webmvc:${PLATFORM:-linux}-${TAG:-latest}
     build:

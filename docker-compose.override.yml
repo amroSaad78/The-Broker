@@ -85,6 +85,20 @@ services:
       - "5102:80"
       - "9102:81" # for grpc port
 
+  signalrhub:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - EventBusConnection=${BROKER_AZURE_SERVICE_BUS:-rabbitmq}
+      - EventBusUserName=${BROKER_SERVICE_BUS_USERNAME}
+      - EventBusPassword=${BROKER_SERVICE_BUS_PASSWORD}
+      - AzureServiceBusEnabled=False
+      - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
+      - OrchestratorType=${ORCHESTRATOR_TYPE}
+      - identityUrl=http://identity.api
+    ports:
+      - "5112:80"
+
   webclientapigw:
     volumes:
       - ./src/ApiGateways/Envoy/config/webclient:/etc/envoy

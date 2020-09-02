@@ -16,7 +16,7 @@ namespace Apartment.API.Infrastructure
 {
     public class ApartmentContextSeed
     {
-        public async Task SeedAsync(ApartmentContext context, IWebHostEnvironment env, IOptions<ApartmentSettings> settings, ILogger<ApartmentContextSeed> logger)
+        public async Task SeedAsync(ApartmentContext context, IWebHostEnvironment env, IOptions<AppSettings> settings, ILogger<ApartmentContextSeed> logger)
         {
             var policy = CreatePolicy(logger, nameof(ApartmentContextSeed));
 

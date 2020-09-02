@@ -189,7 +189,7 @@ namespace Owners.API
         public static IServiceCollection AddCustomOptions(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddOptions();
-            services.Configure<OwnerSettings>(configuration);
+            services.Configure<AppSettings>(configuration);
 
             //add BadRequest error Behavior options for Api controller when action method "ModelState" invalid;
             services.Configure<ApiBehaviorOptions>(options =>
