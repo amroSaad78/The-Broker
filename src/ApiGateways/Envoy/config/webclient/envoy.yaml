@@ -28,14 +28,14 @@ static_resources:
                   prefix: "/ap/"
                 route:
                   auto_host_rewrite: true
-                  prefix_rewrite: "/apartment.api/"
+                  prefix_rewrite: "/apartment-api/"
                   cluster: apartment
               - name: "ow-short"
                 match:
                   prefix: "/ow/"
                 route:
                   auto_host_rewrite: true
-                  prefix_rewrite: "/owners.api/"
+                  prefix_rewrite: "/owners-api/"
                   cluster: owners
           http_filters:
           - name: envoy.router
@@ -64,7 +64,7 @@ static_resources:
     lb_policy: round_robin
     hosts:
     - socket_address:
-        address: apartment.api
+        address: apartment-api
         port_value: 80
   - name: owners
     connect_timeout: 0.25s
@@ -72,5 +72,5 @@ static_resources:
     lb_policy: round_robin
     hosts:
     - socket_address:
-        address: owners.api
+        address: owners-api
         port_value: 80

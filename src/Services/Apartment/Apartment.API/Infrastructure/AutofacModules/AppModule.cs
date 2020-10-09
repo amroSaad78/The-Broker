@@ -11,7 +11,7 @@ namespace Apartment.API.Infrastructure.AutofacModules
             builder.RegisterType<HttpContextAccessor>()
                     .As<IHttpContextAccessor>()
                     .SingleInstance();
-
+            
             builder.RegisterType<AzureStorage>()
                 .As<IStorage>()
                 .InstancePerLifetimeScope();
@@ -19,7 +19,7 @@ namespace Apartment.API.Infrastructure.AutofacModules
             builder.RegisterType<LocalStorage>()
                     .As<IStorage>()
                     .InstancePerLifetimeScope();
-
+            
             builder.RegisterType<PicService>()
                     .As<IPicService>()
                     .InstancePerLifetimeScope();

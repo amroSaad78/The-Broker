@@ -1,0 +1,362 @@
+NAME: identity
+LAST DEPLOYED: Thu Sep 17 14:10:30 2020
+NAMESPACE: default
+STATUS: pending-install
+REVISION: 1
+TEST SUITE: None
+USER-SUPPLIED VALUES:
+app:
+  ingress:
+    entries:
+      apartment: apartment-api
+      identity: identity
+      mvc: webmvc
+      owners: owners-api
+      signalrhub: signalrhub
+      webclientagg: webclientagg
+      webclientaggapigw: webclientaggapigw
+      webclientapigw: webclientapigw
+  name: the-broker
+  svc:
+    apartment: apartment-api
+    identity: identity-api
+    mvc: webmvc
+    owners: owners-api
+    signalrhub: signalrhub
+    webclientagg: webclientagg
+    webclientaggapigw: webclientaggapigw
+    webclientapigw: webclientapigw
+inf:
+  AzureStorage:
+    AccountKey: ""
+    AccountName: ""
+    useAzureStorage: false
+  appinsights:
+    key: ""
+  eventbus:
+    Password: guest
+    constr: rabbitmq
+    svc: rabbitmq
+    useAzure: false
+    userName: guest
+  k8s:
+    dns: ""
+    local: false
+  mesh:
+    enabled: false
+  misc:
+    FileSizeLimit: "2097152"
+    UseCustomization: false
+    useLoadTest: false
+  redis:
+    keystore:
+      constr: keystore-data
+      svc: keystore-data
+  sql:
+    apartment:
+      db: Broker.Service.ApartmentDb
+    common:
+      pid: Developer
+      pwd: '*txKM732@z58G'
+      user: sa
+    host: tcp:192.168.100.110,1433
+    identity:
+      db: Broker.Service.IdentityDb
+    owners:
+      db: Broker.Service.OwnersDb
+  tls:
+    enabled: false
+    issuer: ""
+
+COMPUTED VALUES:
+affinity: {}
+app:
+  ingress:
+    entries:
+      apartment: apartment-api
+      identity: identity
+      mvc: webmvc
+      owners: owners-api
+      signalrhub: signalrhub
+      webclientagg: webclientagg
+      webclientaggapigw: webclientaggapigw
+      webclientapigw: webclientapigw
+  name: the-broker
+  svc:
+    apartment: apartment-api
+    identity: identity-api
+    mvc: webmvc
+    owners: owners-api
+    signalrhub: signalrhub
+    webclientagg: webclientagg
+    webclientaggapigw: webclientaggapigw
+    webclientapigw: webclientapigw
+clusterName: broker-aks
+env:
+  configmap:
+  - key: identity__ConnectionString
+    name: ConnectionString
+  - key: identity__keystore
+    name: DPConnectionString
+  - key: all__InstrumentationKey
+    name: ApplicationInsights__InstrumentationKey
+  - key: mvc_e
+    name: MvcClient
+  - key: owner_e
+    name: OwnerApiClient
+  - key: apartment_e
+    name: ApartmentApiClient
+  - key: WebClientAgg_e
+    name: WebClientAggClient
+  - key: all__UseCustomization
+    name: UseCustomizationData
+  - key: enableDevspaces
+    name: EnableDevspaces
+  urls: null
+  values:
+  - name: ASPNETCORE_ENVIRONMENT
+    value: Development
+  - name: OrchestratorType
+    value: K8S
+  - name: IsClusterEnv
+    value: "True"
+image:
+  pullPolicy: IfNotPresent
+  repository: broker/identity-api
+  tag: linux-latest
+inf:
+  AzureStorage:
+    AccountKey: ""
+    AccountName: ""
+    useAzureStorage: false
+  appinsights:
+    key: ""
+  eventbus:
+    Password: guest
+    constr: rabbitmq
+    svc: rabbitmq
+    useAzure: false
+    userName: guest
+  k8s:
+    dns: ""
+    local: false
+  mesh:
+    enabled: false
+  misc:
+    FileSizeLimit: "2097152"
+    UseCustomization: false
+    useLoadTest: false
+  redis:
+    keystore:
+      constr: keystore-data
+      svc: keystore-data
+  sql:
+    apartment:
+      db: Broker.Service.ApartmentDb
+    common:
+      pid: Developer
+      pwd: '*txKM732@z58G'
+      user: sa
+    host: tcp:192.168.100.110,1433
+    identity:
+      db: Broker.Service.IdentityDb
+    owners:
+      db: Broker.Service.OwnersDb
+  tls:
+    enabled: false
+    issuer: ""
+ingress:
+  annotations: {}
+  enabled: true
+  hosts:
+  - identity
+  tls: []
+nodeSelector: {}
+pathBase: /identity
+probes:
+  liveness:
+    initialDelaySeconds: 10
+    path: /liveness
+    periodSeconds: 15
+    port: 80
+  readiness:
+    initialDelaySeconds: 90
+    path: /hc
+    periodSeconds: 60
+    port: 80
+    timeoutSeconds: 5
+replicaCount: 1
+resources: {}
+service:
+  port: 80
+  type: ClusterIP
+tolerations: []
+
+HOOKS:
+MANIFEST:
+---
+# Source: identity-api/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "cfg-identity-identity-api"
+  labels:
+    app: identity-api
+    chart: identity-api-0.1.0
+    release: identity
+    heritage: Helm
+data:
+  identity__ConnectionString: Server=tcp:192.168.100.110,1433;Initial Catalog=Broker.Service.IdentityDb;User Id=sa;Password=*txKM732@z58G;
+  identity__keystore: keystore-data
+  all__InstrumentationKey: ""
+  all__UseCustomization: "false"
+  mvc_e: http://10.0.75.1/webmvc
+  owner_e: http:///owners-api
+  apartment_e: http:///apartment-api
+  WebClientAgg_e: http:///webclientagg
+  enableDevspaces: "false"
+---
+# Source: identity-api/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: identity-api
+  labels:
+    app: identity-api
+    chart: identity-api-0.1.0
+    release: identity
+    heritage: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: identity-api
+    release: identity
+---
+# Source: identity-api/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity-identity-api
+  labels:
+    ufo: cfg-identity-identity-api
+    app: identity-api
+    chart: identity-api-0.1.0
+    release: identity
+    heritage: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: identity-api
+      release: identity
+  template:
+    metadata:
+      labels:
+        app: identity-api
+        release: identity             
+    spec:
+      containers:
+        - name: identity-api
+          livenessProbe:
+            httpGet:
+              port: 80
+              path: /liveness
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              port: 80
+              path: /hc
+            initialDelaySeconds: 90
+            periodSeconds: 60
+            timeoutSeconds: 5           
+          image: "broker/identity-api:linux-latest"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PATH_BASE
+              value: /identity
+            - name: k8sname
+              value: broker-aks
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Development"
+            - name: OrchestratorType
+              value: "K8S"
+            - name: IsClusterEnv
+              value: "True"
+            - name: ConnectionString
+              valueFrom:
+                configMapKeyRef:
+                  name: cfg-identity-identity-api
+                  key: identity__ConnectionString
+            - name: DPConnectionString
+              valueFrom:
+                configMapKeyRef:
+                  name: cfg-identity-identity-api
+                  key: identity__keystore
+            - name: ApplicationInsights__InstrumentationKey
+              valueFrom:
+                configMapKeyRef:
+                  name: cfg-identity-identity-api
+                  key: all__InstrumentationKey
+            - name: MvcClient
+              valueFrom:
+                configMapKeyRef:
+                  name: cfg-identity-identity-api
+                  key: mvc_e
+            - name: OwnerApiClient
+              valueFrom:
+                configMapKeyRef:
+                  name: cfg-identity-identity-api
+                  key: owner_e
+            - name: ApartmentApiClient
+              valueFrom:
+                configMapKeyRef:
+                  name: cfg-identity-identity-api
+                  key: apartment_e
+            - name: WebClientAggClient
+              valueFrom:
+                configMapKeyRef:
+                  name: cfg-identity-identity-api
+                  key: WebClientAgg_e
+            - name: UseCustomizationData
+              valueFrom:
+                configMapKeyRef:
+                  name: cfg-identity-identity-api
+                  key: all__UseCustomization
+            - name: EnableDevspaces
+              valueFrom:
+                configMapKeyRef:
+                  name: cfg-identity-identity-api
+                  key: enableDevspaces
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          resources:
+            {}
+---
+# Source: identity-api/templates/ingress.yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: identity-identity-api
+  labels:
+    app: identity-api
+    chart: identity-api-0.1.0
+    release: identity
+    heritage: Helm
+spec:
+  rules:
+    - host: identity
+      http:
+        paths:
+          - path: /identity
+            backend:
+              serviceName: identity-api
+              servicePort: http
+

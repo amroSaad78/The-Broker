@@ -1,0 +1,25 @@
+{{- $name := include "apartment-api.fullname" . -}}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "cfg-{{ $name }}"
+  labels:
+    app: {{ template "apartment-api.name" . }}
+    chart: {{ template "apartment-api.chart" .}}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  apartment__ConnectionString: Server={{ .Values.inf.sql.host }};Initial Catalog={{ .Values.inf.sql.apartment.db }};User Id={{ .Values.inf.sql.common.user }};Password={{ .Values.inf.sql.common.pwd }};
+  all__EnableLoadTest: "{{ .Values.inf.misc.useLoadTest }}"
+  urls__IdentityUrl: http://{{ .Values.app.svc.identity }}
+  all__InstrumentationKey: "{{ .Values.inf.appinsights.key }}"
+  all__UseCustomization: "{{ .Values.inf.misc.UseCustomization }}"
+  all__EventBusConnection: "{{ .Values.inf.eventbus.constr }}"
+  all__UseAzureServiceBus: "{{ .Values.inf.eventbus.useAzure }}"
+  all__EventBusUserName: "{{ .Values.inf.eventbus.userName }}"
+  all__EventBusPassword: "{{ .Values.inf.eventbus.Password }}"
+  all__AzureStorageAccountName: "{{ .Values.inf.AzureStorage.AccountName }}"
+  all__AzureStorageAccountKey: "{{ .Values.inf.AzureStorage.AccountKey }}"
+  all__AzureStorageEnabled: "{{ .Values.inf.AzureStorage.useAzureStorage }}"
+  all__FileSizeLimit: "{{ .Values.inf.misc.FileSizeLimit }}"

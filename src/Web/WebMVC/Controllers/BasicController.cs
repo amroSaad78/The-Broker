@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Runtime;
@@ -6,7 +7,7 @@ using WebMVC.Services.Signatures;
 
 namespace WebMVC.Controllers
 {
-    [Authorize(AuthenticationSchemes = "OpenIdConnect", Roles ="Admin")]
+    [Authorize(AuthenticationSchemes = OpenIdConnectDefaults.AuthenticationScheme, Roles ="Admin")]
     public abstract class BasicController<T> : Controller where T: IPageController
     {
         public readonly string _pageName;

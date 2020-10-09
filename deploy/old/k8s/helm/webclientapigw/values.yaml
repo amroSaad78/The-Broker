@@ -1,0 +1,47 @@
+replicaCount: 1
+clusterName: broker-aks
+pathBase: /webclientapigw
+
+image:
+  repository: envoyproxy/envoy
+  tag: v1.11.1
+
+service:
+  type: ClusterIP
+  port: 80
+  adminPort: 8001  
+
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: "/"
+    ingress.kubernetes.io/rewrite-target: "/"
+  tls: []
+
+resources:
+  requests:
+    memory: "100Mi"
+    cpu: "250m"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+env: {}
+
+envoy:
+  configPath: /etc/envoy
+
+probes:
+  liveness:
+    path: /ready
+    initialDelaySeconds: 5
+    periodSeconds: 15
+    port: 8001
+  readiness:
+    path: /ready
+    initialDelaySeconds: 5
+    periodSeconds: 60
+    port: 8001

@@ -4,6 +4,7 @@ using Apartment.API.Infrastructure;
 using Apartment.API.Infrastructure.AutofacModules;
 using Apartment.API.Infrastructure.Filters;
 using Apartment.API.Infrastructure.Middlewares;
+using Apartment.API.Infrastructure.Services;
 using Apartment.API.IntegrationEvents;
 using Apartment.API.IntegrationEvents.EventHandling;
 using Apartment.API.IntegrationEvents.Events;
@@ -16,6 +17,7 @@ using BuildingBlocks.EventBusServiceBus;
 using BuildingBlocks.IntegrationEventLogEF;
 using BuildingBlocks.IntegrationEventLogEF.Services;
 using HealthChecks.UI.Client;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -54,7 +56,7 @@ namespace Apartment.API
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services
-                .AddAppInsight(Configuration)
+                .AddAppInsight()
                 .AddGrpc(options =>{options.EnableDetailedErrors = true;}).Services
                 .AddCustomMVC(Configuration)
                 .AddCustomDbContext(Configuration)
@@ -153,9 +155,9 @@ namespace Apartment.API
 
     public static class CustomExtensionMethods
     {
-        public static IServiceCollection AddAppInsight(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddAppInsight(this IServiceCollection services)
         {
-            services.AddApplicationInsightsTelemetry(configuration);
+            services.AddApplicationInsightsTelemetry();
             services.AddApplicationInsightsKubernetesEnricher();
 
             return services;
@@ -179,6 +181,17 @@ namespace Apartment.API
                     .AllowAnyHeader()
                     .AllowCredentials());
             });
+            if (configuration.GetValue<bool>("AzureStorageEnabled"))
+                services.AddSingleton<IStorage>(serviceProvider => {
+                var blobStorage = new AzureStorage(serviceProvider.GetService<IMediator>(),
+                                                   serviceProvider.GetService<ILogger<AzureStorage>>(),
+                                                   serviceProvider.GetService<IIdentityService>(),
+                                                   serviceProvider.GetService<IEventBus>(),
+                                                   configuration);
+                blobStorage.InitAsync().GetAwaiter().GetResult();
+                return blobStorage;
+                });
+
             return services;
         }
 
@@ -210,7 +223,7 @@ namespace Apartment.API
                 hcBuilder
                     .AddAzureServiceBusTopic(
                         configuration["EventBusConnection"],
-                        topicName: "broker_event_bus",
+                        topicName: configuration["TopicName"],
                         name: "apartment-servicebus-check",
                         tags: new string[] { "servicebus" });
             }
@@ -323,7 +336,7 @@ namespace Apartment.API
             IdentityModelEventSource.ShowPII = true;
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("sub");
 
-            var identityUrl = configuration.GetValue<string>("identityUrl");
+            var identityUrl = configuration.GetValue<string>("IdentityUrl");
 
             services.AddAuthentication(options =>
             {
@@ -355,8 +368,10 @@ namespace Apartment.API
                     var settings = sp.GetRequiredService<IOptions<AppSettings>>().Value;
                     var logger = sp.GetRequiredService<ILogger<DefaultServiceBusPersisterConnection>>();
 
-                    var serviceBusConnection = new ServiceBusConnectionStringBuilder(settings.EventBusConnection);
-
+                    var serviceBusConnection = new ServiceBusConnectionStringBuilder(settings.EventBusConnection)
+                    {
+                        EntityPath = configuration["TopicName"]
+                    };
                     return new DefaultServiceBusPersisterConnection(serviceBusConnection, logger);
                 });
             }

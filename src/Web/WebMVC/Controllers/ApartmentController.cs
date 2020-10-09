@@ -41,7 +41,7 @@ namespace WebMVC.Controllers
                 var model = PopulateLists(result,(_, __, ___) => { });
                 return ActionResult(model);
             }
-            catch
+            catch(Exception ex)
             {
                 return RedirectToAction(nameof(Blank));
             }
@@ -95,7 +95,7 @@ namespace WebMVC.Controllers
                     });
                 return ActionResult(model);
             }
-            catch
+            catch(Exception ex)
             {
                 return RedirectToAction(nameof(Blank));
             }

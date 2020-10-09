@@ -25,7 +25,7 @@ namespace Owners.API.Infrastructure
         public OwnerContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<OwnerContext>()
-                .UseSqlServer("Server=.;Initial Catalog=Broker.Service.OwnersDb;Integrated Security=true");
+                .UseSqlServer("Server=tcp:192.168.100.110:1433;Database=Broker.Service.OwnersDb;User Id=sa;Password=*txKM732@z58G");
 
             return new OwnerContext(optionsBuilder.Options);
         }

@@ -11,9 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebMVC", "src\Web\WebMVC\We
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildingBlocks", "BuildingBlocks", "{5D925DFC-D189-4BE1-B04E-D1BF78C196B3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Devspace.Support", "Devspace.Support", "{58CA5196-3F68-45F0-934C-F57592785DEF}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Devspaces.Support", "Devspaces.Support", "{58CA5196-3F68-45F0-934C-F57592785DEF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Devspaces.Support", "src\BuildingBlocks\Devspace.Support\Devspaces.Support\Devspaces.Support.csproj", "{2E54EBA8-6F6F-45C3-9BC8-24B7A62222C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Devspaces.Support", "src\BuildingBlocks\Devspaces.Support\Devspaces.Support.csproj", "{2E54EBA8-6F6F-45C3-9BC8-24B7A62222C1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{50A82170-3889-4156-AC9F-BE0D1C96B57C}"
 EndProject

@@ -36,6 +36,8 @@ namespace SignalrHub
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services
+                .AddApplicationInsightsTelemetry()
+                .AddApplicationInsightsKubernetesEnricher()
                 .AddCustomHealthCheck(Configuration)
                 .AddCors(options =>
                 {
@@ -65,8 +67,10 @@ namespace SignalrHub
                     var logger = sp.GetRequiredService<ILogger<DefaultServiceBusPersisterConnection>>();
 
                     var serviceBusConnectionString = Configuration["EventBusConnection"];
-                    var serviceBusConnection = new ServiceBusConnectionStringBuilder(serviceBusConnectionString);
-
+                    var serviceBusConnection = new ServiceBusConnectionStringBuilder(serviceBusConnectionString)
+                    {
+                        EntityPath = Configuration["TopicName"]
+                    };
                     return new DefaultServiceBusPersisterConnection(serviceBusConnection, logger);
                 });
             }
@@ -237,7 +241,7 @@ namespace SignalrHub
                 hcBuilder
                     .AddAzureServiceBusTopic(
                         configuration["EventBusConnection"],
-                        topicName: "broker_event_bus",
+                        topicName: configuration["TopicName"],
                         name: "signalr-servicebus-check",
                         tags: new string[] { "servicebus" });
             }

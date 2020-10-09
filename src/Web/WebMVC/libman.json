@@ -106,22 +106,6 @@
         "dist/slicknav.min.css",
         "dist/slicknav.css"
       ]
-    },
-    {
-      "provider": "unpkg",
-      "library": "slimscroll@0.9.1",
-      "destination": "wwwroot/lib/slimscroll/",
-      "files": [
-        "lib/slimscroll.js"
-      ]
-    },
-    {
-      "provider": "unpkg",
-      "library": "slimscroll@0.9.1",
-      "destination": "wwwroot/lib/slimscroll/",
-      "files": [
-        "lib/slimscroll.js"
-      ]
     }
   ]
 }

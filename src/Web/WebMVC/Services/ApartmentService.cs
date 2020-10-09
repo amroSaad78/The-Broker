@@ -16,15 +16,17 @@ namespace WebMVC.Services
     {
         private readonly IOptions<AppSettings> _options;
         private readonly ILogger<ApartmentService> _logger;
+        private readonly ICacheRepository _repository;
         private readonly HttpClient _httpClient;
         private readonly string _apartmentUrl;
         private readonly string _apartmentAggUrl;
-        public ApartmentService(HttpClient httpClient, IOptions<AppSettings> options, ILogger<ApartmentService> logger)
+        public ApartmentService(HttpClient httpClient, IOptions<AppSettings> options, ILogger<ApartmentService> logger, ICacheRepository repository)
         {
             _httpClient = httpClient;
             _options = options;
             _logger = logger;
-            _apartmentUrl = $"{_options.Value.ApartmentUrl}";
+            _repository = repository;
+            _apartmentUrl = $"{_options.Value.ApiGwUrl}";
             _apartmentAggUrl = $"{_options.Value.ApartmentAggUrl}/agg/api/v1/apartment";
         }
 
@@ -33,10 +35,16 @@ namespace WebMVC.Services
 
         public async Task<string> PopulateLists()
         {
+            string result = await _repository.GetListsAsync("lists");
+            if (!string.IsNullOrEmpty(result)) return result;
+
             var response = await _httpClient.GetAsync(_apartmentAggUrl);
             _logger.LogDebug("[PopulateLists] -> response code {StatusCode}", response.StatusCode);
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
+            result = await response.Content.ReadAsStringAsync();
+
+            await _repository.SetListsAsync("lists", result);
+            return result;
         }
 
         public async Task Save(Payload<IPayload> payload)

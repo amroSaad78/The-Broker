@@ -1,0 +1,74 @@
+replicaCount: 1
+clusterName: broker-aks
+pathBase: /webclientagg
+
+image:
+  repository: broker/webclientagg
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  grpcPort: 81
+
+ingress:
+  enabled: false
+  annotations: {}
+  tls: []
+
+resources: {}
+
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# env defines the environment variables that will be declared in the pod
+env:
+  urls:
+  # configmap declares variables which value is taken from the config map defined in template configmap.yaml (name is name of var and key the key in configmap).
+  configmap:
+    - name: ApplicationInsights__InstrumentationKey
+      key: all__InstrumentationKey
+    - name: urls__Apartment
+      key: internalurls__Apartment
+    - name: urls__Owners
+      key: internalurls__Owners
+    - name: urls__Identity
+      key: internalurls__Identity
+    - name: urls__GrpcApartment
+      key: internalurls__GrpcApartment
+    - name: urls__GrpcOwners
+      key: internalurls__GrpcOwners
+    - name: ApartmentUrlHC
+      key: internalurls__apartment__hc
+    - name: OwnersUrlHC
+      key: internalurls__owners__hc
+    - name: IdentityUrlHC
+      key: internalurls__identity__hc
+          # values define environment variables with a fixed value (no configmap involved) (name is name of var, and value is its value)
+  values:
+    - name: ASPNETCORE_ENVIRONMENT
+      value: Development
+    - name: ASPNETCORE_URLS
+      value: http://0.0.0.0:80
+    - name: OrchestratorType
+      value: 'K8S'
+    - name: IsClusterEnv
+      value: 'True'
+probes:
+  liveness:
+    path: /liveness
+    initialDelaySeconds: 10
+    periodSeconds: 15
+    port: 80
+  readiness:
+    path: /hc
+    timeoutSeconds: 5
+    initialDelaySeconds: 90
+    periodSeconds: 60      
+    port: 80
+

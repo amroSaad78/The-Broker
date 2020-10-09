@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Logging;
 using StackExchange.Redis;
 using System;
@@ -35,14 +36,15 @@ namespace WebMVC
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews()
+            services
+                .AddControllersWithViews()
                 .Services
-                .AddAppInsight(Configuration)
+                .AddAppInsight()
                 .AddHealthChecks(Configuration)
                 .AddCustomMvc(Configuration)
+                .AddRedis(Configuration)
                 .AddDevspaces()
-                .AddHttpClientServices(Configuration)
-                .AddSingleton<IPagesNames, PagesNames>();
+                .AddHttpClientServices();
 
             IdentityModelEventSource.ShowPII = true;       // Caution! Do NOT use in production: https://aka.ms/IdentityModel/PII
 
@@ -107,10 +109,25 @@ namespace WebMVC
 
     static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddAppInsight(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddAppInsight(this IServiceCollection services)
         {
-            services.AddApplicationInsightsTelemetry(configuration);
+            services.AddApplicationInsightsTelemetry();
             services.AddApplicationInsightsKubernetesEnricher();
+
+            return services;
+        }
+        public static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration Configuration)
+        {
+            services.AddSingleton<ConnectionMultiplexer>(sp =>
+            {
+                var redisConfig = ConfigurationOptions.Parse(Configuration["DPConnectionString"], true);
+
+                redisConfig.ResolveDns = true;
+
+                return ConnectionMultiplexer.Connect(redisConfig);
+            });
+
+            services.AddTransient<ICacheRepository, CacheRepository>();
 
             return services;
         }
@@ -139,33 +156,26 @@ namespace WebMVC
             }
             return services;
         }
-        public static IServiceCollection AddHttpClientServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddHttpClientServices(this IServiceCollection services)
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-            //register delegating handlers
             services.AddTransient<HttpClientAuthorizationDelegatingHandler>();
             services.AddTransient<HttpClientRequestIdDelegatingHandler>();
-
-            //set 5 min as the lifetime for each HttpMessageHandler into the pool
-            services.AddHttpClient("extendedhandlerlifetime").SetHandlerLifetime(TimeSpan.FromMinutes(5)).AddDevspacesSupport(); //named httpClient
-
-            //add http client services
+            services.AddHttpClient("extendedhandlerlifetime").SetHandlerLifetime(TimeSpan.FromMinutes(5)).AddDevspacesSupport();
             services.AddHttpClient<IApartmentService, ApartmentService>()
                 .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>()
-                //.AddHttpMessageHandler<HttpClientRequestIdDelegatingHandler>()
                 .AddDevspacesSupport();
 
             services.AddHttpClient<IOwnersService, OwnersService>()
                 .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>()
                 .AddDevspacesSupport();
 
-            //add custom application services
             services.AddTransient<IIdentityParser<ApplicationUser>, IdentityParser>();
+
+            services.AddSingleton<IPagesNames, PagesNames>();
 
             return services;
         }
-
         public static IServiceCollection AddCustomAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
             var useLoadTest = configuration.GetValue<bool>("UseLoadTest");

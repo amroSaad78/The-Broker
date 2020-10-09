@@ -41,13 +41,12 @@ namespace Apartment.API.Infrastructure.Services
                 {
                     await fileData.File.CopyToAsync(stream);
                 }
-                if(!await _mediator.Send(new UpdatePicCommand(filePath, fileName, fileData.RequestId)))
+                if(!await _mediator.Send(new UpdatePicCommand(_env.WebRootPath, fileName, fileData.RequestId)))
                     File.Delete(filePath);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"The uploading process has failed to request No. {fileData.RequestId} - Ex : {ex.Message}");
-                
                 _eventBus.Publish(new UploadingFailedIntegrationEvent(_identityService.GetUserIdentity(),
                                                                         $"The uploading process has failed to request No. {fileData.RequestId}"));
             }

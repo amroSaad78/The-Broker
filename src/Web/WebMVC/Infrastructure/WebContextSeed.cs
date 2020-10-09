@@ -26,32 +26,9 @@ namespace WebMVC.Infrastructure
             if (useCustomizationData)
             {
                 GetPreconfiguredImages(contentRootPath, webroot, log);
-
-                //GetPreconfiguredCSS(contentRootPath, webroot, log);
+                
             }
         }
-
-        /*
-        static void GetPreconfiguredCSS(string contentRootPath, string webroot, ILogger log)
-        {
-            try
-            {
-                string overrideCssFile = Path.Combine(contentRootPath, "Setup", "override.css");
-                if (!File.Exists(overrideCssFile))
-                {
-                    log.Error("Override css file '{FileName}' does not exists.", overrideCssFile);
-                    return;
-                }
-
-                string destinationFilename = Path.Combine(webroot, "css", "override.css");
-                File.Copy(overrideCssFile, destinationFilename, true);
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex, "EXCEPTION ERROR: {Message}", ex.Message);
-            }
-        }
-        */
 
         static void GetPreconfiguredImages(string contentRootPath, string webroot, ILogger log)
         {

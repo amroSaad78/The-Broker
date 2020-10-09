@@ -1,0 +1,25 @@
+{{- $name := include "identity.api.fullname" . -}}
+{{- $mvc_url := include "url-of" (list .Values.app.ingress.entries.mvc  .) -}}
+{{- $owners_url := include "url-of" (list .Values.app.ingress.entries.owners .) -}}
+{{- $apartment_url := include "url-of" (list .Values.app.ingress.entries.apartment .) -}}
+{{- $webclientagg := include "url-of" (list .Values.app.ingress.entries.webclientagg .) -}}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "cfg-{{ $name }}"
+  labels:
+    app: {{ template "identity.api.name" . }}
+    chart: {{ template "identity.api.chart" .}}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  identity__ConnectionString: Server={{ .Values.inf.sql.host }};Initial Catalog={{ .Values.inf.sql.identity.db }};User Id={{ .Values.inf.sql.common.user }};Password={{ .Values.inf.sql.common.pwd }};
+  identity__keystore: {{ .Values.inf.redis.keystore.constr }}
+  all__InstrumentationKey: "{{ .Values.inf.appinsights.key }}"
+  all__UseCustomization: "{{ .Values.inf.misc.UseCustomization }}"
+  mvc_e: http://{{ $mvc_url }}
+  owner_e: http://{{ $owners_url }}
+  apartment_e: http://{{ $apartment_url }}
+  WebClientAgg_e: http://{{ $webclientagg }}
+  enableDevspaces: "false"

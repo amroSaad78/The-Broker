@@ -2,18 +2,12 @@
 {
     public class AppSettings
     {
-        //public Connectionstrings ConnectionStrings { get; set; }
-        public string ApartmentUrl { get; set; }        
-        public string ApartmentAggUrl { get; set; }        
-        public string OwnersUrl { get; set; }        
+        public string ApiGwUrl { get; set; }        
+        public string ApartmentAggUrl { get; set; }                
         public Logging Logging { get; set; }
         public bool UseCustomizationData { get; set; }
         public long FileSizeLimit { get; set; }
-    }
-
-    public class Connectionstrings
-    {
-        public string DefaultConnection { get; set; }
+        public string DPConnectionString { get; set; }
     }
 
     public class Logging

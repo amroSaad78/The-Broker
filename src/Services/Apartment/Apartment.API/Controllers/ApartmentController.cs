@@ -33,6 +33,8 @@ namespace Apartment.API.Controllers
             _settings = settings.Value;
         }
 
+        //-------------TODO Using cosomos db for all types of realestate---------------//
+
         // POST api/v1/[controller]/rent
         [HttpPost]
         [Route("rent")]
