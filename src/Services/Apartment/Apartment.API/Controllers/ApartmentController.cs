@@ -20,10 +20,10 @@ namespace Apartment.API.Controllers
     public class ApartmentController : ControllerBase
     {        
         private readonly IApartmentIntegrationEventService _apartmentIntegrationEventService;
-        private readonly ApartmentSettings _settings;
+        private readonly AppSettings _settings;
         private readonly ApartmentContext _context;
 
-        public ApartmentController(IOptionsSnapshot<ApartmentSettings> settings, 
+        public ApartmentController(IOptionsSnapshot<AppSettings> settings, 
                                     IApartmentIntegrationEventService apartmentIntegrationEventService,                                    
                                     ApartmentContext context)
         {
@@ -32,6 +32,8 @@ namespace Apartment.API.Controllers
             _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;            
             _settings = settings.Value;
         }
+
+        //-------------TODO Using cosomos db for all types of realestate---------------//
 
         // POST api/v1/[controller]/rent
         [HttpPost]

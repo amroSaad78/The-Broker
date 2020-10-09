@@ -17,7 +17,7 @@ namespace Owners.API.Infrastructure
 {
     public class OwnerContextSeed
     {
-        public async Task SeedAsync(OwnerContext context, IWebHostEnvironment env, IOptions<OwnerSettings> settings, ILogger<OwnerContextSeed> logger)
+        public async Task SeedAsync(OwnerContext context, IWebHostEnvironment env, IOptions<AppSettings> settings, ILogger<OwnerContextSeed> logger)
         {
             var policy = CreatePolicy(logger, nameof(OwnerContextSeed));
 

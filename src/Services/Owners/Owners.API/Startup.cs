@@ -39,7 +39,7 @@ namespace Owners.API
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services
-                .AddAppInsight(Configuration)
+                .AddAppInsight()
                 .AddGrpc(options => { options.EnableDetailedErrors = true; }).Services
                 .AddCustomMVC(Configuration)
                 .AddCustomDbContext(Configuration)
@@ -57,11 +57,6 @@ namespace Owners.API
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
-            //Configure logs
-
-            //loggerFactory.AddAzureWebAppDiagnostics();
-            //loggerFactory.AddApplicationInsights(app.ApplicationServices, LogLevel.Trace);
-
             var pathBase = Configuration["PATH_BASE"];
 
             if (!string.IsNullOrEmpty(pathBase))
@@ -126,9 +121,9 @@ namespace Owners.API
 
     public static class CustomExtensionMethods
     {
-        public static IServiceCollection AddAppInsight(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddAppInsight(this IServiceCollection services)
         {
-            services.AddApplicationInsightsTelemetry(configuration);
+            services.AddApplicationInsightsTelemetry();
             services.AddApplicationInsightsKubernetesEnricher();
 
             return services;
@@ -189,7 +184,7 @@ namespace Owners.API
         public static IServiceCollection AddCustomOptions(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddOptions();
-            services.Configure<OwnerSettings>(configuration);
+            services.Configure<AppSettings>(configuration);
 
             //add BadRequest error Behavior options for Api controller when action method "ModelState" invalid;
             services.Configure<ApiBehaviorOptions>(options =>
@@ -255,7 +250,7 @@ namespace Owners.API
             IdentityModelEventSource.ShowPII = true;
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("sub");
 
-            var identityUrl = configuration.GetValue<string>("identityUrl");
+            var identityUrl = configuration.GetValue<string>("IdentityUrl");
 
             services.AddAuthentication(options =>
             {

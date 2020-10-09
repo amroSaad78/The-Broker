@@ -37,7 +37,7 @@ namespace Apartment.API.Infrastructure
         public ApartmentContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<ApartmentContext>()
-                .UseSqlServer("Server=.;Initial Catalog=Broker.Service.ApartmentDb;Integrated Security=true");
+                .UseSqlServer("Server=tcp:192.168.100.110:1433;Database=Broker.Service.ApartmentDb;User Id=sa;Password=*txKM732@z58G");
 
             return new ApartmentContext(optionsBuilder.Options);
         }

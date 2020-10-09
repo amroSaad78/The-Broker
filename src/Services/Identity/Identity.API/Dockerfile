@@ -7,24 +7,30 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 
-COPY ["TheBroker.sln", "."]
-COPY ["docker-compose.dcproj", "docker-compose.dcproj""]
-COPY ["BuildingBlocks/WebHostCustomization/WebHost.Customization/WebHost.Customization.csproj", "BuildingBlocks/WebHostCustomization/WebHost.Customization/"]
-COPY ["BungBlocks/EventBus/EventBusRabbitMQ/EventBusRabbitMQ.csproj", "BuildingBlocks/EventBus/EventBusRabbitMQ/"]
-COPY ["BuildingBlocks/EventBus/EventBusServiceBus/EventBusServiceBus.csproj", "BuildingBlocks/EventBus/EventBusServiceBus/"]
-COPY ["BuildingBlocks/EventBus/IntegrationEventLogEF/IntegrationEventLogEF.csproj", "BuildingBlocks/EventBus/IntegrationEventLogEF/"]
-COPY ["BuildingBlocks/Devspaces.Support/Devspaces.Support.csproj", "BuildingBlocks/Devspaces.Support/"]
-COPY ["BuildingBlocks/EventBus/EventBus/EventBus.csproj", "BuildingBlocks/EventBus/EventBus/"]
-COPY ["ApiGateways/Web.Bff/WebClientAgg/WebClientAgg.csproj", "ApiGateways/Web.Bff/WebClientAgg/"]
-COPY ["Services/Identity/Identity.API/Identity.API.csproj", "Services/Identity/Identity.API/"]
-COPY ["Services/Apartment/Apartment.API/Apartment.API.csproj", "Services/Apartment/Apartment.API/"]
-COPY ["Services/Owners/Owners.API/Owners.API.csproj", "Services/Owners/Owners.API/"]
-COPY ["Web/WebMVC/WebMVC.csproj", "src/Web/WebMVC/"]
+COPY "TheBroker.sln" "TheBroker.sln"
 
-RUN dotnet restore "TheBroker.sln"
+COPY "src/ApiGateways/Web.Bff/WebClientAgg/WebClientAgg.csproj" "src/ApiGateways/Web.Bff/WebClientAgg/WebClientAgg.csproj"
+COPY "src/BuildingBlocks/Devspaces.Support/Devspaces.Support.csproj" "src/BuildingBlocks/Devspaces.Support/Devspaces.Support.csproj"
+COPY "src/BuildingBlocks/EventBus/EventBus/EventBus.csproj" "src/BuildingBlocks/EventBus/EventBus/EventBus.csproj"
+COPY "src/BuildingBlocks/EventBus/EventBusRabbitMQ/EventBusRabbitMQ.csproj" "src/BuildingBlocks/EventBus/EventBusRabbitMQ/EventBusRabbitMQ.csproj"
+COPY "src/BuildingBlocks/EventBus/EventBusServiceBus/EventBusServiceBus.csproj" "src/BuildingBlocks/EventBus/EventBusServiceBus/EventBusServiceBus.csproj"
+COPY "src/BuildingBlocks/EventBus/IntegrationEventLogEF/IntegrationEventLogEF.csproj" "src/BuildingBlocks/EventBus/IntegrationEventLogEF/IntegrationEventLogEF.csproj"
+COPY "src/BuildingBlocks/WebHost/WebHost.Customization/WebHost.Customization.csproj" "src/BuildingBlocks/WebHost/WebHost.Customization/WebHost.Customization.csproj"
+COPY "src/Services/Apartment/Apartment.API/Apartment.API.csproj" "src/Services/Apartment/Apartment.API/Apartment.API.csproj"
+COPY "src/Services/Identity/Identity.API/Identity.API.csproj" "src/Services/Identity/Identity.API/Identity.API.csproj"
+COPY "src/Services/Owners/Owners.API/Owners.API.csproj" "src/Services/Owners/Owners.API/Owners.API.csproj"
+COPY "src/Services/SignalR/SignalrHub/SignalrHub.csproj" "src/Services/SignalR/SignalrHub/SignalrHub.csproj"
+COPY "src/Web/WebMVC/WebMVC.csproj" "src/Web/WebMVC/WebMVC.csproj"
+
+COPY "docker-compose.dcproj" "docker-compose.dcproj"
+
+COPY "NuGet.config" "NuGet.config"
+
+RUN dotnet restore "TheBroker.sln" --configfile "/src/NuGet.config" --disable-parallel
+RUN rm /src/NuGet.config
 COPY . .
-WORKDIR /src/Services/Identity/Identity.API
-RUN dotnet publish --no-restore -c Release -o /app
+WORKDIR /src/src/Services/Identity/Identity.API
+RUN dotnet publish "Identity.API.csproj" --no-restore -c Release -o /app
 
 FROM build AS publish
 

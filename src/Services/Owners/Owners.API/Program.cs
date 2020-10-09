@@ -34,7 +34,7 @@ namespace Owners.API
                 host.MigrateDbContext<OwnerContext>((context, services) =>
                 {
                     var env = services.GetService<IWebHostEnvironment>();
-                    var settings = services.GetService<IOptions<OwnerSettings>>();
+                    var settings = services.GetService<IOptions<AppSettings>>();
                     var logger = services.GetService<ILogger<OwnerContextSeed>>();
 
                     new OwnerContextSeed()
@@ -82,14 +82,14 @@ namespace Owners.API
         private static Serilog.ILogger CreateSerilogLogger(IConfiguration configuration)
         {
             var seqServerUrl = configuration["Serilog:SeqServerUrl"];
-            var logstashUrl = configuration["Serilog:LogstashgUrl"];
+            //var logstashUrl = configuration["Serilog:LogstashgUrl"];
             return new LoggerConfiguration()
                 .MinimumLevel.Verbose()
                 .Enrich.WithProperty("ApplicationContext", AppName)
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
                 .WriteTo.Seq(string.IsNullOrWhiteSpace(seqServerUrl) ? "http://seq" : seqServerUrl)
-                .WriteTo.Http(string.IsNullOrWhiteSpace(logstashUrl) ? "http://logstash:8080" : logstashUrl)
+                //.WriteTo.Http(string.IsNullOrWhiteSpace(logstashUrl) ? "http://logstash:8080" : logstashUrl)
                 .ReadFrom.Configuration(configuration)
                 .CreateLogger();
         }

@@ -1,5 +1,4 @@
 ﻿using Apartment.API.Infrastructure.Services;
-using Microsoft.Extensions.Options;
 using System;
 
 namespace Apartment.API.Extensions
@@ -26,6 +25,6 @@ namespace Apartment.API.Extensions
             _spec2 = spec2;
         }
 
-        public bool IsSatisfiedBy(T candidate, IOptions<ApartmentSettings> options) => _spec1.IsSatisfiedBy(candidate, options) && _spec2.IsSatisfiedBy(candidate, options);
+        public bool IsSatisfiedBy(T candidate) => _spec1.IsSatisfiedBy(candidate) && _spec2.IsSatisfiedBy(candidate);
     }
 }

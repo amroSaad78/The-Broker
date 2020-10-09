@@ -4,7 +4,10 @@ using BuildingBlocks.IntegrationEventLogEF;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Azure.KeyVault;
+using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.AzureKeyVault;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -35,7 +38,7 @@ namespace Apartment.API
                 host.MigrateDbContext<ApartmentContext>((context, services) =>
                 {
                     var env = services.GetService<IWebHostEnvironment>();
-                    var settings = services.GetService<IOptions<ApartmentSettings>>();
+                    var settings = services.GetService<IOptions<AppSettings>>();
                     var logger = services.GetService<ILogger<ApartmentContextSeed>>();
 
                     new ApartmentContextSeed()
@@ -75,7 +78,6 @@ namespace Apartment.API
                     {
                         listenOptions.Protocols = HttpProtocols.Http2;
                     });
-
                 })
                 .UseStartup<Startup>()
                 .UseContentRoot(Directory.GetCurrentDirectory())
@@ -86,14 +88,14 @@ namespace Apartment.API
         private static Serilog.ILogger CreateSerilogLogger(IConfiguration configuration)
         {
             var seqServerUrl = configuration["Serilog:SeqServerUrl"];
-            var logstashUrl = configuration["Serilog:LogstashgUrl"];
+            //var logstashUrl = configuration["Serilog:LogstashgUrl"];
             return new LoggerConfiguration()
                 .MinimumLevel.Verbose()
                 .Enrich.WithProperty("ApplicationContext", AppName)
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
                 .WriteTo.Seq(string.IsNullOrWhiteSpace(seqServerUrl) ? "http://seq" : seqServerUrl)
-                .WriteTo.Http(string.IsNullOrWhiteSpace(logstashUrl) ? "http://logstash:8080" : logstashUrl)
+                //.WriteTo.Http(string.IsNullOrWhiteSpace(logstashUrl) ? "http://logstash:8080" : logstashUrl)
                 .ReadFrom.Configuration(configuration)
                 .CreateLogger();
         }
@@ -116,12 +118,15 @@ namespace Apartment.API
 
             if (config.GetValue<bool>("UseVault", false))
             {
+                var azureServiceTokenProvider = new AzureServiceTokenProvider();
+                var keyVaultClient = new KeyVaultClient(
+                    new KeyVaultClient.AuthenticationCallback(
+                        azureServiceTokenProvider.KeyVaultTokenCallback));
                 builder.AddAzureKeyVault(
                     $"https://{config["Vault:Name"]}.vault.azure.net/",
-                    config["Vault:ClientId"],
-                    config["Vault:ClientSecret"]);
+                    keyVaultClient,
+                    new DefaultKeyVaultSecretManager());
             }
-
             return builder.Build();
         }
     }

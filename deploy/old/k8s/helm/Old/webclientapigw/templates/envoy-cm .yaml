@@ -1,0 +1,14 @@
+{{- $name := include "webclientapigw.fullname" . -}}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "envoy-{{ $name }}"
+  labels:
+    app: {{ template "webclientapigw.name" . }}
+    chart: {{ template "webclientapigw.chart" .}}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  {{ (.Files.Glob "envoy.yaml").AsConfig  | indent 2 }}
+

@@ -16,7 +16,7 @@ namespace WebMVC.Services
         {
             _httpClient = httpClient;
             _settings = settings;
-            _ownersUrl = $"{_settings.Value.OwnersUrl}/ow/api/v1/owner";
+            _ownersUrl = $"{_settings.Value.ApiGwUrl}/ow/api/v1/owner";
         }
         Task<IEnumerable<Owner>> IOwnersService.GetOwners() => throw new NotImplementedException();
     }

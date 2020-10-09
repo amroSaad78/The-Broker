@@ -1,4 +1,5 @@
 ﻿using Apartment.API.Infrastructure.Services;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -36,6 +37,8 @@ namespace Apartment.API.Model
         public string PictureFileName { get; set; }
         public string PictureUri { get; set; }
         public bool BookedUp { get; set; }
+        [JsonIgnore, Required]
+        public Guid RequestId { get; set; }
     }
 
     public class Rent: IPayload

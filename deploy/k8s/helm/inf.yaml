@@ -1,0 +1,50 @@
+# This helm values file defines all infrastructure used by eShopOnContainers.
+# It is used on all charts, so ** MUST BE INCLUDED ** on every deployment
+
+inf:
+  mesh:
+    enabled: false                    # True to enable Linkerd (set by deploy-all.ps1)
+  tls:
+    enabled: false                    # True to enable TLS (set by deploy-all.ps1)
+    issuer: ""                        # cert-manager issuer to use for retrieving certs (set by deploy-all.ps1)
+  sql:                                # inf.sql defines the sql server databases & logins
+    host:  tcp:192.168.100.110,1433   # Uncomment to specify a custom sql-server to be used. By default "sql-data-<appname>" will be used  
+    common:
+      user: sa                        # SQL user
+      pwd: "*txKM732@z58G"            # SQL pwd - should be in secret
+      pid: Developer
+    owners:                           # inf.sql.owners: settings for the owners-api sql (user, pwd, db)
+      db: Broker.Service.OwnersDb     # OwnersDb API SQL db name
+    apartment:                        # inf.sql.apartment: settings for the apartment-api sql (user, pwd, db)
+      db: Broker.Service.ApartmentDb  # ApartmentDb API SQL db name
+    identity:                         # inf.sql.identity: settings for the identity-api sql (user, pwd, db)
+      db: Broker.Service.IdentityDb   # IdentityDb API SQL db name
+  redis:                              # inf.redis defines the redis' connection strings
+    keystore:
+      svc: keystore-data              # Name of k8s svc for keystore-data redis
+      constr: keystore-data           # Connection string to Redis used as a Keystore (by Identity API & MVC)
+  eventbus:
+    svc: rabbitmq                     # Name of k8s svc for rabbitmq
+    constr: rabbitmq                  # Event bus connection string
+    useAzure: false                   # true if use Azure Service Bus. False if RabbitMQ
+    userName: guest                   # Service Bus user name
+    Password: guest                   # Service Bus password
+  appinsights:
+    key: ""                           # App insights to use
+  k8s:                                # inf.k8s defines Kubernetes cluster global config
+    dns:  ""                          # k8s external  DNS. This value or ip value MUST BE PROVIDED
+    local: false                      # True when deploying on "local K8s" provided by Docker Desktop.
+  AzureStorage:
+    useAzureStorage: false
+    AccountName: ""
+    AccountKey: ""
+  misc:                             # inf.misc contains miscellaneous configuration related to infrastructure
+    useLoadTest: false              # If running under loading test or not
+    UseCustomization: false
+    FileSizeLimit: "2097152"
+#  registry:                        # Uncomment "registry" to specify registry secret
+#    secretName:                    # secretName is the name of the secret inside k8s   
+#    server:                        # Registry login server
+#    login:                         # User login
+#    pwd:                           # User pwd
+

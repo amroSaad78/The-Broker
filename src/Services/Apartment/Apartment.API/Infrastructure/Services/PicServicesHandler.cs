@@ -1,31 +1,31 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using System;
-using System.IO;
+﻿using Apartment.API.Model;
+using Microsoft.Extensions.Options;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Apartment.API.Infrastructure.Services
 {
     public class PicServicesHandler: IPicServicesHandler
     {
-        private readonly IWebHostEnvironment _env;        
+        private readonly IEnumerable<IStorage> _storages;
+        private readonly IOptions<AppSettings> _options;
 
-        public PicServicesHandler(IWebHostEnvironment env)
+        public PicServicesHandler(IEnumerable<IStorage> storages, IOptions<AppSettings> options)
         {
-            _env = env;
+            _storages = storages;
+            _options = options;
         }
 
-        public void Subscrib(IPicService picService)
-        {
-            picService.OnFileUpload += _picService_OnFileUploadAsync;
-        }
+        public void Subscrib(IPicService picService) => picService.OnFileUploaded += PicService_OnFileUploadAsync;
 
-        private async void _picService_OnFileUploadAsync(object sender, IFormFile file)
+        private void PicService_OnFileUploadAsync(object sender, FileData fileData)
         {
-            //start to save file locally or on azure making Istore service
-            string fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-            var filePath = Path.Combine(_env.WebRootPath, fileName);
-            using var fileStream = new FileStream(filePath, FileMode.Create);
-            await file.CopyToAsync(fileStream);
+            //just using local and azure blob storage;
+            IStorage storage = _options.Value.AzureStorageEnabled ? 
+                                        _storages.FirstOrDefault(s => s.GetType().Name == nameof(AzureStorage)):
+                                        _storages.FirstOrDefault(s => s.GetType().Name == nameof(LocalStorage));
+            Task.Run(async () => await storage.SaveAsync(fileData)).Wait();
         }
     }
 }

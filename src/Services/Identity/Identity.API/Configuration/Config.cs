@@ -13,7 +13,8 @@ namespace Identity.API.Configuration
             {
                 new ApiResource("apartment", "Apartment API"),
                 new ApiResource("owners", "Owners API"),
-                new ApiResource("webclientagg", "Web Client Aggregator")
+                new ApiResource("webclientagg", "Web Client Aggregator"),
+                new ApiResource("signalrhub", "Signalr Hub")
             };
         }
 
@@ -62,7 +63,8 @@ namespace Identity.API.Configuration
                         IdentityServerConstants.StandardScopes.OfflineAccess,
                         "apartment",
                         "owners",
-                        "webclientagg"
+                        "webclientagg",
+                        "signalrhub"
                     },
                     AccessTokenLifetime = 60*60*2, // 2 hours
                     IdentityTokenLifetime= 60*60*2 // 2 hours

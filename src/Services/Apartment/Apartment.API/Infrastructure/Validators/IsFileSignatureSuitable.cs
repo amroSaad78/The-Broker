@@ -16,9 +16,8 @@ namespace Apartment.API.Infrastructure.Validators
                 foreach (KeyValuePair<string, List<byte[]>> key in _fileSignature)
                 {
                     var headerBytes = reader.ReadBytes(key.Value.Max(m => m.Length));
-
-                    if(key.Value.Any(signature => headerBytes.Take(signature.Length).SequenceEqual(signature))) return true;
                     reader.BaseStream.Position=0;
+                    if(key.Value.Any(signature => headerBytes.Take(signature.Length).SequenceEqual(signature))) return true;
                 }
             }
             return false;

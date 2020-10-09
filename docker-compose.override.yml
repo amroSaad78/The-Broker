@@ -7,109 +7,124 @@ services:
     ports:
       - "5340:80"
 
-  sql.data:
-    environment:
-      - SA_PASSWORD=Pass@word
-      - ACCEPT_EULA=Y
-    ports:
-      - "5433:1433"    # Important: In a production environment your should remove the external port
-    volumes:
-      - broker-sqldata:/var/opt/mssql
-
-  redis:
+  cache:
     ports:
       - "6379:6379"
+    volumes:
+      - broker-cache:/data
 
   rabbitmq:
     ports:
       - "15672:15672"
       - "5672:5672"
 
-  identity.api:
+  identity-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-      - ConnectionString=${BROKER_AZURE_IDENTITY_DB:-Server=sql.data;Database=Broker.Service.IdentityDb;User Id=sa;Password=Pass@word;} 
+      - ConnectionString=${BROKER_AZURE_IDENTITY_DB} 
       - MvcClient=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5100
       - OwnerApiClient=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5101
       - ApartmentApiClient=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5102
       - WebClientAggClient=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5121
       - UseCustomizationData=False 
-      - DPConnectionString={BROKER_AZURE_REDIS_keystore_DB:-keystoredata}
+      - EnableDevspaces=False 
+      - DPConnectionString=${BROKER_AZURE_REDIS_CACHE_DB:-cache}
       - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
       - OrchestratorType=${ORCHESTRATOR_TYPE}
     ports:
       - "5105:80"
 
-  owners.api:
+  owners-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-      - ConnectionString=${BROKER_AZURE_OWNERS_DB:-Server=sql.data;Database=Broker.Service.OwnersDb;User Id=sa;Password=Pass@word;} 
-      - identityUrl=http://identity.api
+      - ConnectionString=${BROKER_AZURE_OWNERS_DB} 
+      - IdentityUrl=http://identity-api
       - IdentityUrlExternal=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5105
       - UseCustomizationData=True  
       - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
       - OrchestratorType=${ORCHESTRATOR_TYPE}
       - UseLoadTest=${USE_LOADTEST:-False}
-      - PATH_BASE=/owners.api
+      - PATH_BASE=/owners-api
       - GRPC_PORT=81
       - PORT=80
     ports:
       - "5101:80"
       - "9101:81" # for grpc port
 
-  apartment.api:
+  apartment-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-      - ConnectionString=${BROKER_AZURE_APARTMENT_DB:-Server=sql.data;Database=Broker.Service.ApartmentDb;User Id=sa;Password=Pass@word;} 
-      - identityUrl=http://identity.api
+      - ConnectionString=${BROKER_AZURE_APARTMENT_DB} 
+      - IdentityUrl=http://identity-api
       - IdentityUrlExternal=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5105
       - EventBusConnection=${BROKER_AZURE_SERVICE_BUS:-rabbitmq}
       - EventBusUserName=${BROKER_SERVICE_BUS_USERNAME}
       - EventBusPassword=${BROKER_SERVICE_BUS_PASSWORD}
-      - AzureStorageAccountName=${BROKER_AZURE_STORAGE_NAME}
-      - AzureStorageAccountKey=${BROKER_AZURE_STORAGE_KEY}
+      - AzureStorageConnectionString=${BROKER_AZURE_STORAGE_CONNECTION}
+      - AzureStorageContainerName=${BROKER_AZURE_STORAGE_CONTAINER}
+      - AzureStorageAccountEndpoint=${BROKER_AZURE_STORAGE_Endpoint}
       - UseCustomizationData=True
       - AzureServiceBusEnabled=False
+      - TopicName=${BROKER_AZURE_SERVICE_BUS_TOPIC}
       - AzureStorageEnabled=False
+      - FileSizeLimit=2097152
       - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
       - OrchestratorType=${ORCHESTRATOR_TYPE}
       - UseLoadTest=${USE_LOADTEST:-False}
-      - PATH_BASE=/apartment.api
+      - PATH_BASE=/apartment-api
       - GRPC_PORT=81
       - PORT=80
     ports:
       - "5102:80"
       - "9102:81" # for grpc port
 
+  signalrhub:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - EventBusConnection=${BROKER_AZURE_SERVICE_BUS:-rabbitmq}
+      - EventBusUserName=${BROKER_SERVICE_BUS_USERNAME}
+      - EventBusPassword=${BROKER_SERVICE_BUS_PASSWORD}
+      - AzureServiceBusEnabled=False
+      - TopicName=${BROKER_AZURE_SERVICE_BUS_TOPIC}
+      - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
+      - OrchestratorType=${ORCHESTRATOR_TYPE}
+      - IdentityUrl=http://identity-api
+    ports:
+      - "5112:80"
+
   webclientapigw:
     volumes:
       - ./src/ApiGateways/Envoy/config/webclient:/etc/envoy
     ports:
-    - "5201:80"
-    - "15201:8001"
+      - "5201:80"
+      - "15201:8001"
 
   webclientaggapigw:
     volumes:
       - ./src/ApiGateways/Envoy/config/webclientagg:/etc/envoy
     ports:
-    - "5202:80"
-    - "15202:8001"
+      - "5202:80"
+      - "15202:8001"
 
   webclientagg:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - urls__Apartment=http://apartment.api
-      - urls__Owners=http://owners.api
-      - urls__identity=http://identity.api
-      - urls__GrpcApartment=http://apartment.api:81
-      - urls__GrpcOwners=http://owners.api:81
-      - ApartmentUrlHC=http://apartment.api/hc
-      - OwnersUrlHC=http://owners.api/hc
-      - IdentityUrlHC=http://identity.api/hc
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - urls__Apartment=http://apartment-api
+      - urls__Owners=http://owners-api
+      - urls__Identity=http://identity-api
+      - urls__GrpcApartment=http://apartment-api:81
+      - urls__GrpcOwners=http://owners-api:81
+      - ApartmentUrlHC=http://apartment-api/hc
+      - OwnersUrlHC=http://owners-api/hc
+      - IdentityUrlHC=http://identity-api/hc
+      - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
       - IdentityUrlExternal=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5105
+      - OrchestratorType=${ORCHESTRATOR_TYPE}
       - PATH_BASE=/webclientagg
     ports:
       - "5121:80"
@@ -118,18 +133,19 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-      - ApartmentUrl=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5201
-      - OwnersUrl=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5201
+      - ApiGwUrl=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5201
       - IdentityUrl=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5105
       - ApartmentAggUrl=http://${BROKER_EXTERNAL_DNS_NAME_OR_IP}:5202
-      - IdentityUrlHC=http://identity.api/hc
+      - IdentityUrlHC=http://identity-api/hc
       - UseCustomizationData=False
-      - DPConnectionString={BROKER_AZURE_REDIS_keystore_DB:-keystoredata}
+      - FileSizeLimit=2097152
+      - DPConnectionString=${BROKER_AZURE_REDIS_CACHE_DB:-cache}
       - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
       - OrchestratorType=${ORCHESTRATOR_TYPE}
       - UseLoadTest=${USE_LOADTEST:-False}
     ports:
       - "5100:80"
+
 volumes:
-  broker-sqldata:
-    external: False
+  broker-cache:
+    external: false

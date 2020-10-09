@@ -5,24 +5,24 @@ jQuery(document).ready(function ($) {
     // ============================================================== 
     // Notification list
     // ============================================================== 
-    if ($(".notification-list").length) {
+    /*if ($(".notification-list").length) {
 
         $('.notification-list').slimScroll({
             height: '250px'
         });
 
-    }
+    }*/
 
     // ============================================================== 
     // Menu Slim Scroll List
     // ============================================================== 
 
 
-    if ($(".menu-list").length) {
+    /*if ($(".menu-list").length) {
         $('.menu-list').slimScroll({
 
         });
-    }
+    }*/
 
     // ============================================================== 
     // Sidebar scrollnavigation 
@@ -90,14 +90,14 @@ jQuery(document).ready(function ($) {
     // ============================================================== 
 
 
-    if ($('.chat-list').length) {
+    /*if ($('.chat-list').length) {
         $('.chat-list').slimScroll({
             color: 'false',
             width: '100%'
 
 
         });
-    }
+    }*/
 });
 
     // ============================================================== 

@@ -1,0 +1,21 @@
+{{- $name := include "webclientagg.fullname" . -}}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "cfg-{{ $name }}"
+  labels:
+    app: {{ template "webclientagg.name" . }}
+    chart: {{ template "webclientagg.chart" .}}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  all__InstrumentationKey: "{{ .Values.inf.appinsights.key }}"
+  internalurls__Apartment: http://{{ .Values.app.svc.apartment }}
+  internalurls__Owners: http://{{ .Values.app.svc.owners }}
+  internalurls__Identity: http://{{ .Values.app.svc.identity }}
+  internalurls__GrpcApartment: "http://{{ .Values.app.svc.apartment }}:{{ .Values.service.grpcPort }}"
+  internalurls__GrpcOwners: "http://{{ .Values.app.svc.owners }}:{{ .Values.service.grpcPort }}"
+  internalurls__apartment__hc: http://{{ .Values.app.svc.apartment }}/hc
+  internalurls__owners__hc: http://{{ .Values.app.svc.owners }}/hc
+  internalurls__identity__hc: http://{{ .Values.app.svc.identity }}/hc

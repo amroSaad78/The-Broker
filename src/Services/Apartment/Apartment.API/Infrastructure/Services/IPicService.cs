@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Apartment.API.Model;
 using System;
 
 namespace Apartment.API.Infrastructure.Services
 {
     public interface IPicService
     {
-        event EventHandler<IFormFile> OnFileUpload;
-        void UploadFile(IFormFile file);
+        event EventHandler<FileData> OnFileUploaded;
+        void UploadFile(FileData fileData);
     }
 }

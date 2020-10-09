@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.app.svc.webclientagg }}
+  labels:
+    app: {{ template "webclientagg.name" . }}
+    chart: {{ template "webclientagg.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ template "webclientagg.name" . }}
+    release: {{ .Release.Name }}

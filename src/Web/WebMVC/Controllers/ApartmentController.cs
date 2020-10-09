@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using WebMVC.Extension;
@@ -14,6 +12,8 @@ using WebMVC.ViewModels;
 
 namespace WebMVC.Controllers
 {
+    //Todo: adding cashing service for lists and adding signalR client
+    //using https and win sql server
     public class ApartmentController: BasicController<ApartmentController> ,IPageController
     {
         private readonly IApartmentService _apartmentService;
@@ -24,8 +24,10 @@ namespace WebMVC.Controllers
             _apartmentService = apartmentService;            
         }
 
-        public IActionResult Blank(Messages msg)
+        public IActionResult Blank()
         {
+            var msg = new Messages();
+            msg.SetMessage(ToastTypes.error,"Apartment service is inoperative.");
             ViewBag.msg = msg;
             return ActionResult();
         }
@@ -35,66 +37,78 @@ namespace WebMVC.Controllers
         {
             try
             {
-                var vmModel = await PopulateLists((_, __, ___) => { });
-                return ActionResult(vmModel);
+                string result = await _apartmentService.PopulateLists();
+                var model = PopulateLists(result,(_, __, ___) => { });
+                return ActionResult(model);
             }
             catch(Exception ex)
             {
-                var msg = new Messages();
-                msg.SetMessage(ToastTypes.error, ex.Message);
-                return RedirectToAction(nameof(Blank), msg);
+                return RedirectToAction(nameof(Blank));
             }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [PreventDuplicateRequest]
-        //[ServiceFilter(typeof(CheckUploadedFile<IOptions<AppSettings>>))]
         public async Task<IActionResult> New(GenricApartment<ListsVM, RentVM, SaleVM, ApartmentVM> apartment, IFormFile file)
         {
-            Messages msg = new Messages();            
-            if (ModelState.IsValid)
+            Messages msg = new Messages();
+            if (!ModelState.IsValid)
+            {
+                msg.SetMessage(ToastTypes.error, "There is an error in the entered data.", "Error");
+            }
+            else
             {
                 try
                 {
                     IPayload entity = (apartment.In2, apartment.In3) switch
                     {
-                        (null,  _) => apartment.In3.Sale,
+                        (null, _) => apartment.In3.Sale,
                         (_, null) => apartment.In2.Rent,
                         _ => throw new ArgumentOutOfRangeException("Invalid arguments values.")
                     };
-
+                    Guid requestId = Guid.NewGuid();
                     var payload = new Payload<IPayload>(apartment.In4.Apartment, entity);
-                    await _apartmentService.Save(payload); //get id and pass it to sec request
-                    await _apartmentService.UploadImage(file);
+                    payload.Apartment.RequestId = requestId;
+                    await _apartmentService.Save(payload);
+                    ModelState.Clear();
+                    await _apartmentService.UploadImage(file, requestId);
                     msg.SetMessage(ToastTypes.success, "Apartment data was saved.", "Success");
-                    ViewBag.msg = msg;
-                    var model = await PopulateLists((_, __, ___) => { });
-                    return ActionResult(model);
                 }
                 catch (Exception ex)
                 {
-                    msg.SetMessage(ToastTypes.error, ex.Message);
+                    if(ex.GetType() == typeof(ArgumentException))
+                        msg.SetMessage(ToastTypes.warning, ex.Message ?? "Apartment service is inoperative.", "Warning");
+                    else
+                        msg.SetMessage(ToastTypes.error, ex.Message ?? "Apartment service is inoperative.");
                 }
             }
-            ViewBag.msg = msg;
-            var vmModel = await PopulateLists((Rent rent, Sale sale, Apartment apartData) => {
-                rent = apartment.In2?.Rent;
-                sale = apartment.In3?.Sale;
-                apartData = apartment.In4?.Apartment;
-            });
-            return ActionResult(vmModel);
+            try
+            {
+                ViewBag.msg = msg;
+                string result = await _apartmentService.PopulateLists();
+                var model = PopulateLists(result,(Rent rent, Sale sale, Apartment apartData) =>
+                    {
+                        rent = apartment.In2?.Rent;
+                        sale = apartment.In3?.Sale;
+                        apartData = apartment.In4?.Apartment;
+                    });
+                return ActionResult(model);
+            }
+            catch(Exception ex)
+            {
+                return RedirectToAction(nameof(Blank));
+            }
         }
 
-        private async Task<GenricApartment<ListsVM, RentVM, SaleVM, ApartmentVM>> PopulateLists(Action<Rent, Sale, Apartment> action)
+        private GenricApartment<ListsVM, RentVM, SaleVM, ApartmentVM> PopulateLists(string lists, Action<Rent, Sale, Apartment> action)
         {
-            var lists = await _apartmentService.PopulateLists();
             ListsVM listsVm = new ListsVM()
             {
                 Bedrooms = lists.GetSelectListAsync("bedrooms", "bedroomsCount"),
                 Countries = lists.GetSelectListAsync("countries", "country").OrderBy(o => o.Text),
                 Furnishings = lists.GetSelectListAsync("furnishings", "furnitureType"),
-                Owners = lists.GetSelectListAsync("owners", "fullName").OrderBy(o => o.Text)                
+                Owners = lists.GetSelectListAsync("owners", "fullName").OrderBy(o => o.Text)
             };
             RentVM rent = new RentVM() { Periods = lists.GetSelectListAsync("periods", "period") };
             SaleVM sale = new SaleVM();

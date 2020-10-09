@@ -1,6 +1,7 @@
 using Apartment.API.Controllers;
 using Apartment.API.Grpc;
 using Apartment.API.Infrastructure;
+using Apartment.API.Infrastructure.AutofacModules;
 using Apartment.API.Infrastructure.Filters;
 using Apartment.API.Infrastructure.Middlewares;
 using Apartment.API.Infrastructure.Services;
@@ -16,6 +17,7 @@ using BuildingBlocks.EventBusServiceBus;
 using BuildingBlocks.IntegrationEventLogEF;
 using BuildingBlocks.IntegrationEventLogEF.Services;
 using HealthChecks.UI.Client;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -54,7 +56,7 @@ namespace Apartment.API
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services
-                .AddAppInsight(Configuration)
+                .AddAppInsight()
                 .AddGrpc(options =>{options.EnableDetailedErrors = true;}).Services
                 .AddCustomMVC(Configuration)
                 .AddCustomDbContext(Configuration)
@@ -65,10 +67,10 @@ namespace Apartment.API
                 .AddCustomHealthCheck(Configuration)
                 .AddCustomAuthentication(Configuration);
 
-
             var container = new ContainerBuilder();
             container.Populate(services);
-
+            container.RegisterModule(new AppModule());
+            container.RegisterModule(new MediatorModule());
             return new AutofacServiceProvider(container.Build());
         }
 
@@ -153,9 +155,9 @@ namespace Apartment.API
 
     public static class CustomExtensionMethods
     {
-        public static IServiceCollection AddAppInsight(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddAppInsight(this IServiceCollection services)
         {
-            services.AddApplicationInsightsTelemetry(configuration);
+            services.AddApplicationInsightsTelemetry();
             services.AddApplicationInsightsKubernetesEnricher();
 
             return services;
@@ -179,8 +181,17 @@ namespace Apartment.API
                     .AllowAnyHeader()
                     .AllowCredentials());
             });
-            services.AddTransient<IPicService, PicServices>();
-            services.AddTransient<IPicServicesHandler, PicServicesHandler>();
+            if (configuration.GetValue<bool>("AzureStorageEnabled"))
+                services.AddSingleton<IStorage>(serviceProvider => {
+                var blobStorage = new AzureStorage(serviceProvider.GetService<IMediator>(),
+                                                   serviceProvider.GetService<ILogger<AzureStorage>>(),
+                                                   serviceProvider.GetService<IIdentityService>(),
+                                                   serviceProvider.GetService<IEventBus>(),
+                                                   configuration);
+                blobStorage.InitAsync().GetAwaiter().GetResult();
+                return blobStorage;
+                });
+
             return services;
         }
 
@@ -212,7 +223,7 @@ namespace Apartment.API
                 hcBuilder
                     .AddAzureServiceBusTopic(
                         configuration["EventBusConnection"],
-                        topicName: "broker_event_bus",
+                        topicName: configuration["TopicName"],
                         name: "apartment-servicebus-check",
                         tags: new string[] { "servicebus" });
             }
@@ -234,24 +245,24 @@ namespace Apartment.API
                 .AddDbContext<ApartmentContext>(options =>
                 {
                     options.UseSqlServer(configuration["ConnectionString"],
-                                         sqlServerOptionsAction: sqlOptions =>
-                                         {
-                                             sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
-                                         //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
-                                         sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
-                                         });
+                        sqlServerOptionsAction: sqlOptions =>
+                        {
+                            sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+                            //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
+                            sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+                        });
                 });
             
             services.AddDbContext<IntegrationEventLogContext>(options =>
-            {
-                options.UseSqlServer(configuration["ConnectionString"],
-                                     sqlServerOptionsAction: sqlOptions =>
-                                     {
-                                         sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
-                                         //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
-                                         sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
-                                     });
-            });
+                {
+                    options.UseSqlServer(configuration["ConnectionString"],
+                        sqlServerOptionsAction: sqlOptions =>
+                        {
+                            sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+                            //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
+                            sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+                        });
+                });
             
             return services;
         }
@@ -259,7 +270,7 @@ namespace Apartment.API
         public static IServiceCollection AddCustomOptions(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddOptions();
-            services.Configure<ApartmentSettings>(configuration);
+            services.Configure<AppSettings>(configuration);
 
             //add BadRequest error Behavior options for Api controller when action method "ModelState" invalid;
             services.Configure<ApiBehaviorOptions>(options =>
@@ -325,7 +336,7 @@ namespace Apartment.API
             IdentityModelEventSource.ShowPII = true;
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("sub");
 
-            var identityUrl = configuration.GetValue<string>("identityUrl");
+            var identityUrl = configuration.GetValue<string>("IdentityUrl");
 
             services.AddAuthentication(options =>
             {
@@ -354,11 +365,13 @@ namespace Apartment.API
             {
                 services.AddSingleton<IServiceBusPersisterConnection>(sp =>
                 {
-                    var settings = sp.GetRequiredService<IOptions<ApartmentSettings>>().Value;
+                    var settings = sp.GetRequiredService<IOptions<AppSettings>>().Value;
                     var logger = sp.GetRequiredService<ILogger<DefaultServiceBusPersisterConnection>>();
 
-                    var serviceBusConnection = new ServiceBusConnectionStringBuilder(settings.EventBusConnection);
-
+                    var serviceBusConnection = new ServiceBusConnectionStringBuilder(settings.EventBusConnection)
+                    {
+                        EntityPath = configuration["TopicName"]
+                    };
                     return new DefaultServiceBusPersisterConnection(serviceBusConnection, logger);
                 });
             }
@@ -366,7 +379,7 @@ namespace Apartment.API
             {
                 services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
                 {
-                    var settings = sp.GetRequiredService<IOptions<ApartmentSettings>>().Value;
+                    var settings = sp.GetRequiredService<IOptions<AppSettings>>().Value;
                     var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
 
                     var factory = new ConnectionFactory()

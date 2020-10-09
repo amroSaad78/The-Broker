@@ -34,6 +34,7 @@ namespace WebClientAgg
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            RegisterAppInsights(services);
             services.AddHealthChecks()
                 .AddCheck("self", () => HealthCheckResult.Healthy())
                 .AddUrlGroup(new Uri(Configuration["ApartmentUrlHC"]), name: "apartmentapi-check", tags: new string[] { "apartmentapi" })
@@ -93,6 +94,11 @@ namespace WebClientAgg
                 });
             });
         }
+        private void RegisterAppInsights(IServiceCollection services)
+        {
+            services.AddApplicationInsightsTelemetry();
+            services.AddApplicationInsightsKubernetesEnricher();
+        }
     }
 
     public static class ServiceCollectionExtensions
@@ -101,7 +107,7 @@ namespace WebClientAgg
         {
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("sub");
 
-            var identityUrl = configuration.GetValue<string>("urls:identity");
+            var identityUrl = configuration.GetValue<string>("urls:Identity");
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

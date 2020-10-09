@@ -22,9 +22,9 @@ namespace Apartment.API.Controllers
     public class OwnerController : ControllerBase
     {
         private readonly OwnerContext _context;
-        private readonly OwnerSettings _settings;
+        private readonly AppSettings _settings;
 
-        public OwnerController(OwnerContext context, IOptionsSnapshot<OwnerSettings> settings)
+        public OwnerController(OwnerContext context, IOptionsSnapshot<AppSettings> settings)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _settings = settings.Value;

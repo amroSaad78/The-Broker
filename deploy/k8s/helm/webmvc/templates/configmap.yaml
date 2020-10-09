@@ -1,0 +1,23 @@
+{{- $name := include "webmvc.fullname" . -}}
+{{- $webclientapigw := include "url-of" (list .Values.app.ingress.entries.webclientapigw .) -}}
+{{- $protocol := include "protocol" . -}}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "cfg-{{ $name }}"
+  labels:
+    app: {{ template "webmvc.name" . }}
+    chart: {{ template "webmvc.chart" .}}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  all__InstrumentationKey: "{{ .Values.inf.appinsights.key }}"
+  all_EnableLoadTest: "{{ .Values.inf.misc.useLoadTest }}"
+  webmvc__keystore: {{ .Values.inf.redis.keystore.constr }}
+  internalurls__apigw: http://{{ .Values.app.svc.webclientapigw }}
+  internalurls__apiaggw: http://{{ .Values.app.svc.webclientaggapigw }}
+  internalurls__identity__hc: http://{{ .Values.app.svc.identity }}/hc
+  urls__IdentityUrl: http://kubernetes.docker.internal/identity
+  urls__mvc: http://kubernetes.docker.internal/webmvc
+  all__FileSizeLimit: "{{ .Values.inf.misc.FileSizeLimit }}"

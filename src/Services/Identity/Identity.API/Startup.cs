@@ -55,9 +55,6 @@ namespace Identity.API
                 .AddDefaultTokenProviders();
 
             services.Configure<AppSettings>(Configuration);
-
-            //services.AddMvc(opt => opt.EnableEndpointRouting = false)
-            //    .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             
             if (Configuration.GetValue<string>("IsClusterEnv") == bool.TrueString)
             {
@@ -163,7 +160,7 @@ namespace Identity.API
 
         private void RegisterAppInsights(IServiceCollection services)
         {
-            services.AddApplicationInsightsTelemetry(Configuration);
+            services.AddApplicationInsightsTelemetry();
             services.AddApplicationInsightsKubernetesEnricher();
         }
     }
